@@ -9,7 +9,6 @@ jobs:
         uses: "alstr/todo-to-issue-action@master"
         with:
           REPO: ${{ github.repository }}
-          HEAD: ${{ github.event.head }}
           BEFORE: ${{ github.event.before }}
           SHA: ${{ github.sha }}
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
