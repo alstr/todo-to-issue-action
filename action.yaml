@@ -1,9 +1,0 @@
-name: "TODO to Issue"
-description: "Converts IDE TODO comments to GitHub issues"
-author: "Alastair Mooney"
-runs:
-  using: "docker"
-  image: "Dockerfile"
-branding:
-  icon: "check-square"
-  color: "orange"
