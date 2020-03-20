@@ -6,7 +6,7 @@ import requests
 import re
 import json
 from time import sleep
-
+from io import StringIO
 
 base_url = 'https://api.github.com/repos/'
 
@@ -43,7 +43,7 @@ def main():
         closed_issues = []
 
         # Read the diff file one line at a time, checking for additions/deletions in each hunk.
-        with open(diff, 'r') as diff_file:
+        with StringIO(diff) as diff_file:
             curr_file = None
             hunk_start = None
             hunk_index = None
