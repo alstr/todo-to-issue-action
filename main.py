@@ -54,6 +54,7 @@ def main():
                 if header_search:
                     files = header_search.group(0).split(' ')
                     curr_file = files[1][2:]
+                    line_counter = None
                 else:
                     # Look for hunks so we can get the line numbers for the changes.
                     hunk_search = hunk_start_pattern.search(line)
@@ -96,7 +97,7 @@ def main():
                                 todo_search = todo_pattern.search(deletion)
                                 if todo_search:
                                     closed_issues.append(todo_search.group(0))
-                            else:
+                            elif line_counter is not None:
                                 line_counter += 1
                 if recording:
                     recording = False
