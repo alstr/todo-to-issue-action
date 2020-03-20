@@ -34,8 +34,8 @@ def main():
         header_pattern = re.compile(r'(?<=diff\s--git\s).+')
         hunk_start_pattern = re.compile(r'((?<=^@@\s).+(?=\s@@))')
         line_num_pattern = re.compile(r'(?<=\+).+')
-        addition_pattern = re.compile(r'(?<=^\+\s).+')
-        deletion_pattern = re.compile(r'(?<=^-\s).+')
+        addition_pattern = re.compile(r'(?<=^\+).*')
+        deletion_pattern = re.compile(r'(?<=^-).*')
         todo_pattern = re.compile(r'(?<=' + label + r'\s).+')
         comment_pattern = re.compile(r'(?<=' + comment_marker + r'\s).+')
 
@@ -45,9 +45,8 @@ def main():
         # Read the diff file one line at a time, checking for additions/deletions in each hunk.
         with StringIO(diff) as diff_file:
             curr_file = None
-            hunk_start = None
-            hunk_index = None
             recording = False
+            line_counter = None
 
             for n, line in enumerate(diff_file):
                 # First look for a diff header so we can determine the file the changes relate to.
@@ -62,7 +61,7 @@ def main():
                         hunk = hunk_search.group(0)
                         line_nums = line_num_pattern.search(hunk).group(0).split(',')
                         hunk_start = int(line_nums[0])
-                        hunk_index = n
+                        line_counter = hunk_start
                     else:
                         # Look for additions and deletions (specifically TODOs) within each hunk.
                         addition_search = addition_pattern.search(line)
@@ -78,10 +77,9 @@ def main():
                                     'todo': todo,
                                     'body': todo,
                                     'file': curr_file,
-                                    'line_num': hunk_start + (n - hunk_index - 1)
+                                    'line_num': line_counter
                                 }
                                 new_issues.append(new_issue)
-                                continue
                             elif recording:
                                 # If we are recording, check if the current line continues the last.
                                 comment_search = comment_pattern.search(addition)
@@ -89,7 +87,8 @@ def main():
                                     comment = comment_search.group(0).lstrip()
                                     last_issue = new_issues[len(new_issues) - 1]
                                     last_issue['body'] += '\n' + comment
-                                continue
+                            line_counter += 1
+                            continue
                         else:
                             deletion_search = deletion_pattern.search(line)
                             if deletion_search:
@@ -97,6 +96,8 @@ def main():
                                 todo_search = todo_pattern.search(deletion)
                                 if todo_search:
                                     closed_issues.append(todo_search.group(0))
+                            else:
+                                line_counter += 1
                 if recording:
                     recording = False
 
