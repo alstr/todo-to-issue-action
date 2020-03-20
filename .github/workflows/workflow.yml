@@ -13,4 +13,5 @@ jobs:
           SHA: ${{ github.sha }}
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LABEL: "# TODO"
+          COMMENT_MARKER: "#"
         id: "todo"
