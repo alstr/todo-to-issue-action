@@ -135,10 +135,15 @@ def main():
                             issue_number = current_issue['number']
 
                             update_issue_url = f'{base_url}{repo}/issues/{issue_number}'
-                            body = f'Closed in {sha}'
-                            closed_issue_body = {'state': 'closed', 'body': body}
+                            body = {'state': 'closed'}
                             requests.patch(update_issue_url, headers=issue_headers, params=params,
-                                           data=json.dumps(closed_issue_body))
+                                           data=json.dumps(body))
+
+                            issue_comment_url = f'{base_url}{repo}/issues/{issue_number}/comments'
+                            body = f'Closed in {sha}'
+                            requests.post(issue_comment_url, headers=issue_headers, params=params,
+                                          data=json.dumps(body))
+
                             # Don't update too many issues too quickly.
                             sleep(1)
 
