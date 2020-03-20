@@ -2,7 +2,10 @@
 
 This action will convert your `# TODO` comments to GitHub issues when a new commit is pushed.
 
-It will also close an issue when a `# TODO` is removed in a pushed commit.
+The new issue will contain a link to the line in your code containing the TODO.
+
+It will also close an issue when a `# TODO` is removed in a pushed commit. A comment will be posted
+with the ref of the commit that it was closed by.
 
 The `# TODO` comment is commonly used in Python, but this can be customised to whatever you want.
 
@@ -27,6 +30,7 @@ Create a workflow file in your .github/workflows directory as follows:
               SHA: ${{ github.sha }}
               TOKEN: ${{ secrets.GITHUB_TOKEN }}
               LABEL: "# TODO"
+              COMMENT_MARKER: "#"
             id: "todo"
 
 ### Inputs
@@ -38,6 +42,7 @@ Create a workflow file in your .github/workflows directory as follows:
 | `SHA` | The SHA of the latest commit (automatically set) |
 | `TOKEN` | The GitHub access token to allow us to retrieve, create and update issues (automatically set) |
 | `LABEL` | The label that will be used to identify TODO comments (by default this is `# TODO` for Python) |
+| `COMMENT_MARKER` | The marker used to signify a line comment in your code (by default this is `#` for Python) |
 
 ## Examples
 
@@ -54,7 +59,20 @@ This will create an issue called "Come up with a more imaginative greeting".
 Should the title be longer than 50 characters, it will be truncated for the issue title.
  
 The full title will be included in the issue body and a `todo` label will be attached to the issue.
- 
+
+### Multiline TODOs
+
+    def hello_world():
+        # TODO Come up with a more imaginative greeting
+        #  Everyone uses hello world and it's boring.
+        print('Hello world!')
+
+You can create a multiline todo by continuing below the initial TODO declaration with a comment.
+
+The extra line(s) will be posted in the body of the issue.
+
+The `COMMENT_MARKER` input must be set to the correct syntax (e.g. `#` for Python).
+
 ### Removing TODOs
 
     def hello_world():
