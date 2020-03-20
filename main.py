@@ -15,6 +15,7 @@ def main():
     repo = os.getenv('INPUT_REPO')
     before = os.getenv('INPUT_BEFORE')
     sha = os.getenv('INPUT_SHA')
+    comment_marker = os.getenv('COMMENT_MARKER')
     label = os.getenv('INPUT_LABEL')
     params = {
         'access_token': os.getenv('INPUT_TOKEN')
@@ -30,17 +31,74 @@ def main():
     if diff_request.status_code == 200:
         diff = diff_request.text
 
-        # Check for additions in the diff.
-        addition_pattern = re.compile(r'(?<=^\+).*', re.MULTILINE)
-        additions = addition_pattern.findall(diff)
-        new_issues = []
+        header_pattern = re.compile(r'(?<=diff\s--git\s).+')
+        hunk_start_pattern = re.compile(r'((?<=^@@\s).+(?=\s@@))')
+        line_num_pattern = re.compile(r'(?<=\+).+')
+        addition_pattern = re.compile(r'(?<=^\+\s).+')
+        deletion_pattern = re.compile(r'(?<=^-\s).+')
+        todo_pattern = re.compile(r'(?<=' + label + r'\s).+')
+        comment_pattern = re.compile(r'(?<=' + comment_marker + r'\s).+')
 
-        # Filter the additions down to newly added TODOs.
-        for addition in additions:
-            todo_pattern = re.compile(r'(?<=' + label + r'\s).*')
-            todos = todo_pattern.search(addition)
-            if todos:
-                new_issues.append(todos.group(0))
+        new_issues = []
+        closed_issues = []
+
+        # Read the diff file one line at a time, checking for additions/deletions in each hunk.
+        with open(diff, 'r') as diff_file:
+            curr_file = None
+            hunk_start = None
+            hunk_index = None
+            recording = False
+
+            for n, line in enumerate(diff_file):
+                # First look for a diff header so we can determine the file the changes relate to.
+                header_search = header_pattern.search(line)
+                if header_search:
+                    files = header_search.group(0).split(' ')
+                    curr_file = files[1][2:]
+                else:
+                    # Look for hunks so we can get the line numbers for the changes.
+                    hunk_search = hunk_start_pattern.search(line)
+                    if hunk_search:
+                        hunk = hunk_search.group(0)
+                        line_nums = line_num_pattern.search(hunk).group(0).split(',')
+                        hunk_start = int(line_nums[0])
+                        hunk_index = n
+                    else:
+                        # Look for additions and deletions (specifically TODOs) within each hunk.
+                        addition_search = addition_pattern.search(line)
+                        if addition_search:
+                            addition = addition_search.group(0)
+                            todo_search = todo_pattern.search(addition)
+                            if todo_search:
+                                # Start recording so we can capture multiline TODOs.
+                                recording = True
+                                todo = todo_search.group(0)
+                                new_issue = {
+                                    'labels': ['todo'],
+                                    'todo': todo,
+                                    'body': todo,
+                                    'file': curr_file,
+                                    'line_num': hunk_start + (n - hunk_index - 1)
+                                }
+                                new_issues.append(new_issue)
+                                continue
+                            elif recording:
+                                # If we are recording, check if the current line continues the last.
+                                comment_search = comment_pattern.search(addition)
+                                if comment_search:
+                                    comment = comment_search.group(0).lstrip()
+                                    last_issue = new_issues[len(new_issues) - 1]
+                                    last_issue['body'] += '\n' + comment
+                                continue
+                        else:
+                            deletion_search = deletion_pattern.search(line)
+                            if deletion_search:
+                                deletion = deletion_search.group(0)
+                                todo_search = todo_pattern.search(deletion)
+                                if todo_search:
+                                    closed_issues.append(todo_search.group(0))
+                if recording:
+                    recording = False
 
         # Create new issues for any newly added TODOs.
         issues_url = f'{base_url}{repo}/issues'
@@ -48,26 +106,17 @@ def main():
             'Content-Type': 'application/json',
         }
         for issue in new_issues:
-            title = issue
+            title = issue['todo']
             # Truncate the title if it's longer than 50 chars.
             if len(title) > 50:
-                title = issue[:50] + '...'
-            new_issue_body = {'title': title, 'body': issue, 'labels': ['todo']}
+                title = title[:50] + '...'
+            file = issue['file']
+            line = issue['line_num']
+            body = issue['body'] + '\n' + f'https://github.com/{ repo }/blob/{ sha }/{ file }#L{ line }'
+            new_issue_body = {'title': title, 'body': body, 'labels': ['todo']}
             requests.post(url=issues_url, headers=issue_headers, params=params, data=json.dumps(new_issue_body))
             # Don't add too many issues too quickly.
             sleep(1)
-
-        # Check for deletions in the diff.
-        deletion_pattern = re.compile(r'(?<=^-).*', re.MULTILINE)
-        deletions = deletion_pattern.findall(diff)
-        closed_issues = []
-
-        # Filter the deletions down to removed TODOs.
-        for deletion in deletions:
-            todo_pattern = re.compile(r'(?<=' + label + r'\s).*')
-            todos = todo_pattern.search(deletion)
-            if todos:
-                closed_issues.append(todos.group(0))
 
         if len(closed_issues) > 0:
             # Get the list of current issues.
