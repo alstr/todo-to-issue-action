@@ -81,6 +81,8 @@ def main():
                                     'line_num': line_counter
                                 }
                                 new_issues.append(new_issue)
+                                line_counter += 1
+                                continue
                             elif recording:
                                 # If we are recording, check if the current line continues the last.
                                 comment_search = comment_pattern.search(addition)
@@ -88,8 +90,10 @@ def main():
                                     comment = comment_search.group(0).lstrip()
                                     last_issue = new_issues[len(new_issues) - 1]
                                     last_issue['body'] += '\n' + comment
-                            line_counter += 1
-                            continue
+                                    line_counter += 1
+                                    continue
+                            if line_counter is not None:
+                                line_counter += 1
                         else:
                             deletion_search = deletion_pattern.search(line)
                             if deletion_search:
