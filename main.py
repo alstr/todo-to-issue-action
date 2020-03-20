@@ -112,7 +112,7 @@ def main():
                 title = title[:50] + '...'
             file = issue['file']
             line = issue['line_num']
-            body = issue['body'] + '\n' + f'https://github.com/{ repo }/blob/{ sha }/{ file }#L{ line }'
+            body = issue['body'] + '\n' + f'https://github.com/{repo}/blob/{sha}/{file}#L{line}'
             new_issue_body = {'title': title, 'body': body, 'labels': ['todo']}
             requests.post(url=issues_url, headers=issue_headers, params=params, data=json.dumps(new_issue_body))
             # Don't add too many issues too quickly.
@@ -140,7 +140,7 @@ def main():
                                            data=json.dumps(body))
 
                             issue_comment_url = f'{base_url}{repo}/issues/{issue_number}/comments'
-                            body = f'Closed in {sha}'
+                            body = {'body': f'Closed in {sha}'}
                             requests.post(issue_comment_url, headers=issue_headers, params=params,
                                           data=json.dumps(body))
 
