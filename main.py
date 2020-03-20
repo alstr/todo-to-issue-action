@@ -15,7 +15,7 @@ def main():
     repo = os.getenv('INPUT_REPO')
     before = os.getenv('INPUT_BEFORE')
     sha = os.getenv('INPUT_SHA')
-    comment_marker = os.getenv('COMMENT_MARKER')
+    comment_marker = os.getenv('INPUT_COMMENT_MARKER')
     label = os.getenv('INPUT_LABEL')
     params = {
         'access_token': os.getenv('INPUT_TOKEN')
