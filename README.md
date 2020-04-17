@@ -2,7 +2,7 @@
 
 This action will convert your `# TODO` comments to GitHub issues when a new commit is pushed.
 
-The new issue will contain a link to the line in the file code containing the TODO, together with a code snippet.
+The new issue will contain a link to the line in the file containing the TODO, together with a code snippet. The action performs a `GET` request to retrieve GitHub's [`languages.yaml` file](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) file to apply highlighting to the snippet.
 
 It will also close an issue when a `# TODO` is removed in a pushed commit. A comment will be posted
 with the ref of the commit that it was closed by.
@@ -95,3 +95,7 @@ This may be updated in future.
 Thanks to Jacob Tomlinson for his handy overview of GitHub Actions:
 
 https://www.jacobtomlinson.co.uk/posts/2019/creating-github-actions-in-python/
+
+Thanks to GitHub's [linguist repo](https://github.com/github/linguist/) for the handy `languages.yaml` file used by the app to determine the correct highlighting to apply to code snippets:
+
+https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml
