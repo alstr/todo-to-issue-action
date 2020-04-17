@@ -2,7 +2,7 @@
 
 This action will convert your `# TODO` comments to GitHub issues when a new commit is pushed.
 
-The new issue will contain a link to the line in your code containing the TODO.
+The new issue will contain a link to the line in the file code containing the TODO, together with a code snippet.
 
 It will also close an issue when a `# TODO` is removed in a pushed commit. A comment will be posted
 with the ref of the commit that it was closed by.

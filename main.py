@@ -7,6 +7,7 @@ import re
 import json
 from time import sleep
 from io import StringIO
+from ruamel.yaml import YAML
 
 base_url = 'https://api.github.com/repos/'
 
@@ -27,6 +28,15 @@ def main():
         'Accept': 'application/vnd.github.v3.diff'
     }
 
+    # Load a file so we can see what language each file is written in and apply highlighting later.
+    languages_url = 'https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml'
+    languages_request = requests.get(url=languages_url)
+    languages_dict = None
+    if languages_request.status_code == 200:
+        languages_data = languages_request.text
+        yaml = YAML(typ='safe')
+        languages_dict = yaml.load(languages_data)
+
     diff_request = requests.get(url=diff_url, headers=diff_headers, params=params)
     if diff_request.status_code == 200:
         diff = diff_request.text
@@ -41,11 +51,13 @@ def main():
 
         new_issues = []
         closed_issues = []
+        lines = []
+        curr_issue = None
 
         # Read the diff file one line at a time, checking for additions/deletions in each hunk.
         with StringIO(diff) as diff_file:
             curr_file = None
-            recording = False
+            previous_line_was_todo = False
             line_counter = None
 
             for n, line in enumerate(diff_file):
@@ -59,6 +71,12 @@ def main():
                     # Look for hunks so we can get the line numbers for the changes.
                     hunk_search = hunk_start_pattern.search(line)
                     if hunk_search:
+                        if curr_issue:
+                            curr_issue['hunk'] = lines
+                            new_issues.append(curr_issue)
+                            curr_issue = None
+
+                        lines = []
                         hunk = hunk_search.group(0)
                         line_nums = line_num_pattern.search(hunk).group(0).split(',')
                         hunk_start = int(line_nums[0])
@@ -67,29 +85,31 @@ def main():
                         # Look for additions and deletions (specifically TODOs) within each hunk.
                         addition_search = addition_pattern.search(line)
                         if addition_search:
+                            lines.append(line[1:])
                             addition = addition_search.group(0)
                             todo_search = todo_pattern.search(addition)
                             if todo_search:
                                 # Start recording so we can capture multiline TODOs.
-                                recording = True
+                                previous_line_was_todo = True
                                 todo = todo_search.group(0)
-                                new_issue = {
+                                if curr_issue:
+                                    curr_issue['hunk'] = lines
+                                    new_issues.append(curr_issue)
+
+                                curr_issue = {
                                     'labels': ['todo'],
                                     'todo': todo,
                                     'body': todo,
                                     'file': curr_file,
                                     'line_num': line_counter
                                 }
-                                new_issues.append(new_issue)
                                 line_counter += 1
                                 continue
-                            elif recording:
-                                # If we are recording, check if the current line continues the last.
+                            elif previous_line_was_todo:
+                                # Check if this is a continuation from the previous line.
                                 comment_search = comment_pattern.search(addition)
                                 if comment_search:
-                                    comment = comment_search.group(0).lstrip()
-                                    last_issue = new_issues[len(new_issues) - 1]
-                                    last_issue['body'] += '\n' + comment
+                                    curr_issue['body'] += '\n\n' + comment_search.group(0).lstrip()
                                     line_counter += 1
                                     continue
                             if line_counter is not None:
@@ -101,26 +121,61 @@ def main():
                                 todo_search = todo_pattern.search(deletion)
                                 if todo_search:
                                     closed_issues.append(todo_search.group(0))
-                            elif line_counter is not None:
-                                line_counter += 1
-                if recording:
-                    recording = False
+                            else:
+                                lines.append(line[1:])
+
+                                if previous_line_was_todo:
+                                    # Check if this is a continuation from the previous line.
+                                    comment_search = comment_pattern.search(line)
+                                    if comment_search:
+                                        curr_issue['body'] += '\n\n' + comment_search.group(0).lstrip()
+                                        line_counter += 1
+                                        continue
+                                if line_counter is not None:
+                                    line_counter += 1
+                if previous_line_was_todo:
+                    previous_line_was_todo = False
+
+            if curr_issue:
+                curr_issue['hunk'] = lines
+                new_issues.append(curr_issue)
 
         # Create new issues for any newly added TODOs.
         issues_url = f'{base_url}{repo}/issues'
         issue_headers = {
             'Content-Type': 'application/json',
         }
-        for issue in new_issues:
+        for i, issue in enumerate(new_issues):
             title = issue['todo']
             # Truncate the title if it's longer than 50 chars.
             if len(title) > 50:
                 title = title[:50] + '...'
             file = issue['file']
             line = issue['line_num']
-            body = issue['body'] + '\n' + f'https://github.com/{repo}/blob/{sha}/{file}#L{line}'
+            body = issue['body'] + '\n\n' + f'https://github.com/{repo}/blob/{sha}/{file}#L{line}'
+            if 'hunk' in issue:
+                hunk = issue['hunk']
+                hunk.pop(0)
+
+                file_name, extension = os.path.splitext(os.path.basename(file))
+                markdown_language = None
+                if languages_dict:
+                    for language in languages_dict:
+                        if ('extensions' in languages_dict[language]
+                                and extension in languages_dict[language]['extensions']):
+                            markdown_language = languages_dict[language]['ace_mode']
+                if markdown_language:
+                    body += '\n\n' + '```' + markdown_language + ''.join(hunk) + '```'
+                else:
+                    body += '\n\n' + '```' + ''.join(hunk) + '```'
             new_issue_body = {'title': title, 'body': body, 'labels': ['todo']}
-            requests.post(url=issues_url, headers=issue_headers, params=params, data=json.dumps(new_issue_body))
+            new_issue_request = requests.post(url=issues_url, headers=issue_headers, params=params,
+                                              data=json.dumps(new_issue_body))
+            print(f'Creating issue {i + 1} of {len(new_issues)}')
+            if new_issue_request.status_code == 201:
+                print('Issue created')
+            else:
+                print('Issue could not be created')
             # Don't add too many issues too quickly.
             sleep(1)
 
@@ -129,7 +184,7 @@ def main():
             list_issues_request = requests.get(issues_url, headers=issue_headers, params=params)
             if list_issues_request.status_code == 200:
                 current_issues = list_issues_request.json()
-                for closed_issue in closed_issues:
+                for i, closed_issue in enumerate(closed_issues):
                     title = closed_issue
                     if len(title) > 50:
                         title = closed_issue[:50] + '...'
@@ -147,9 +202,13 @@ def main():
 
                             issue_comment_url = f'{base_url}{repo}/issues/{issue_number}/comments'
                             body = {'body': f'Closed in {sha}'}
-                            requests.post(issue_comment_url, headers=issue_headers, params=params,
-                                          data=json.dumps(body))
-
+                            update_issue_request = requests.post(issue_comment_url, headers=issue_headers,
+                                                                 params=params, data=json.dumps(body))
+                            print(f'Closing issue {i + 1} of {len(closed_issues)}')
+                            if update_issue_request.status_code == 201:
+                                print('Issue closed')
+                            else:
+                                print('Issue could not be closed')
                             # Don't update too many issues too quickly.
                             sleep(1)
 
