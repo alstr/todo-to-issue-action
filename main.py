@@ -62,14 +62,17 @@ def main():
 
             for n, line in enumerate(diff_file):
                 # First look for a diff header so we can determine the file the changes relate to.
-                header_search = header_pattern.search(line)
+                encoded_line = line.encode('utf-8')
+                cleaned_line = encoded_line.rstrip(b'\r\n').decode('utf-8')
+
+                header_search = header_pattern.search(cleaned_line)
                 if header_search:
                     files = header_search.group(0).split(' ')
                     curr_file = files[1][2:]
                     line_counter = None
                 else:
                     # Look for hunks so we can get the line numbers for the changes.
-                    hunk_search = hunk_start_pattern.search(line)
+                    hunk_search = hunk_start_pattern.search(cleaned_line)
                     if hunk_search:
                         if curr_issue:
                             curr_issue['hunk'] = lines
@@ -83,9 +86,9 @@ def main():
                         line_counter = hunk_start
                     else:
                         # Look for additions and deletions (specifically TODOs) within each hunk.
-                        addition_search = addition_pattern.search(line)
+                        addition_search = addition_pattern.search(cleaned_line)
                         if addition_search:
-                            lines.append(line[1:])
+                            lines.append(cleaned_line[1:])
                             addition = addition_search.group(0)
                             todo_search = todo_pattern.search(addition)
                             if todo_search:
@@ -115,18 +118,18 @@ def main():
                             if line_counter is not None:
                                 line_counter += 1
                         else:
-                            deletion_search = deletion_pattern.search(line)
+                            deletion_search = deletion_pattern.search(cleaned_line)
                             if deletion_search:
                                 deletion = deletion_search.group(0)
                                 todo_search = todo_pattern.search(deletion)
                                 if todo_search:
                                     closed_issues.append(todo_search.group(0))
                             else:
-                                lines.append(line[1:])
+                                lines.append(cleaned_line[1:])
 
                                 if previous_line_was_todo:
                                     # Check if this is a continuation from the previous line.
-                                    comment_search = comment_pattern.search(line)
+                                    comment_search = comment_pattern.search(cleaned_line)
                                     if comment_search:
                                         curr_issue['body'] += '\n\n' + comment_search.group(0).lstrip()
                                         line_counter += 1
@@ -165,7 +168,7 @@ def main():
                                 and extension in languages_dict[language]['extensions']):
                             markdown_language = languages_dict[language]['ace_mode']
                 if markdown_language:
-                    body += '\n\n' + '```' + markdown_language + '\n'.join(hunk) + '```'
+                    body += '\n\n' + '```' + markdown_language + '\n' + '\n'.join(hunk) + '```'
                 else:
                     body += '\n\n' + '```' + '\n'.join(hunk) + '```'
             new_issue_body = {'title': title, 'body': body, 'labels': ['todo']}
