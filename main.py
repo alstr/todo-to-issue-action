@@ -18,14 +18,13 @@ def main():
     sha = os.getenv('INPUT_SHA')
     comment_marker = os.getenv('INPUT_COMMENT_MARKER')
     label = os.getenv('INPUT_LABEL')
-    params = {
-        'access_token': os.getenv('INPUT_TOKEN')
-    }
+    token = os.getenv('INPUT_TOKEN')
 
     # Let's compare the last two pushed commits.
     diff_url = f'{base_url}{repo}/compare/{before}...{sha}'
     diff_headers = {
-        'Accept': 'application/vnd.github.v3.diff'
+        'Accept': 'application/vnd.github.v3.diff',
+        'Authorization': f'token {token}'
     }
 
     # Load a file so we can see what language each file is written in and apply highlighting later.
@@ -37,7 +36,7 @@ def main():
         yaml = YAML(typ='safe')
         languages_dict = yaml.load(languages_data)
 
-    diff_request = requests.get(url=diff_url, headers=diff_headers, params=params)
+    diff_request = requests.get(url=diff_url, headers=diff_headers)
     if diff_request.status_code == 200:
         diff = diff_request.text
 
@@ -147,6 +146,7 @@ def main():
         issues_url = f'{base_url}{repo}/issues'
         issue_headers = {
             'Content-Type': 'application/json',
+            'Authorization': f'token {token}'
         }
         for i, issue in enumerate(new_issues):
             title = issue['todo']
@@ -172,8 +172,7 @@ def main():
                 else:
                     body += '\n\n' + '```' + '\n'.join(hunk) + '```'
             new_issue_body = {'title': title, 'body': body, 'labels': ['todo']}
-            new_issue_request = requests.post(url=issues_url, headers=issue_headers, params=params,
-                                              data=json.dumps(new_issue_body))
+            new_issue_request = requests.post(url=issues_url, headers=issue_headers, data=json.dumps(new_issue_body))
             print(f'Creating issue {i + 1} of {len(new_issues)}')
             if new_issue_request.status_code == 201:
                 print('Issue created')
@@ -184,7 +183,7 @@ def main():
 
         if len(closed_issues) > 0:
             # Get the list of current issues.
-            list_issues_request = requests.get(issues_url, headers=issue_headers, params=params)
+            list_issues_request = requests.get(issues_url, headers=issue_headers)
             if list_issues_request.status_code == 200:
                 current_issues = list_issues_request.json()
                 for i, closed_issue in enumerate(closed_issues):
@@ -200,13 +199,12 @@ def main():
 
                             update_issue_url = f'{base_url}{repo}/issues/{issue_number}'
                             body = {'state': 'closed'}
-                            requests.patch(update_issue_url, headers=issue_headers, params=params,
-                                           data=json.dumps(body))
+                            requests.patch(update_issue_url, headers=issue_headers, data=json.dumps(body))
 
                             issue_comment_url = f'{base_url}{repo}/issues/{issue_number}/comments'
                             body = {'body': f'Closed in {sha}'}
                             update_issue_request = requests.post(issue_comment_url, headers=issue_headers,
-                                                                 params=params, data=json.dumps(body))
+                                                                 data=json.dumps(body))
                             print(f'Closing issue {i + 1} of {len(closed_issues)}')
                             if update_issue_request.status_code == 201:
                                 print('Issue closed')
