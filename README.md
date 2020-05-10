@@ -15,6 +15,8 @@ Create a workflow file in your .github/workflows directory as follows:
 
 ### workflow.yaml
 
+Latest version is `v1.1.1-beta`.
+
     name: "Workflow"
     on: ["push"]
     jobs:
@@ -23,7 +25,7 @@ Create a workflow file in your .github/workflows directory as follows:
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@master"
+            uses: "alstr/todo-to-issue-action@v1.1.1-beta"
             with:
               REPO: ${{ github.repository }}
               BEFORE: ${{ github.event.before }}
@@ -32,6 +34,8 @@ Create a workflow file in your .github/workflows directory as follows:
               LABEL: "# TODO"
               COMMENT_MARKER: "#"
             id: "todo"
+
+**If you use the action in a new repo, you should initialise the repo with an empty commit.**
 
 ### Inputs
 
