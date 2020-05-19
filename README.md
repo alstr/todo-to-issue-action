@@ -15,7 +15,7 @@ Create a workflow file in your .github/workflows directory as follows:
 
 ### workflow.yaml
 
-Latest version is `v1.1.1-beta`.
+Latest version is `v1.1.2-beta`.
 
     name: "Workflow"
     on: ["push"]
@@ -58,7 +58,7 @@ Latest version is `v1.1.1-beta`.
         
 This will create an issue called "Come up with a more imaginative greeting".
  
-**The action expects a space to follow the `TODO` label.**
+**The action expects a space and/or colon to follow the `TODO` label.**
  
 Should the title be longer than 50 characters, it will be truncated for the issue title.
  
