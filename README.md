@@ -25,7 +25,7 @@ Latest version is `v1.1.2-beta`.
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v1.1.1-beta"
+            uses: "alstr/todo-to-issue-action@v1.1.2-beta"
             with:
               REPO: ${{ github.repository }}
               BEFORE: ${{ github.event.before }}
