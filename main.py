@@ -174,6 +174,9 @@ def main():
             new_issue_body = {'title': title, 'body': body, 'labels': ['todo']}
             new_issue_request = requests.post(url=issues_url, headers=issue_headers, data=json.dumps(new_issue_body))
             print(f'Creating issue {i + 1} of {len(new_issues)}')
+            # TODO Investigate result not being printed on last loop when adding multiple new TODOs
+            #  See https://github.com/alstr/todo-to-issue-action/issues/7#issuecomment-630694673
+            #  Could the log be being truncated?
             if new_issue_request.status_code == 201:
                 print('Issue created')
             else:
