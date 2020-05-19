@@ -168,9 +168,9 @@ def main():
                                 and extension in languages_dict[language]['extensions']):
                             markdown_language = languages_dict[language]['ace_mode']
                 if markdown_language:
-                    body += '\n\n' + '```' + markdown_language + '\n' + '\n'.join(hunk) + '```'
+                    body += '\n\n' + '```' + markdown_language + '\n' + '\n'.join(hunk) + '\n' + '```'
                 else:
-                    body += '\n\n' + '```' + '\n'.join(hunk) + '```'
+                    body += '\n\n' + '```' + '\n'.join(hunk) + '\n' + '```'
             new_issue_body = {'title': title, 'body': body, 'labels': ['todo']}
             new_issue_request = requests.post(url=issues_url, headers=issue_headers, data=json.dumps(new_issue_body))
             print(f'Creating issue {i + 1} of {len(new_issues)}')
