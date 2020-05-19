@@ -7,3 +7,22 @@ runs:
 branding:
   icon: "check-square"
   color: "orange"
+inputs:
+  REPO:
+    description: "The path to the repository where the action will be used, e.g. 'alstr/my-repo' (automatically set)"
+    required: true
+  BEFORE:
+    description: "The SHA of the last pushed commit (automatically set)"
+    required: true
+  SHA:
+    description: "The SHA of the latest commit (automatically set)"
+    required: true
+  TOKEN:
+    description: "The GitHub access token to allow us to retrieve, create and update issues (automatically set)"
+    required: true
+  LABEL:
+    description: "The label that will be used to identify TODO comments (by default this is # TODO for Python)"
+    required: true
+  COMMENT_MARKER:
+    description: "The marker used to signify a line comment in your code (by default this is # for Python)"
+    required: true
