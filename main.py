@@ -45,7 +45,7 @@ def main():
         line_num_pattern = re.compile(r'(?<=\+).+')
         addition_pattern = re.compile(r'(?<=^\+).*')
         deletion_pattern = re.compile(r'(?<=^-).*')
-        todo_pattern = re.compile(r'(?<=' + label + r'\s).+')
+        todo_pattern = re.compile(r'(?<=' + label + r'[\s:]).+')
         comment_pattern = re.compile(r'(?<=' + comment_marker + r'\s).+')
 
         new_issues = []
@@ -93,7 +93,7 @@ def main():
                             if todo_search:
                                 # Start recording so we can capture multiline TODOs.
                                 previous_line_was_todo = True
-                                todo = todo_search.group(0)
+                                todo = todo_search.group(0).lstrip()
                                 if curr_issue:
                                     curr_issue['hunk'] = lines
                                     new_issues.append(curr_issue)
