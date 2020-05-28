@@ -8,6 +8,7 @@ import json
 from time import sleep
 from io import StringIO
 from ruamel.yaml import YAML
+import hashlib
 
 base_url = 'https://api.github.com/repos/'
 
@@ -35,6 +36,17 @@ def main():
         languages_data = languages_request.text
         yaml = YAML(typ='safe')
         languages_dict = yaml.load(languages_data)
+
+    # Get the current issues so we can check we're not duplicating any, and so we can close any that have been removed.
+    issues_url = f'{base_url}{repo}/issues'
+    issue_headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'token {token}'
+    }
+    current_issues = []
+    list_issues_request = requests.get(issues_url, headers=issue_headers)
+    if list_issues_request.status_code == 200:
+        current_issues = list_issues_request.json()
 
     diff_request = requests.get(url=diff_url, headers=diff_headers)
     if diff_request.status_code == 200:
@@ -122,7 +134,7 @@ def main():
                                 deletion = deletion_search.group(0)
                                 todo_search = todo_pattern.search(deletion)
                                 if todo_search:
-                                    closed_issues.append(todo_search.group(0))
+                                    closed_issues.append(todo_search.group(0).lstrip())
                             else:
                                 lines.append(cleaned_line[1:])
 
@@ -143,11 +155,7 @@ def main():
                 new_issues.append(curr_issue)
 
         # Create new issues for any newly added TODOs.
-        issues_url = f'{base_url}{repo}/issues'
-        issue_headers = {
-            'Content-Type': 'application/json',
-            'Authorization': f'token {token}'
-        }
+        print('Start creating issues')
         for i, issue in enumerate(new_issues):
             title = issue['todo']
             # Truncate the title if it's longer than 50 chars.
@@ -171,50 +179,65 @@ def main():
                     body += '\n\n' + '```' + markdown_language + '\n' + '\n'.join(hunk) + '\n' + '```'
                 else:
                     body += '\n\n' + '```' + '\n'.join(hunk) + '\n' + '```'
-            new_issue_body = {'title': title, 'body': body, 'labels': ['todo']}
-            new_issue_request = requests.post(url=issues_url, headers=issue_headers, data=json.dumps(new_issue_body))
-            print(f'Creating issue {i + 1} of {len(new_issues)}')
-            # TODO Investigate result not being printed on last loop when adding multiple new TODOs
-            #  See https://github.com/alstr/todo-to-issue-action/issues/7#issuecomment-630694673
-            #  Could the log be being truncated?
-            if new_issue_request.status_code == 201:
-                print('Issue created')
+
+            # Check if the current issue already exists - if so, skip it.
+            issue_id = hashlib.sha1(body.encode('utf-8')).hexdigest()
+            body += '\n\n' + issue_id
+            for current_issue in current_issues:
+                if issue_id in current_issue['body']:
+                    print(f'Skipping issue {i + 1} of {len(new_issues)} (already exists)')
+                    break
             else:
-                print('Issue could not be created')
-            # Don't add too many issues too quickly.
-            sleep(1)
+                new_issue_body = {'title': title, 'body': body, 'labels': ['todo']}
+                new_issue_request = requests.post(url=issues_url, headers=issue_headers,
+                                                  data=json.dumps(new_issue_body))
+                print(f'Creating issue {i + 1} of {len(new_issues)}')
+                # TODO Investigate result not being printed on last loop when adding multiple new TODOs
+                #  See https://github.com/alstr/todo-to-issue-action/issues/7#issuecomment-630694673
+                #  Could the log be being truncated?
+                if new_issue_request.status_code == 201:
+                    print('Issue created')
+                else:
+                    print('Issue could not be created')
+                # Don't add too many issues too quickly.
+                sleep(1)
+        print('Creating issues complete')
 
-        if len(closed_issues) > 0:
-            # Get the list of current issues.
-            list_issues_request = requests.get(issues_url, headers=issue_headers)
-            if list_issues_request.status_code == 200:
-                current_issues = list_issues_request.json()
-                for i, closed_issue in enumerate(closed_issues):
-                    title = closed_issue
-                    if len(title) > 50:
-                        title = closed_issue[:50] + '...'
+        # Close issues for removed TODOs.
+        print('Start closing issues')
+        for i, closed_issue in enumerate(closed_issues):
+            title = closed_issue
+            matched = 0
+            issue_number = None
+            # Compare the title of each closed issue with each issue in the issues list.
+            for current_issue in current_issues:
+                if current_issue['body'].startswith(title):
+                    matched += 1
+                    # If there are multiple issues with similar titles, don't try and close any.
+                    if matched > 1:
+                        print(f'Skipping issue {i + 1} of {len(closed_issues)} (multiple matches)')
+                        break
+                    issue_number = current_issue['number']
+            else:
+                if issue_number is None:
+                    continue
+                # The titles match, so we will try and close the issue.
+                update_issue_url = f'{base_url}{repo}/issues/{issue_number}'
+                body = {'state': 'closed'}
+                requests.patch(update_issue_url, headers=issue_headers, data=json.dumps(body))
 
-                    # Compare the title of each closed issue with each issue in the issues list.
-                    for current_issue in current_issues:
-                        if current_issue['title'] == title:
-                            # The titles match, so we will try and close the issue.
-                            issue_number = current_issue['number']
-
-                            update_issue_url = f'{base_url}{repo}/issues/{issue_number}'
-                            body = {'state': 'closed'}
-                            requests.patch(update_issue_url, headers=issue_headers, data=json.dumps(body))
-
-                            issue_comment_url = f'{base_url}{repo}/issues/{issue_number}/comments'
-                            body = {'body': f'Closed in {sha}'}
-                            update_issue_request = requests.post(issue_comment_url, headers=issue_headers,
-                                                                 data=json.dumps(body))
-                            print(f'Closing issue {i + 1} of {len(closed_issues)}')
-                            if update_issue_request.status_code == 201:
-                                print('Issue closed')
-                            else:
-                                print('Issue could not be closed')
-                            # Don't update too many issues too quickly.
-                            sleep(1)
+                issue_comment_url = f'{base_url}{repo}/issues/{issue_number}/comments'
+                body = {'body': f'Closed in {sha}'}
+                update_issue_request = requests.post(issue_comment_url, headers=issue_headers,
+                                                     data=json.dumps(body))
+                print(f'Closing issue {i + 1} of {len(closed_issues)}')
+                if update_issue_request.status_code == 201:
+                    print('Issue closed')
+                else:
+                    print('Issue could not be closed')
+                # Don't update too many issues too quickly.
+                sleep(1)
+        print('Closing issues complete')
 
 
 if __name__ == "__main__":
