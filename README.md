@@ -15,7 +15,7 @@ Create a workflow file in your .github/workflows directory as follows:
 
 ### workflow.yaml
 
-Latest version is `v1.1.2-beta`.
+Latest version is `v1.2-beta`.
 
     name: "Workflow"
     on: ["push"]
@@ -25,7 +25,7 @@ Latest version is `v1.1.2-beta`.
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v1.1.2-beta"
+            uses: "alstr/todo-to-issue-action@v1.2-beta"
             with:
               REPO: ${{ github.repository }}
               BEFORE: ${{ github.event.before }}
@@ -58,11 +58,13 @@ Latest version is `v1.1.2-beta`.
         
 This will create an issue called "Come up with a more imaginative greeting".
  
-**The action expects a space and/or colon to follow the `TODO` label.**
+**The action expects a colon and/or space to follow the `TODO` label (so `TODO: ` or just `TODO`).**
  
 Should the title be longer than 50 characters, it will be truncated for the issue title.
  
 The full title will be included in the issue body and a `todo` label will be attached to the issue.
+
+A reference hash is added to the end of the issue body. This is to help prevent duplication of TODOs.
 
 ### Multiline TODOs
 
@@ -82,7 +84,7 @@ The `COMMENT_MARKER` input must be set to the correct syntax (e.g. `#` for Pytho
     def hello_world():
         print('Hello world!')
 
-Removing the `# TODO` comment will close the issue on push.
+Removing the `# TODO` comment will close the issue on push. This is still an experimental feature.
 
 ### Updating TODOs
 
@@ -94,12 +96,17 @@ Should you change the `# TODO` text, this will currently create a new issue, so 
 
 This may be updated in future.
 
+## Contributing & Issues
+
+The action was developed for the GitHub Hackathon and is still in an early stage. Whilst every effort is made to ensure it works, it comes with no guarantee.
+
+It may not yet work for [ events ](https://help.github.com/en/actions/reference/events-that-trigger-workflows) other than `push` or those with a complex [ workflow syntax ](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions).
+
+If you do encounter any problems, please file an issue. PRs are welcome and appreciated!
+
 ## Thanks
 
-Thanks to Jacob Tomlinson for his handy overview of GitHub Actions:
+Thanks to Jacob Tomlinson for [ his handy overview of GitHub Actions ](https://www.jacobtomlinson.co.uk/posts/2019/creating-github-actions-in-python/).
 
-https://www.jacobtomlinson.co.uk/posts/2019/creating-github-actions-in-python/
-
-Thanks to GitHub's [linguist repo](https://github.com/github/linguist/) for the handy `languages.yml` file used by the app to determine the correct highlighting to apply to code snippets:
-
-https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml
+Thanks to GitHub's [linguist repo](https://github.com/github/linguist/) for the [ `languages.yml` ](
+https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) file used by the app to determine the correct highlighting to apply to code snippets.
