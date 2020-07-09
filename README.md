@@ -96,6 +96,13 @@ Should you change the `# TODO` text, this will currently create a new issue, so 
 
 This may be updated in future.
 
+### In an existing repo with existing todo
+
+> This action will convert your `# TODO` comments to GitHub issues when a new commit is pushed.
+
+Knowing that the todo are found thanks to the difference between the new commit and the previous commit this means that if this action is implemented during development the existing todo will not be taken. 
+They will have to be deleted, commit, put back and commit for it to be taken.
+
 ## Contributing & Issues
 
 The action was developed for the GitHub Hackathon and is still in an early stage. Whilst every effort is made to ensure it works, it comes with no guarantee.
