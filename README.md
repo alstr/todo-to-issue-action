@@ -9,6 +9,19 @@ with the ref of the commit that it was closed by.
 
 The `# TODO` comment is commonly used in Python, but this can be customised to whatever you want.
 
+## Summary
+- [Usage](#usage)
+    - [workflow.yaml](#workflowyaml)
+    - [inputs](#inputs)
+- [Examples](#examples)
+    - [Adding TODOs](#adding-todos)
+    - [Multiline TODOs](#multiline-todos)
+    - [Removing TODOs](#removing-todos)
+    - [Updating TODOs](#updating-todos)
+    - [In an existing repo with existing todo](#in-an-existing-repo-with-existing-todo)
+- [Contributing & Issues](#contributing--issues)
+- [Thanks](#thanks)
+
 ## Usage
 
 Create a workflow file in your .github/workflows directory as follows:
