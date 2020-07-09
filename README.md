@@ -12,13 +12,13 @@ The `# TODO` comment is commonly used in Python, but this can be customised to w
 ## Summary
 - [Usage](#usage)
     - [workflow.yaml](#workflowyaml)
-    - [inputs](#inputs)
+    - [Inputs](#inputs)
 - [Examples](#examples)
     - [Adding TODOs](#adding-todos)
     - [Multiline TODOs](#multiline-todos)
     - [Removing TODOs](#removing-todos)
     - [Updating TODOs](#updating-todos)
-    - [In an existing repo with existing todo](#in-an-existing-repo-with-existing-todo)
+    - [Existing TODOs](#existing-todos)
 - [Contributing & Issues](#contributing--issues)
 - [Thanks](#thanks)
 
@@ -109,12 +109,11 @@ Should you change the `# TODO` text, this will currently create a new issue, so 
 
 This may be updated in future.
 
-### In an existing repo with existing todo
+### Existing TODOs
 
 > This action will convert your `# TODO` comments to GitHub issues when a new commit is pushed.
 
-Knowing that the todo are found thanks to the difference between the new commit and the previous commit this means that if this action is implemented during development the existing todo will not be taken. 
-They will have to be deleted, commit, put back and commit for it to be taken.
+As the TODOs are found by analysing the difference between the new commit and the previous one, this means that if this action is implemented during development any existing TODOs will not be detected. For them to be detected, you would have to remove them, commit, put them back and commit again.
 
 ## Contributing & Issues
 
