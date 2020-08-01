@@ -28,7 +28,7 @@ Create a workflow file in your .github/workflows directory as follows:
 
 ### workflow.yaml
 
-Latest version is `v1.2-beta`.
+Latest version is `v1.3-beta`.
 
     name: "Workflow"
     on: ["push"]
@@ -38,7 +38,7 @@ Latest version is `v1.2-beta`.
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v1.2-beta"
+            uses: "alstr/todo-to-issue-action@v1.3-beta"
             with:
               REPO: ${{ github.repository }}
               BEFORE: ${{ github.event.before }}
