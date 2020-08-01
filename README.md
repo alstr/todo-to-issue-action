@@ -9,6 +9,19 @@ with the ref of the commit that it was closed by.
 
 The `# TODO` comment is commonly used in Python, but this can be customised to whatever you want.
 
+## Summary
+- [Usage](#usage)
+    - [workflow.yaml](#workflowyaml)
+    - [Inputs](#inputs)
+- [Examples](#examples)
+    - [Adding TODOs](#adding-todos)
+    - [Multiline TODOs](#multiline-todos)
+    - [Removing TODOs](#removing-todos)
+    - [Updating TODOs](#updating-todos)
+    - [Existing TODOs](#existing-todos)
+- [Contributing & Issues](#contributing--issues)
+- [Thanks](#thanks)
+
 ## Usage
 
 Create a workflow file in your .github/workflows directory as follows:
@@ -95,6 +108,12 @@ Removing the `# TODO` comment will close the issue on push. This is still an exp
 Should you change the `# TODO` text, this will currently create a new issue, so bear that in mind.
 
 This may be updated in future.
+
+### Existing TODOs
+
+> This action will convert your `# TODO` comments to GitHub issues when a new commit is pushed.
+
+As the TODOs are found by analysing the difference between the new commit and the previous one, this means that if this action is implemented during development any existing TODOs will not be detected. For them to be detected, you would have to remove them, commit, put them back and commit again.
 
 ## Contributing & Issues
 
