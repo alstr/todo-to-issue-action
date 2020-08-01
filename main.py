@@ -21,13 +21,6 @@ def main():
     label = os.getenv('INPUT_LABEL')
     token = os.getenv('INPUT_TOKEN')
 
-    # Let's compare the last two pushed commits.
-    diff_url = f'{base_url}{repo}/compare/{before}...{sha}'
-    diff_headers = {
-        'Accept': 'application/vnd.github.v3.diff',
-        'Authorization': f'token {token}'
-    }
-
     # Load a file so we can see what language each file is written in and apply highlighting later.
     languages_url = 'https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml'
     languages_request = requests.get(url=languages_url)
@@ -38,16 +31,34 @@ def main():
         languages_dict = yaml.load(languages_data)
 
     # Get the current issues so we can check we're not duplicating any, and so we can close any that have been removed.
+    def get_current_issues(page=1):
+        params = {
+            'per_page': 100,
+            'page': page,
+            'state': 'open',
+            'labels': 'todo'
+        }
+        list_issues_request = requests.get(issues_url, headers=issue_headers, params=params)
+        if list_issues_request.status_code == 200:
+            current_issues.extend(list_issues_request.json())
+            links = list_issues_request.links
+            if 'next' in links:
+                get_current_issues(page + 1)
+
     issues_url = f'{base_url}{repo}/issues'
     issue_headers = {
         'Content-Type': 'application/json',
         'Authorization': f'token {token}'
     }
     current_issues = []
-    list_issues_request = requests.get(issues_url, headers=issue_headers)
-    if list_issues_request.status_code == 200:
-        current_issues = list_issues_request.json()
+    get_current_issues()
 
+    # Start to compare the latest and previous commit, to find any added or removed TODOs.
+    diff_url = f'{base_url}{repo}/compare/{before}...{sha}'
+    diff_headers = {
+        'Accept': 'application/vnd.github.v3.diff',
+        'Authorization': f'token {token}'
+    }
     diff_request = requests.get(url=diff_url, headers=diff_headers)
     if diff_request.status_code == 200:
         diff = diff_request.text
