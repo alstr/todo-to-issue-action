@@ -117,7 +117,7 @@ The `todo` label is automatically added to issues to help the action efficiently
 
 Removing the `# TODO` comment will close the issue on push.
 
-This is still an experimental feature. By default it is enabled, but if you want to disable it, you can set `CLOSE_ISSUES` to `false` as described in [workflow.yaml](#workflowyaml).
+This is still an experimental feature. By default it is enabled, but if you want to disable it, you can set `CLOSE_ISSUES` to `false` as described in [Inputs](#inputs).
 
 ### Updating TODOs
 
