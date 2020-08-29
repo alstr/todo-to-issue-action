@@ -70,6 +70,7 @@ def main():
         deletion_pattern = re.compile(r'(?<=^-).*')
         todo_pattern = re.compile(r'(?<=' + label + r'[\s:]).+')
         comment_pattern = re.compile(r'(?<=' + comment_marker + r'\s).+')
+        labels_pattern = re.compile(r'(?<=labels:).+')
 
         new_issues = []
         closed_issues = []
@@ -81,6 +82,23 @@ def main():
             curr_file = None
             previous_line_was_todo = False
             line_counter = None
+
+            # Used to check if the line passed in is a continuation of the previous line, returning True/False.
+            # If True, the current issue is updated with the extra details from this line.
+            def process_line(next_line):
+                if previous_line_was_todo:
+                    comment_search = comment_pattern.search(next_line)
+                    if comment_search:
+                        comment = comment_search.group(0).lstrip()
+                        labels_search = labels_pattern.search(comment, re.IGNORECASE)
+                        if labels_search:
+                            labels = labels_search.group(0).lstrip().replace(', ', ',')
+                            labels = list(filter(None, labels.split(',')))
+                            curr_issue['labels'].extend(labels)
+                        else:
+                            curr_issue['body'] += '\n\n' + comment_search.group(0).lstrip()
+                        return True
+                return False
 
             for n, line in enumerate(diff_file):
                 # First look for a diff header so we can determine the file the changes relate to.
@@ -112,9 +130,9 @@ def main():
                         if addition_search:
                             lines.append(cleaned_line[1:])
                             addition = addition_search.group(0)
-                            todo_search = todo_pattern.search(addition)
+                            todo_search = todo_pattern.search(addition, re.IGNORECASE)
                             if todo_search:
-                                # Start recording so we can capture multiline TODOs.
+                                # A new item was found. Start recording so we can capture multiline TODOs.
                                 previous_line_was_todo = True
                                 todo = todo_search.group(0).lstrip()
                                 if curr_issue:
@@ -130,11 +148,10 @@ def main():
                                 }
                                 line_counter += 1
                                 continue
-                            elif previous_line_was_todo:
-                                # Check if this is a continuation from the previous line.
-                                comment_search = comment_pattern.search(addition)
-                                if comment_search:
-                                    curr_issue['body'] += '\n\n' + comment_search.group(0).lstrip()
+                            else:
+                                # This line isn't a new item. Let's check if it continues from the previous line.
+                                line_processed = process_line(addition)
+                                if line_processed:
                                     line_counter += 1
                                     continue
                             if line_counter is not None:
@@ -143,19 +160,16 @@ def main():
                             deletion_search = deletion_pattern.search(cleaned_line)
                             if deletion_search:
                                 deletion = deletion_search.group(0)
-                                todo_search = todo_pattern.search(deletion)
+                                todo_search = todo_pattern.search(deletion, re.IGNORECASE)
                                 if todo_search:
                                     closed_issues.append(todo_search.group(0).lstrip())
                             else:
                                 lines.append(cleaned_line[1:])
-
-                                if previous_line_was_todo:
-                                    # Check if this is a continuation from the previous line.
-                                    comment_search = comment_pattern.search(cleaned_line)
-                                    if comment_search:
-                                        curr_issue['body'] += '\n\n' + comment_search.group(0).lstrip()
-                                        line_counter += 1
-                                        continue
+                                # Let's check if this line continues from a previous deletion.
+                                line_processed = process_line(cleaned_line)
+                                if line_processed:
+                                    line_counter += 1
+                                    continue
                                 if line_counter is not None:
                                     line_counter += 1
                 if previous_line_was_todo:
@@ -199,7 +213,7 @@ def main():
                     print(f'Skipping issue {i + 1} of {len(new_issues)} (already exists)')
                     break
             else:
-                new_issue_body = {'title': title, 'body': body, 'labels': ['todo']}
+                new_issue_body = {'title': title, 'body': body, 'labels': issue['labels']}
                 new_issue_request = requests.post(url=issues_url, headers=issue_headers,
                                                   data=json.dumps(new_issue_body))
                 print(f'Creating issue {i + 1} of {len(new_issues)}')
