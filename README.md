@@ -99,7 +99,7 @@ The `COMMENT_MARKER` input must be set to the correct syntax (e.g. `#` for Pytho
     def hello_world():
         # TODO Come up with a more imaginative greeting
         #  Everyone uses hello world and it's boring.
-        #  labels: enhancement, help_wanted
+        #  labels: enhancement, help wanted
         print('Hello world!')
 
 You can specify the labels to add to your issue in the TODO body.
