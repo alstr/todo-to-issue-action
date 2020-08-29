@@ -2,7 +2,7 @@
 
 This action will convert your `# TODO` comments to GitHub issues when a new commit is pushed.
 
-The new issue will contain a link to the line in the file containing the TODO, together with a code snippet. The action performs a `GET` request to retrieve GitHub's [`languages.yml` file](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) file to apply highlighting to the snippet.
+The new issue will contain a link to the line in the file containing the TODO, together with a code snippet and any defined labels. The action performs a `GET` request to retrieve GitHub's [`languages.yml` file](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) file to apply highlighting to the snippet.
 
 It will also close an issue when a `# TODO` is removed in a pushed commit. A comment will be posted
 with the ref of the commit that it was closed by.
@@ -16,6 +16,7 @@ The `# TODO` comment is commonly used in Python, but this can be customised to w
 - [Examples](#examples)
     - [Adding TODOs](#adding-todos)
     - [Multiline TODOs](#multiline-todos)
+    - [Dynamic Labels](#dynamic-labels)
     - [Removing TODOs](#removing-todos)
     - [Updating TODOs](#updating-todos)
     - [Existing TODOs](#existing-todos)
@@ -28,7 +29,7 @@ Create a workflow file in your .github/workflows directory as follows:
 
 ### workflow.yaml
 
-Latest version is `v1.3-beta`.
+Latest version is `v2.0`.
 
     name: "Workflow"
     on: ["push"]
@@ -38,7 +39,7 @@ Latest version is `v1.3-beta`.
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v1.3-beta"
+            uses: "alstr/todo-to-issue-action@v2.0"
             with:
               REPO: ${{ github.repository }}
               BEFORE: ${{ github.event.before }}
@@ -58,8 +59,9 @@ Latest version is `v1.3-beta`.
 | `BEFORE` | The SHA of the last pushed commit (automatically set) |
 | `SHA` | The SHA of the latest commit (automatically set) |
 | `TOKEN` | The GitHub access token to allow us to retrieve, create and update issues (automatically set) |
-| `LABEL` | The label that will be used to identify TODO comments (by default this is `# TODO` for Python) |
-| `COMMENT_MARKER` | The marker used to signify a line comment in your code (by default this is `#` for Python) |
+| `LABEL` | The label that will be used to identify TODO comments (e.g. `# TODO` for Python) |
+| `COMMENT_MARKER` | The marker used to signify a line comment in your code (e.g. `#` for Python) |
+| `CLOSE_ISSUES` | Optional input that specifies whether to attempt to close an issue when a TODO is removed (default: "true") |
 
 ## Examples
 
@@ -92,12 +94,30 @@ The extra line(s) will be posted in the body of the issue.
 
 The `COMMENT_MARKER` input must be set to the correct syntax (e.g. `#` for Python).
 
+### Dynamic Labels
+
+    def hello_world():
+        # TODO Come up with a more imaginative greeting
+        #  Everyone uses hello world and it's boring.
+        #  labels: enhancement, help_wanted
+        print('Hello world!')
+
+You can specify the labels to add to your issue in the TODO body.
+
+The labels should be on their own line below the initial TODO declaration.
+
+Include the `labels:` prefix, then a list of comma-separated label titles.
+
+The `todo` label is automatically added to issues to help the action efficiently retrieve them in the future.
+
 ### Removing TODOs
 
     def hello_world():
         print('Hello world!')
 
-Removing the `# TODO` comment will close the issue on push. This is still an experimental feature.
+Removing the `# TODO` comment will close the issue on push.
+
+This is still an experimental feature. By default it is enabled, but if you want to disable it, you can set `CLOSE_ISSUES` to `false` as described in [workflow.yaml](#workflowyaml).
 
 ### Updating TODOs
 

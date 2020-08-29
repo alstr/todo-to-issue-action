@@ -20,6 +20,7 @@ def main():
     comment_marker = os.getenv('INPUT_COMMENT_MARKER')
     label = os.getenv('INPUT_LABEL')
     token = os.getenv('INPUT_TOKEN')
+    close_issues = os.getenv('INPUT_CLOSE_ISSUES', 'true') == 'true'
 
     # Load a file so we can see what language each file is written in and apply highlighting later.
     languages_url = 'https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml'
@@ -225,41 +226,42 @@ def main():
                 sleep(1)
         print('Creating issues complete')
 
-        # Close issues for removed TODOs.
-        print('Start closing issues')
-        for i, closed_issue in enumerate(closed_issues):
-            title = closed_issue
-            matched = 0
-            issue_number = None
-            # Compare the title of each closed issue with each issue in the issues list.
-            for current_issue in current_issues:
-                if current_issue['body'].startswith(title):
-                    matched += 1
-                    # If there are multiple issues with similar titles, don't try and close any.
-                    if matched > 1:
-                        print(f'Skipping issue {i + 1} of {len(closed_issues)} (multiple matches)')
-                        break
-                    issue_number = current_issue['number']
-            else:
-                if issue_number is None:
-                    continue
-                # The titles match, so we will try and close the issue.
-                update_issue_url = f'{base_url}{repo}/issues/{issue_number}'
-                body = {'state': 'closed'}
-                requests.patch(update_issue_url, headers=issue_headers, data=json.dumps(body))
-
-                issue_comment_url = f'{base_url}{repo}/issues/{issue_number}/comments'
-                body = {'body': f'Closed in {sha}'}
-                update_issue_request = requests.post(issue_comment_url, headers=issue_headers,
-                                                     data=json.dumps(body))
-                print(f'Closing issue {i + 1} of {len(closed_issues)}')
-                if update_issue_request.status_code == 201:
-                    print('Issue closed')
+        # Close issues for removed TODOs if this is enabled.
+        if close_issues:
+            print('Start closing issues')
+            for i, closed_issue in enumerate(closed_issues):
+                title = closed_issue
+                matched = 0
+                issue_number = None
+                # Compare the title of each closed issue with each issue in the issues list.
+                for current_issue in current_issues:
+                    if current_issue['body'].startswith(title):
+                        matched += 1
+                        # If there are multiple issues with similar titles, don't try and close any.
+                        if matched > 1:
+                            print(f'Skipping issue {i + 1} of {len(closed_issues)} (multiple matches)')
+                            break
+                        issue_number = current_issue['number']
                 else:
-                    print('Issue could not be closed')
-                # Don't update too many issues too quickly.
-                sleep(1)
-        print('Closing issues complete')
+                    if issue_number is None:
+                        continue
+                    # The titles match, so we will try and close the issue.
+                    update_issue_url = f'{base_url}{repo}/issues/{issue_number}'
+                    body = {'state': 'closed'}
+                    requests.patch(update_issue_url, headers=issue_headers, data=json.dumps(body))
+
+                    issue_comment_url = f'{base_url}{repo}/issues/{issue_number}/comments'
+                    body = {'body': f'Closed in {sha}'}
+                    update_issue_request = requests.post(issue_comment_url, headers=issue_headers,
+                                                         data=json.dumps(body))
+                    print(f'Closing issue {i + 1} of {len(closed_issues)}')
+                    if update_issue_request.status_code == 201:
+                        print('Issue closed')
+                    else:
+                        print('Issue could not be closed')
+                    # Don't update too many issues too quickly.
+                    sleep(1)
+            print('Closing issues complete')
 
 
 if __name__ == "__main__":
