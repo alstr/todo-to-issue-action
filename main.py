@@ -184,9 +184,9 @@ def main():
         print('Start creating issues')
         for i, issue in enumerate(new_issues):
             title = issue['todo']
-            # Truncate the title if it's longer than 50 chars.
-            if len(title) > 50:
-                title = title[:50] + '...'
+            # Truncate the title if it's longer than 80 chars.
+            if len(title) > 80:
+                title = title[:80] + '...'
             file = issue['file']
             line = issue['line_num']
             body = issue['body'] + '\n\n' + f'https://github.com/{repo}/blob/{sha}/{file}#L{line}'
