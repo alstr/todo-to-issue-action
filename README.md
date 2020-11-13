@@ -16,7 +16,9 @@ The `# TODO` comment is commonly used in Python, but this can be customised to w
 - [Examples](#examples)
     - [Adding TODOs](#adding-todos)
     - [Multiline TODOs](#multiline-todos)
-    - [Dynamic Labels](#dynamic-labels)
+    - [Specifying Labels](#specifying-labels)
+    - [Specifying Assignees](#specifying-assignees)
+    - [Specifying Milestone](#specifying-milestone)
     - [Removing TODOs](#removing-todos)
     - [Updating TODOs](#updating-todos)
     - [Existing TODOs](#existing-todos)
@@ -29,7 +31,7 @@ Create a workflow file in your .github/workflows directory as follows:
 
 ### workflow.yaml
 
-Latest version is `v2.1`.
+Latest version is `v2.2`.
 
     name: "Workflow"
     on: ["push"]
@@ -39,7 +41,7 @@ Latest version is `v2.1`.
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v2.0"
+            uses: "alstr/todo-to-issue-action@v2.2"
             with:
               REPO: ${{ github.repository }}
               BEFORE: ${{ github.event.before }}
@@ -94,7 +96,7 @@ The extra line(s) will be posted in the body of the issue.
 
 The `COMMENT_MARKER` input must be set to the correct syntax (e.g. `#` for Python).
 
-### Dynamic Labels
+### Specifying Labels
 
     def hello_world():
         # TODO Come up with a more imaginative greeting
@@ -106,9 +108,33 @@ You can specify the labels to add to your issue in the TODO body.
 
 The labels should be on their own line below the initial TODO declaration.
 
-Include the `labels:` prefix, then a list of comma-separated label titles.
+Include the `labels:` prefix, then a list of comma-separated label titles. If any of the label do not already exist, they will be created.
 
 The `todo` label is automatically added to issues to help the action efficiently retrieve them in the future.
+
+### Specifying Assignees
+
+    def hello_world():
+        # TODO Come up with a more imaginative greeting
+        #  Everyone uses hello world and it's boring.
+        #  assignees: alstr, bouteillerAlan, hbjydev
+        print('Hello world!')
+
+Similar to labels, you can define assignees as a comma-separated list.
+
+If the assignee is not valid, it will be dropped from issue creation request.
+
+### Specifying Milestone
+
+    def hello_world():
+        # TODO Come up with a more imaginative greeting
+        #  Everyone uses hello world and it's boring.
+        #  milestone: 1
+        print('Hello world!')
+
+You can set the issue milestone by specifying the milestone ID. Only a single milestone can be specified.
+
+If the milestone does not already exist, it will be dropped from issue creation request.
 
 ### Removing TODOs
 

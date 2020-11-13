@@ -72,6 +72,8 @@ def main():
         todo_pattern = re.compile(r'(?<=' + label + r'[\s:]).+')
         comment_pattern = re.compile(r'(?<=' + comment_marker + r'\s).+')
         labels_pattern = re.compile(r'(?<=labels:).+')
+        assignees_pattern = re.compile(r'(?<=assignees:).+')
+        milestone_pattern = re.compile(r'(?<=milestone:).+')
 
         new_issues = []
         closed_issues = []
@@ -97,7 +99,19 @@ def main():
                             labels = list(filter(None, labels.split(',')))
                             curr_issue['labels'].extend(labels)
                         else:
-                            curr_issue['body'] += '\n\n' + comment_search.group(0).lstrip()
+                            assignees_search = assignees_pattern.search(comment, re.IGNORECASE)
+                            if assignees_search:
+                                assignees = assignees_search.group(0).lstrip().replace(', ', ',')
+                                assignees = list(filter(None, assignees.split(',')))
+                                curr_issue['assignees'] = assignees
+                            else:
+                                milestone_search = milestone_pattern.search(comment, re.IGNORECASE)
+                                if milestone_search:
+                                    milestone = milestone_search.group(0).strip()
+                                    if milestone.isdigit():
+                                        curr_issue['milestone'] = int(milestone)
+                                else:
+                                    curr_issue['body'] += '\n\n' + comment_search.group(0).lstrip()
                         return True
                 return False
 
@@ -215,6 +229,28 @@ def main():
                     break
             else:
                 new_issue_body = {'title': title, 'body': body, 'labels': issue['labels']}
+
+                # We need to check if any assignees/milestone specified exist, otherwise issue creation will fail.
+                if 'assignees' in issue:
+                    valid_assignees = []
+                    for assignee in issue['assignees']:
+                        assignee_url = f'{base_url}{repo}/assignees/{assignee}'
+                        assignee_request = requests.get(url=assignee_url, headers=issue_headers)
+                        if assignee_request.status_code == 204:
+                            valid_assignees.append(assignee)
+                        else:
+                            print('Assignee doesn\'t exist! Dropping this assignee!')
+                    new_issue_body['assignees'] = valid_assignees
+
+                if 'milestone' in issue:
+                    milestone_number = issue['milestone']
+                    milestone_url = f'{base_url}{repo}/milestones/{milestone_number}'
+                    milestone_request = requests.get(url=milestone_url, headers=issue_headers)
+                    if milestone_request.status_code == 200:
+                        new_issue_body['milestone'] = issue['milestone']
+                    else:
+                        print('Milestone doesn\'t exist! Dropping this parameter!')
+
                 new_issue_request = requests.post(url=issues_url, headers=issue_headers,
                                                   data=json.dumps(new_issue_body))
                 print(f'Creating issue {i + 1} of {len(new_issues)}')
