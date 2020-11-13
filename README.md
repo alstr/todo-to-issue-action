@@ -108,7 +108,7 @@ You can specify the labels to add to your issue in the TODO body.
 
 The labels should be on their own line below the initial TODO declaration.
 
-Include the `labels:` prefix, then a list of comma-separated label titles. If any of the label do not already exist, they will be created.
+Include the `labels:` prefix, then a list of comma-separated label titles. If any of the labels do not already exist, they will be created.
 
 The `todo` label is automatically added to issues to help the action efficiently retrieve them in the future.
 
@@ -122,7 +122,7 @@ The `todo` label is automatically added to issues to help the action efficiently
 
 Similar to labels, you can define assignees as a comma-separated list.
 
-If the assignee is not valid, it will be dropped from issue creation request.
+If the assignee is not valid, it will be dropped from the issue creation request.
 
 ### Specifying Milestone
 
@@ -134,7 +134,7 @@ If the assignee is not valid, it will be dropped from issue creation request.
 
 You can set the issue milestone by specifying the milestone ID. Only a single milestone can be specified.
 
-If the milestone does not already exist, it will be dropped from issue creation request.
+If the milestone does not already exist, it will be dropped from the issue creation request.
 
 ### Removing TODOs
 
