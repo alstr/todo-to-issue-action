@@ -20,7 +20,7 @@ def main():
     comment_marker = os.getenv('INPUT_COMMENT_MARKER')
     label = os.getenv('INPUT_LABEL')
     token = os.getenv('INPUT_TOKEN')
-    close_issues = os.getenv('INPUT_CLOSE_ISSUES', 'true') == 'true'
+    close_issues = os.getenv('INPUT_CLOSE_ISSUES')
 
     # Load a file so we can see what language each file is written in and apply highlighting later.
     languages_url = 'https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml'
