@@ -42,28 +42,21 @@ Latest version is `v2.2`.
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
             uses: "alstr/todo-to-issue-action@v2.2"
-            with:
-              REPO: ${{ github.repository }}
-              BEFORE: ${{ github.event.before }}
-              SHA: ${{ github.sha }}
-              TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              LABEL: "# TODO"
-              COMMENT_MARKER: "#"
             id: "todo"
 
 **If you use the action in a new repo, you should initialise the repo with an empty commit.**
 
 ### Inputs
 
-| Input    | Description |
-|----------|-------------|
-| `REPO` | The path to the repository where the action will be used, e.g. 'alstr/my-repo' (automatically set) |
-| `BEFORE` | The SHA of the last pushed commit (automatically set) |
-| `SHA` | The SHA of the latest commit (automatically set) |
-| `TOKEN` | The GitHub access token to allow us to retrieve, create and update issues (automatically set) |
-| `LABEL` | The label that will be used to identify TODO comments (e.g. `# TODO` for Python) |
-| `COMMENT_MARKER` | The marker used to signify a line comment in your code (e.g. `#` for Python) |
-| `CLOSE_ISSUES` | Optional input that specifies whether to attempt to close an issue when a TODO is removed (default: "true") |
+| Input    | Default value | Description |
+|----------|---------------|-------------|
+| `REPO` | "${{ github.repository }}" | The path to the repository where the action will be used, e.g. 'alstr/my-repo' (automatically set) |
+| `BEFORE` | "${{ github.event.before }}" | The SHA of the last pushed commit (automatically set) |
+| `SHA` | "${{ github.sha }}" | The SHA of the latest commit (automatically set) |
+| `TOKEN` | "${{ secrets.GITHUB_TOKEN }}" | The GitHub access token to allow us to retrieve, create and update issues (automatically set) |
+| `LABEL` | "# TODO" | The label that will be used to identify TODO comments (e.g. `# TODO` for Python) |
+| `COMMENT_MARKER` | "#" | The marker used to signify a line comment in your code (e.g. `#` for Python) |
+| `CLOSE_ISSUES` | "true" | Optional input that specifies whether to attempt to close an issue when a TODO is removed |
 
 ## Examples
 
