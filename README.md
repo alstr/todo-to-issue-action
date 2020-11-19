@@ -43,6 +43,8 @@ Latest version is `v2.2`.
           - name: "TODO to Issue"
             uses: "alstr/todo-to-issue-action@v2.2"
             id: "todo"
+            with:
+              TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 **If you use the action in a new repo, you should initialise the repo with an empty commit.**
 
