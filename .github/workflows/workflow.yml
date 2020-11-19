@@ -8,3 +8,5 @@ jobs:
       - name: "TODO to Issue"
         uses: "alstr/todo-to-issue-action@master"
         id: "todo"
+        with:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
