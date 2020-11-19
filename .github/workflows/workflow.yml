@@ -7,11 +7,4 @@ jobs:
       - uses: "actions/checkout@master"
       - name: "TODO to Issue"
         uses: "alstr/todo-to-issue-action@master"
-        with:
-          REPO: ${{ github.repository }}
-          BEFORE: ${{ github.event.before }}
-          SHA: ${{ github.sha }}
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          LABEL: "# TODO"
-          COMMENT_MARKER: "#"
         id: "todo"
