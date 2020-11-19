@@ -23,7 +23,6 @@ inputs:
   TOKEN:
     description: "The GitHub access token to allow us to retrieve, create and update issues (automatically set)"
     required: true
-    default: "${{ secrets.GITHUB_TOKEN }}"
   LABEL:
     description: "The label that will be used to identify TODO comments (e.g. # TODO for Python)"
     required: true
