@@ -16,6 +16,7 @@ The `# TODO` comment is commonly used in Python, but this can be customised to w
 - [Examples](#examples)
     - [Adding TODOs](#adding-todos)
     - [Multiline TODOs](#multiline-todos)
+    - [Specifying Identifier](#specifying-identifier)
     - [Specifying Labels](#specifying-labels)
     - [Specifying Assignees](#specifying-assignees)
     - [Specifying Milestone](#specifying-milestone)
@@ -31,7 +32,7 @@ Create a workflow file in your .github/workflows directory as follows:
 
 ### workflow.yaml
 
-Latest version is `v2.3`.
+Latest version is `v2.4`.
 
     name: "Workflow"
     on: ["push"]
@@ -41,7 +42,7 @@ Latest version is `v2.3`.
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v2.3"
+            uses: "alstr/todo-to-issue-action@v2.4"
             id: "todo"
             with:
               TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -56,9 +57,10 @@ Latest version is `v2.3`.
 | `BEFORE` | "${{ github.event.before }}" | The SHA of the last pushed commit (automatically set) |
 | `SHA` | "${{ github.sha }}" | The SHA of the latest commit (automatically set) |
 | `TOKEN` | "${{ secrets.GITHUB_TOKEN }}" | The GitHub access token to allow us to retrieve, create and update issues (automatically set) |
-| `LABEL` | "# TODO" | The label that will be used to identify TODO comments (e.g. `# TODO` for Python) |
-| `COMMENT_MARKER` | "#" | The marker used to signify a line comment in your code (e.g. `#` for Python) |
+| `LABEL` | "# TODO" | The label that will be used to identify TODO comments |
+| `COMMENT_MARKER` | "#" | The marker used to signify a line comment in your code |
 | `CLOSE_ISSUES` | "true" | Optional input that specifies whether to attempt to close an issue when a TODO is removed |
+| `AUTO_P` | "true" | For multiline TODOs, format each line as a new paragraph when creating the issue |
 
 ## Examples
 
@@ -90,6 +92,17 @@ You can create a multiline todo by continuing below the initial TODO declaration
 The extra line(s) will be posted in the body of the issue.
 
 The `COMMENT_MARKER` input must be set to the correct syntax (e.g. `#` for Python).
+
+Each line in the multiline TODO will be formatted as a paragraph in the issue body. To disable this, set `AUTO_P` to `"false"`.
+
+### Specifying Identifier
+
+    def hello_world():
+        # TODO(alstr) Come up with a more imaginative greeting
+
+As per the [Google Style Guide](https://google.github.io/styleguide/cppguide.html#TODO_Comments), you can provide an identifier after the TODO label. This will be included in the issue title for searchability.
+
+Don't include parentheses within the identifier itself.
 
 ### Specifying Labels
 
@@ -166,7 +179,7 @@ If you do encounter any problems, please file an issue. PRs are welcome and appr
 
 ## Thanks
 
-Thanks to Jacob Tomlinson for [ his handy overview of GitHub Actions ](https://www.jacobtomlinson.co.uk/posts/2019/creating-github-actions-in-python/).
+Thanks to Jacob Tomlinson for [his handy overview of GitHub Actions](https://www.jacobtomlinson.co.uk/posts/2019/creating-github-actions-in-python/).
 
 Thanks to GitHub's [linguist repo](https://github.com/github/linguist/) for the [ `languages.yml` ](
 https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) file used by the app to determine the correct highlighting to apply to code snippets.

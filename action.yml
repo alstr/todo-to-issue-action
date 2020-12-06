@@ -24,14 +24,18 @@ inputs:
     description: "The GitHub access token to allow us to retrieve, create and update issues (automatically set)"
     required: true
   LABEL:
-    description: "The label that will be used to identify TODO comments (e.g. # TODO for Python)"
+    description: "The label that will be used to identify TODO comments"
     required: true
     default: "# TODO"
   COMMENT_MARKER:
-    description: "The marker used to signify a line comment in your code (e.g. # for Python)"
+    description: "The marker used to signify a line comment in your code"
     required: true
     default: "#"
   CLOSE_ISSUES:
-    description: "Optional input that specifies whether to attempt to close an issue when a TODO is removed (default: true)"
+    description: "Optional input that specifies whether to attempt to close an issue when a TODO is removed"
+    required: false
+    default: "true"
+  AUTO_P:
+    description: "For multiline TODOs, format each line as a new paragraph when creating the issue"
     required: false
     default: "true"
