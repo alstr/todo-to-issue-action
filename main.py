@@ -21,7 +21,7 @@ def main():
     label = os.getenv('INPUT_LABEL')
     token = os.getenv('INPUT_TOKEN')
     close_issues = os.getenv('INPUT_CLOSE_ISSUES') == 'true'
-    auto_p = os.getenv('AUTO_P') == 'true'
+    auto_p = os.getenv('INPUT_AUTO_P') == 'true'
     line_break = '\n\n' if auto_p else '\n'
 
     # Load a file so we can see what language each file is written in and apply highlighting later.

@@ -53,14 +53,14 @@ Latest version is `v2.4`.
 
 | Input    | Default value | Description |
 |----------|---------------|-------------|
-| `REPO` | "${{ github.repository }}" | The path to the repository where the action will be used, e.g. 'alstr/my-repo' (automatically set) |
-| `BEFORE` | "${{ github.event.before }}" | The SHA of the last pushed commit (automatically set) |
-| `SHA` | "${{ github.sha }}" | The SHA of the latest commit (automatically set) |
-| `TOKEN` | "${{ secrets.GITHUB_TOKEN }}" | The GitHub access token to allow us to retrieve, create and update issues (automatically set) |
-| `LABEL` | "# TODO" | The label that will be used to identify TODO comments |
-| `COMMENT_MARKER` | "#" | The marker used to signify a line comment in your code |
-| `CLOSE_ISSUES` | "true" | Optional input that specifies whether to attempt to close an issue when a TODO is removed |
-| `AUTO_P` | "true" | For multiline TODOs, format each line as a new paragraph when creating the issue |
+| `REPO` | `"${{ github.repository }}"` | The path to the repository where the action will be used, e.g. 'alstr/my-repo' (automatically set) |
+| `BEFORE` | `"${{ github.event.before }}"` | The SHA of the last pushed commit (automatically set) |
+| `SHA` | `"${{ github.sha }}"` | The SHA of the latest commit (automatically set) |
+| `TOKEN` | `"${{ secrets.GITHUB_TOKEN }}"` | The GitHub access token to allow us to retrieve, create and update issues (automatically set) |
+| `LABEL` | `"# TODO"` | The label that will be used to identify TODO comments |
+| `COMMENT_MARKER` | `"#"` | The marker used to signify a line comment in your code |
+| `CLOSE_ISSUES` | `true` | Optional input that specifies whether to attempt to close an issue when a TODO is removed |
+| `AUTO_P` | `true` | For multiline TODOs, format each line as a new paragraph when creating the issue |
 
 ## Examples
 
@@ -93,7 +93,7 @@ The extra line(s) will be posted in the body of the issue.
 
 The `COMMENT_MARKER` input must be set to the correct syntax (e.g. `#` for Python).
 
-Each line in the multiline TODO will be formatted as a paragraph in the issue body. To disable this, set `AUTO_P` to `"false"`.
+Each line in the multiline TODO will be formatted as a paragraph in the issue body. To disable this, set `AUTO_P` to `false`.
 
 ### Specifying Identifier
 

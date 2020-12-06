@@ -33,9 +33,9 @@ inputs:
     default: "#"
   CLOSE_ISSUES:
     description: "Optional input that specifies whether to attempt to close an issue when a TODO is removed"
-    required: false
-    default: "true"
+    required: true
+    default: true
   AUTO_P:
     description: "For multiline TODOs, format each line as a new paragraph when creating the issue"
-    required: false
-    default: "true"
+    required: true
+    default: true
