@@ -20,7 +20,9 @@ def main():
     comment_marker = os.getenv('INPUT_COMMENT_MARKER')
     label = os.getenv('INPUT_LABEL')
     token = os.getenv('INPUT_TOKEN')
-    close_issues = os.getenv('INPUT_CLOSE_ISSUES')
+    close_issues = os.getenv('INPUT_CLOSE_ISSUES') == 'true'
+    auto_p = os.getenv('INPUT_AUTO_P') == 'true'
+    line_break = '\n\n' if auto_p else '\n'
 
     # Load a file so we can see what language each file is written in and apply highlighting later.
     languages_url = 'https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml'
@@ -69,7 +71,9 @@ def main():
         line_num_pattern = re.compile(r'(?<=\+).+')
         addition_pattern = re.compile(r'(?<=^\+).*')
         deletion_pattern = re.compile(r'(?<=^-).*')
-        todo_pattern = re.compile(r'(?<=' + label + r'[\s:]).+')
+        todo_pattern = re.compile(r'(?<=' + label + r'[(\s:]).+')
+        identifier_pattern = re.compile(r'.+(?=\))')
+        title_pattern = re.compile(r'(?<=\)[\s:]).+')
         comment_pattern = re.compile(r'(?<=' + comment_marker + r'\s).+')
         labels_pattern = re.compile(r'(?<=labels:).+')
         assignees_pattern = re.compile(r'(?<=assignees:).+')
@@ -90,6 +94,9 @@ def main():
             # If True, the current issue is updated with the extra details from this line.
             def process_line(next_line):
                 if previous_line_was_todo:
+                    if next_line.strip() == comment_marker:
+                        curr_issue['body'] += line_break
+                        return True
                     comment_search = comment_pattern.search(next_line)
                     if comment_search:
                         comment = comment_search.group(0).lstrip()
@@ -111,7 +118,7 @@ def main():
                                     if milestone.isdigit():
                                         curr_issue['milestone'] = int(milestone)
                                 else:
-                                    curr_issue['body'] += '\n\n' + comment_search.group(0).lstrip()
+                                    curr_issue['body'] += line_break + comment
                         return True
                 return False
 
@@ -150,6 +157,15 @@ def main():
                                 # A new item was found. Start recording so we can capture multiline TODOs.
                                 previous_line_was_todo = True
                                 todo = todo_search.group(0).lstrip()
+                                identifier_search = identifier_pattern.search(todo)
+                                title_search = title_pattern.search(todo)
+                                if identifier_search and title_search:
+                                    todo = f'[{identifier_search.group(0)}] {title_search.group(0).lstrip()}'
+                                elif identifier_search:
+                                    todo = identifier_search.group(0)  # Shouldn't really arise.
+                                elif title_search:
+                                    todo = title_search.group(0)  # Shouldn't really arise.
+
                                 if curr_issue:
                                     curr_issue['hunk'] = lines
                                     new_issues.append(curr_issue)
