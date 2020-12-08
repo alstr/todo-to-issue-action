@@ -72,8 +72,6 @@ def main():
         addition_pattern = re.compile(r'(?<=^\+).*')
         deletion_pattern = re.compile(r'(?<=^-).*')
         todo_pattern = re.compile(r'(?<=' + label + r'[(\s:]).+')
-        identifier_pattern = re.compile(r'.+(?=\))')
-        title_pattern = re.compile(r'(?<=\)[\s:]).+')
         comment_pattern = re.compile(r'(?<=' + comment_marker + r'\s).+')
         labels_pattern = re.compile(r'(?<=labels:).+')
         assignees_pattern = re.compile(r'(?<=assignees:).+')
@@ -156,15 +154,7 @@ def main():
                             if todo_search:
                                 # A new item was found. Start recording so we can capture multiline TODOs.
                                 previous_line_was_todo = True
-                                todo = todo_search.group(0).lstrip()
-                                identifier_search = identifier_pattern.search(todo)
-                                title_search = title_pattern.search(todo)
-                                if identifier_search and title_search:
-                                    todo = f'[{identifier_search.group(0)}] {title_search.group(0).lstrip()}'
-                                elif identifier_search:
-                                    todo = identifier_search.group(0)  # Shouldn't really arise.
-                                elif title_search:
-                                    todo = title_search.group(0)  # Shouldn't really arise.
+                                todo = clean_title(todo_search)
 
                                 if curr_issue:
                                     curr_issue['hunk'] = lines
@@ -193,7 +183,8 @@ def main():
                                 deletion = deletion_search.group(0)
                                 todo_search = todo_pattern.search(deletion, re.IGNORECASE)
                                 if todo_search:
-                                    closed_issues.append(todo_search.group(0).lstrip())
+                                    todo = clean_title(todo_search)
+                                    closed_issues.append(todo)
                             else:
                                 lines.append(cleaned_line[1:])
                                 # Let's check if this line continues from a previous deletion.
@@ -314,6 +305,21 @@ def main():
                     # Don't update too many issues too quickly.
                     sleep(1)
             print('Closing issues complete')
+
+
+def clean_title(todo_search):
+    identifier_pattern = re.compile(r'.+(?=\))')
+    title_pattern = re.compile(r'(?<=\)[\s:]).+')
+    cleaned_title = todo_search.group(0).lstrip()
+    identifier_search = identifier_pattern.search(cleaned_title)
+    title_search = title_pattern.search(cleaned_title)
+    if identifier_search and title_search:
+        cleaned_title = f'[{identifier_search.group(0)}] {title_search.group(0).lstrip()}'
+    elif identifier_search:
+        cleaned_title = identifier_search.group(0)  # Shouldn't really arise.
+    elif title_search:
+        cleaned_title = title_search.group(0)  # Shouldn't really arise.
+    return cleaned_title
 
 
 if __name__ == "__main__":
