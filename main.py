@@ -443,7 +443,7 @@ if __name__ == "__main__":
     if os.getenv('INPUT_COMMENT_MARKER') and os.getenv('INPUT_LABEL'):
         # The user doesn't want to use the v3.x parser for whatever reason.
         fallback_parser.main()
-    else:
+    elif os.getenv('INPUT_BEFORE') != '0000000000000000000000000000000000000000':
         # Create a basic client for communicating with GitHub, automatically initialised with environment variables.
         client = GitHubClient()
         # Get the diff from the last pushed commit.
