@@ -9,7 +9,7 @@ with the ref of the commit that it was closed by.
 
 ## Important information about v3.0
 
-This version is a complete rewrite of the action. TODO labels are now parsed dynamically based on the file type identified by the action. As such, you no longer need to hard-code the `LABEL` or `COMMENT_MARKER` inputs (unless you have very specific requirements). If you do provide these, the action will revert to the prior v2.4.1 version.
+This version is a complete rewrite of the action. TODO labels are now parsed dynamically based on the file type identified by the action. As such, you no longer need to hard-code the `LABEL` or `COMMENT_MARKER` inputs (unless you have very specific requirements). If you do provide these, the action will revert to the prior `v2.4.1` version.
 
 Syntax data for identifying comments is defined in `syntax.json`. Whilst this file is not yet exhaustive, it is provided as a starting point and can be easily updated (pull requests welcome). It has not been tested beyond the current markers specified in this file, so the core parser may need modifying to handle any new types.
 
@@ -38,7 +38,7 @@ Create a workflow file in your .github/workflows directory as follows:
 
 ### workflow.yaml
 
-Latest version is `v3.0`.
+Latest version is `v3.0-beta`.
 
     name: "Workflow"
     on: ["push"]
@@ -48,7 +48,7 @@ Latest version is `v3.0`.
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v2.4.1"
+            uses: "alstr/todo-to-issue-action@v3.0-beta"
             id: "todo"
             with:
               TOKEN: ${{ secrets.GITHUB_TOKEN }}
