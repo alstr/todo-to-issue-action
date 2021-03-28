@@ -299,7 +299,11 @@ class TodoParser(object):
 
         # Strip some of the diff symbols so it can be included as a code snippet in the issue body.
         for i, issue in enumerate(issues):
-            cleaned_hunk = re.sub(r'^.', '', issue.hunk, 0, re.MULTILINE)
+            # Strip removed lines.
+            cleaned_hunk = re.sub(r'\n^-.*$', '', issue.hunk, 0, re.MULTILINE)
+            # Strip leading symbols/whitespace.
+            cleaned_hunk = re.sub(r'^.', '', cleaned_hunk, 0, re.MULTILINE)
+            # Strip newline message.
             cleaned_hunk = re.sub(r'\n\sNo newline at end of file', '', cleaned_hunk, 0, re.MULTILINE)
             issue.hunk = cleaned_hunk
         return issues
