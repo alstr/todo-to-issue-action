@@ -43,7 +43,7 @@ class GitHubClient(object):
     base_url = 'https://api.github.com/repos/'
 
     def __init__(self):
-        self.repo = os.getenv('INPUT_REPO', 'alstr/todo-test')
+        self.repo = os.getenv('INPUT_REPO')
         self.before = os.getenv('INPUT_BEFORE')
         self.sha = os.getenv('INPUT_SHA')
         self.token = os.getenv('INPUT_TOKEN')
