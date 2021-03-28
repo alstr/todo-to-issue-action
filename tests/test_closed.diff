@@ -17,46 +17,36 @@ index d340f6a..29b54da 100644
 -    */
  }
 \ No newline at end of file
-diff --git a/tests/example-file.css b/tests/example-file.css
-index 344fe46..0519500 100644
---- a/tests/example-file.css
-+++ b/tests/example-file.css
-@@ -1,10 +1,4 @@
- body {
--    <!-- TODO: This is too bright -->
-     background: red;
--    <!--
--    TODO: Insufficient contrast
--    Use another colour for the text
--    labels: UI
--    -->
-     color: deeppink;
- }
-\ No newline at end of file
 diff --git a/tests/example-file.php b/tests/example-file.php
-index d36df2f..e77f4bb 100644
+deleted file mode 100644
+index 063bb80..0000000
 --- a/tests/example-file.php
-+++ b/tests/example-file.php
-@@ -4,19 +4,8 @@
-
- <?php
-     echo 'Testing 123';
++++ /dev/null
+@@ -1,23 +0,0 @@
+-<!DOCTYPE html>
+-<html>
+-<body>
+-<!-- TODO: Check HTML comments work -->
+-<?php
+-    echo 'Testing 123';
 -    // TODO: Expand this page
 -    //  We aren't doing anything here yet
 -
-     echo 'Testing 456';
+-    echo 'Testing 456';
 -    # TODO: Definitely expand this
 -    #  There needs to be some point to this file
 -
-     echo 'Testing 789'
+-    echo 'Testing 789'
 -    /*
 -     * TODO: Echo a greeting instead
 -     * This should work with or without the asterisk on each line
 -     * labels: help wanted
 -     */
- ?>
-
- </body>
+-?>
+-
+-</body>
+-</html>
+\ No newline at end of file
 diff --git a/tests/example_file.py b/tests/example_file.py
 index 525e25d..ba4e68d 100644
 --- a/tests/example_file.py

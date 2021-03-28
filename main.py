@@ -161,7 +161,7 @@ class GitHubClient(object):
 class TodoParser(object):
     """Parser for extracting information from a given diff file."""
     FILE_HUNK_PATTERN = r'(?<=diff)(.*?)(?=diff\s--git\s)'
-    HEADER_PATTERN = r'(?<=--git).*?(?=$\n(index|new))'
+    HEADER_PATTERN = r'(?<=--git).*?(?=$\n(index|new|deleted))'
     LINE_PATTERN = r'^.*$'
     FILENAME_PATTERN = re.compile(r'(?<=a/).+?(?=\sb/)')
     LINE_NUMBERS_PATTERN = re.compile(r'@@[\d\s,\-+]*\s@@.*')

@@ -23,13 +23,10 @@ class NewIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
 
     def test_php_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 3)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 4)
 
     def test_java_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 2)
-
-    def test_css_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'css'), 2)
 
     def test_ruby_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
@@ -48,13 +45,10 @@ class ClosedIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
 
     def test_php_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 3)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 4)
 
     def test_java_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 2)
-
-    def test_css_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'css'), 2)
 
     def test_ruby_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)

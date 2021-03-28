@@ -18,33 +18,16 @@ index 0000000..d340f6a
 +    */
 +}
 \ No newline at end of file
-diff --git a/tests/example-file.css b/tests/example-file.css
-new file mode 100644
-index 0000000..344fe46
---- /dev/null
-+++ b/tests/example-file.css
-@@ -0,0 +1,10 @@
-+body {
-+    <!-- TODO: This is too bright -->
-+    background: red;
-+    <!--
-+    TODO: Insufficient contrast
-+    Use another colour for the text
-+    labels: UI
-+    -->
-+    color: deeppink;
-+}
-\ No newline at end of file
 diff --git a/tests/example-file.php b/tests/example-file.php
 new file mode 100644
-index 0000000..d36df2f
+index 0000000..063bb80
 --- /dev/null
 +++ b/tests/example-file.php
 @@ -0,0 +1,23 @@
 +<!DOCTYPE html>
 +<html>
 +<body>
-+
++<!-- TODO: Check HTML comments work -->
 +<?php
 +    echo 'Testing 123';
 +    // TODO: Expand this page
