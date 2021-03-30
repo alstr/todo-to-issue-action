@@ -227,5 +227,14 @@
         }
       }
     ]
+  },
+  {
+    "language": "AutoHotKey",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": ";"
+      }
+    ]
   }
 ]
