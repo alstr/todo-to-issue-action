@@ -9,7 +9,7 @@ with the ref of the commit that it was closed by.
 
 ## Important information about v3.0
 
-This version is a complete rewrite of the action. TODO labels are now parsed dynamically based on the file type identified by the action. As such, you no longer need to hard-code the `LABEL` or `COMMENT_MARKER` inputs (unless you have very specific requirements). If you do provide these, the action will revert to the prior `v2.4.1` version.
+This version is a complete rewrite of the action. TODO labels are now parsed dynamically based on the file type identified by the action. As such, you no longer need to hard-code the `LABEL` or `COMMENT_MARKER` inputs.
 
 Syntax data for identifying comments is defined in `syntax.json`. Whilst this file is not yet exhaustive, it is provided as a starting point and can be easily updated (pull requests welcome). It has not been tested beyond the current markers specified in this file, so the core parser may need modifying to handle any new types.
 
@@ -77,6 +77,8 @@ Latest version is `v3.0-beta`.
 This will create an issue called "Come up with a more imaginative greeting".
  
 **The action expects a colon and/or space to follow the `TODO` label (so `TODO: ` or just `TODO`).**
+
+**Currently only TODOs on their own line are supported, but this may change.**
  
 Should the title be longer than 80 characters, it will be truncated for the issue title.
  
