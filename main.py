@@ -11,8 +11,6 @@ from ruamel.yaml import YAML
 import hashlib
 from enum import Enum
 
-import fallback_parser
-
 
 class LineStatus(Enum):
     """Represents the status of a line in a diff file."""
@@ -185,11 +183,16 @@ class TodoParser(object):
             languages_data = languages_request.text
             yaml = YAML(typ='safe')
             self.languages_dict = yaml.load(languages_data)
+        else:
+            raise Exception('Cannot retrieve languages data. Operation will abort.')
 
         # Load the comment syntax data for identifying comments.
-        with open('syntax.json', mode='r') as syntax_file:
-            syntax_dict = json.loads(syntax_file.read())
-            self.syntax_dict = syntax_dict
+        syntax_url = 'https://raw.githubusercontent.com/alstr/todo-to-issue-action/master/syntax.json'
+        syntax_request = requests.get(url=syntax_url)
+        if syntax_request.status_code == 200:
+            self.syntax_dict = syntax_request.json()
+        else:
+            raise Exception('Cannot retrieve syntax data. Operation will abort.')
 
     # noinspection PyTypeChecker
     def parse(self, diff_file):
@@ -207,6 +210,7 @@ class TodoParser(object):
             last_end = file_hunk.end()
         diff_file.seek(0)
         extracted_file_hunks.append(diff_file.read()[last_end:])
+        diff_file.close()
 
         code_blocks = []
         prev_block = None
@@ -311,13 +315,12 @@ class TodoParser(object):
     def _get_file_details(self, file):
         """Try and get the markdown language and comment syntax data for the given file."""
         file_name, extension = os.path.splitext(os.path.basename(file))
-        if self.languages_dict:
-            for language_name in self.languages_dict:
-                if ('extensions' in self.languages_dict[language_name]
-                        and extension in self.languages_dict[language_name]['extensions']):
-                    for syntax_details in self.syntax_dict:
-                        if syntax_details['language'] == language_name:
-                            return syntax_details['markers'], self.languages_dict[language_name]['ace_mode']
+        for language_name in self.languages_dict:
+            if ('extensions' in self.languages_dict[language_name]
+                    and extension in self.languages_dict[language_name]['extensions']):
+                for syntax_details in self.syntax_dict:
+                    if syntax_details['language'] == language_name:
+                        return syntax_details['markers'], self.languages_dict[language_name]['ace_mode']
         return None, None
 
     def _extract_issue_if_exists(self, comment, marker, code_block):
@@ -444,10 +447,7 @@ class TodoParser(object):
 
 
 if __name__ == "__main__":
-    if os.getenv('INPUT_COMMENT_MARKER') and os.getenv('INPUT_LABEL'):
-        # The user doesn't want to use the v3.x parser for whatever reason.
-        fallback_parser.main()
-    elif os.getenv('INPUT_BEFORE') != '0000000000000000000000000000000000000000':
+    if os.getenv('INPUT_BEFORE') != '0000000000000000000000000000000000000000':
         # Create a basic client for communicating with GitHub, automatically initialised with environment variables.
         client = GitHubClient()
         # Get the diff from the last pushed commit.
