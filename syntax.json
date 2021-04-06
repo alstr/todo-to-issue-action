@@ -141,6 +141,22 @@
     ]
   },
   {
+    "language": "Dart",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "//"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "/\\*",
+          "end": "\\*/"
+        }
+      }
+    ]
+  },
+  {
     "language": "Kotlin",
     "markers": [
       {
@@ -236,5 +252,6 @@
         "pattern": ";"
       }
     ]
-  }
+  },
+  
 ]
