@@ -57,14 +57,21 @@ Latest version is `v3.0.1-beta`.
 
 ### Inputs
 
-| Input    | Default value | Description |
-|----------|---------------|-------------|
-| `REPO` | `"${{ github.repository }}"` | The path to the repository where the action will be used, e.g. 'alstr/my-repo' (automatically set) |
-| `BEFORE` | `"${{ github.event.before }}"` | The SHA of the last pushed commit (automatically set) |
-| `SHA` | `"${{ github.sha }}"` | The SHA of the latest commit (automatically set) |
-| `TOKEN` | `"${{ secrets.GITHUB_TOKEN }}"` | The GitHub access token to allow us to retrieve, create and update issues (automatically set) |
-| `CLOSE_ISSUES` | `true` | Optional input that specifies whether to attempt to close an issue when a TODO is removed |
-| `AUTO_P` | `true` | For multiline TODOs, format each line as a new paragraph when creating the issue |
+The workflow files takes the following required/optional inputs:
+
+| Input    | Required | Description |
+|----------|----------|-------------|
+| `TOKEN` | Yes | The GitHub access token to allow us to retrieve, create and update issues for your repo. This should be set to `${{ secrets.GITHUB_TOKEN }}`. |
+| `CLOSE_ISSUES` | No | Optional boolean input that specifies whether to attempt to close an issue when a TODO is removed. Default: `true`. |
+| `AUTO_P` | No | Optional boolean input that specifies whether to format each line in multiline TODOs as a new paragraph. Default: `true`. |
+
+Three other inputs are provided automatically by GitHub and should not be included in your workflow file, but you may see them referred to in these docs:
+
+| Input    | Description |
+|----------|-------------|
+| `REPO` | The path to the repository where the action will be used, e.g. 'alstr/my-repo'. |
+| `BEFORE` | The SHA of the last pushed commit. |
+| `SHA` | The SHA of the latest commit. |
 
 ## Examples
 
