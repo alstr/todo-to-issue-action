@@ -70,7 +70,7 @@ Three other inputs are provided automatically by GitHub and should not be includ
 | Input    | Description |
 |----------|-------------|
 | `REPO` | The path to the repository where the action will be used, e.g. 'alstr/my-repo'. |
-| `BEFORE` | The SHA of the last pushed commit. |
+| `BEFORE` | The SHA of the previous commit. |
 | `SHA` | The SHA of the latest commit. |
 
 ## Examples
