@@ -2,18 +2,12 @@
 
 This action will convert your `# TODO` comments to GitHub issues when a new commit is pushed.
 
-The new issue will contain a link to the line in the file containing the TODO, together with a code snippet and any defined labels. The action performs a `GET` request to retrieve GitHub's [`languages.yml` file](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) to determine the correct comment syntax to look for, and apply the relevant code highlighting.
+The new issue will contain a link to the line in the file containing the TODO, together with a code snippet and any defined labels. The action performs a `GET` request to retrieve GitHub's [`languages.yml` file](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) file to apply highlighting to the snippet.
 
 It will also close an issue when a `# TODO` is removed in a pushed commit. A comment will be posted
 with the ref of the commit that it was closed by.
 
-## Important information about v3.0
-
-This version is a complete rewrite of the action. TODO labels are now parsed dynamically based on the file type identified by the action. As such, you no longer need to hard-code the `LABEL` or `COMMENT_MARKER` inputs.
-
-Syntax data for identifying comments is defined in `syntax.json`. Whilst this file is not yet exhaustive, it is provided as a starting point and can be easily updated (pull requests welcome). It has not been tested beyond the current markers specified in this file, so the core parser may need modifying to handle any new types.
-
-A few basic tests are included if you would like to see how the new action works.
+The `# TODO` comment is commonly used in Python, but this can be customised to whatever you want.
 
 ## Summary
 - [Usage](#usage)
@@ -38,7 +32,7 @@ Create a workflow file in your .github/workflows directory as follows:
 
 ### workflow.yaml
 
-Latest version is `v3.0.2-beta`.
+Latest version is `v2.4`.
 
     name: "Workflow"
     on: ["push"]
@@ -48,7 +42,7 @@ Latest version is `v3.0.2-beta`.
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v3.0.2-beta"
+            uses: "alstr/todo-to-issue-action@v2.4"
             id: "todo"
             with:
               TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -57,21 +51,16 @@ Latest version is `v3.0.2-beta`.
 
 ### Inputs
 
-The workflow files takes the following required/optional inputs:
-
-| Input    | Required | Description |
-|----------|----------|-------------|
-| `TOKEN` | Yes | The GitHub access token to allow us to retrieve, create and update issues for your repo. This should be set to `${{ secrets.GITHUB_TOKEN }}`. |
-| `CLOSE_ISSUES` | No | Optional boolean input that specifies whether to attempt to close an issue when a TODO is removed. Default: `true`. |
-| `AUTO_P` | No | Optional boolean input that specifies whether to format each line in multiline TODOs as a new paragraph. Default: `true`. |
-
-Three other inputs are provided automatically by GitHub and should not be included in your workflow file, but you may see them referred to in these docs:
-
-| Input    | Description |
-|----------|-------------|
-| `REPO` | The path to the repository where the action will be used, e.g. 'alstr/my-repo'. |
-| `BEFORE` | The SHA of the previous commit. |
-| `SHA` | The SHA of the latest commit. |
+| Input    | Default value | Description |
+|----------|---------------|-------------|
+| `REPO` | `"${{ github.repository }}"` | The path to the repository where the action will be used, e.g. 'alstr/my-repo' (automatically set) |
+| `BEFORE` | `"${{ github.event.before }}"` | The SHA of the last pushed commit (automatically set) |
+| `SHA` | `"${{ github.sha }}"` | The SHA of the latest commit (automatically set) |
+| `TOKEN` | `"${{ secrets.GITHUB_TOKEN }}"` | The GitHub access token to allow us to retrieve, create and update issues (automatically set) |
+| `LABEL` | `"# TODO"` | The label that will be used to identify TODO comments |
+| `COMMENT_MARKER` | `"#"` | The marker used to signify a line comment in your code |
+| `CLOSE_ISSUES` | `true` | Optional input that specifies whether to attempt to close an issue when a TODO is removed |
+| `AUTO_P` | `true` | For multiline TODOs, format each line as a new paragraph when creating the issue |
 
 ## Examples
 
@@ -84,8 +73,6 @@ Three other inputs are provided automatically by GitHub and should not be includ
 This will create an issue called "Come up with a more imaginative greeting".
  
 **The action expects a colon and/or space to follow the `TODO` label (so `TODO: ` or just `TODO`).**
-
-**Currently only TODOs on their own line are supported, but this may change.**
  
 Should the title be longer than 80 characters, it will be truncated for the issue title.
  
@@ -103,6 +90,8 @@ A reference hash is added to the end of the issue body. This is to help prevent 
 You can create a multiline todo by continuing below the initial TODO declaration with a comment.
 
 The extra line(s) will be posted in the body of the issue.
+
+The `COMMENT_MARKER` input must be set to the correct syntax (e.g. `#` for Python).
 
 Each line in the multiline TODO will be formatted as a paragraph in the issue body. To disable this, set `AUTO_P` to `false`.
 

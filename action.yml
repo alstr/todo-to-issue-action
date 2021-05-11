@@ -24,11 +24,13 @@ inputs:
     description: "The GitHub access token to allow us to retrieve, create and update issues (automatically set)"
     required: true
   LABEL:
-    description: "The label that will be used to identify TODO comments (deprecated)"
-    required: false
+    description: "The label that will be used to identify TODO comments"
+    required: true
+    default: "# TODO"
   COMMENT_MARKER:
-    description: "The marker used to signify a line comment in your code (deprecated)"
-    required: false
+    description: "The marker used to signify a line comment in your code"
+    required: true
+    default: "#"
   CLOSE_ISSUES:
     description: "Optional input that specifies whether to attempt to close an issue when a TODO is removed"
     required: true
