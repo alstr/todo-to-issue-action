@@ -1,0 +1,96 @@
+diff --git a/tests/ExampleFile.java b/tests/ExampleFile.java
+new file mode 100644
+index 0000000..d340f6a
+--- /dev/null
++++ b/tests/ExampleFile.java
+@@ -0,0 +1,13 @@
++package com.mydomain.myapp;
++
++public class JavaTests {
++    // TODO: Expand this class
++    //  Do it
++    // labels: urgent
++
++    /*
++    TODO: Definitely expand this class
++    Do it ASAP
++    labels: urgent
++    */
++}
+\ No newline at end of file
+diff --git a/tests/example-file.php b/tests/example-file.php
+new file mode 100644
+index 0000000..063bb80
+--- /dev/null
++++ b/tests/example-file.php
+@@ -0,0 +1,23 @@
++<!DOCTYPE html>
++<html>
++<body>
++<!-- TODO: Check HTML comments work -->
++<?php
++    echo 'Testing 123';
++    // TODO: Expand this page
++    //  We aren't doing anything here yet
++
++    echo 'Testing 456';
++    # TODO: Definitely expand this
++    #  There needs to be some point to this file
++
++    echo 'Testing 789'
++    /*
++     * TODO: Echo a greeting instead
++     * This should work with or without the asterisk on each line
++     * labels: help wanted
++     */
++?>
++
++</body>
++</html>
+\ No newline at end of file
+diff --git a/tests/example_file.py b/tests/example_file.py
+new file mode 100644
+index 0000000..525e25d
+--- /dev/null
++++ b/tests/example_file.py
+@@ -0,0 +1,7 @@
++def hello_world():
++    # TODO: Come up with a more imaginative greeting
++    print('Hello world')
++
++    # TODO: Do more stuff
++    #  This function should probably do something more interesting
++    #  labels: help wanted
+diff --git a/tests/example_file.rb b/tests/example_file.rb
+new file mode 100644
+index 0000000..e6da2ec
+--- /dev/null
++++ b/tests/example_file.rb
+@@ -0,0 +1,14 @@
++#!/usr/bin/ruby -w
++
++# TODO: Come up with a more imaginative greeting
++puts "Greetings"
++
++=begin
++TODO: Do more stuff
++This function should probably do something more interesting
++labels: help wanted
++=end
++
++# TODO: Do even more stuff
++# This function should probably do something more interesting
++# labels: help wanted
+diff --git a/tests/example_file.yaml b/tests/example_file.yaml
+new file mode 100644
+index 0000000..6397789
+--- /dev/null
++++ b/tests/example_file.yaml
+@@ -0,0 +1,7 @@
++name: "TODO to Issue"
++# TODO: Write a more interesting description
++description: "Converts IDE TODO comments to GitHub issues"
++author: "Alastair Mooney"
++# TODO: Define inputs
++#  Need to do this before the action is released
++#  labels: urgent
