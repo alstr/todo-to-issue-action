@@ -157,6 +157,22 @@
     ]
   },
   {
+    "language": "TSX",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "//"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "/\\*",
+          "end": "\\*/"
+        }
+      }
+    ]
+  },
+  {
     "language": "Dart",
     "markers": [
       {
