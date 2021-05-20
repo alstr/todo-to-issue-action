@@ -9,6 +9,15 @@
     ]
   },
   {
+    "language": "Elixir",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "#"
+      }
+    ]
+  },
+  {
     "language": "YAML",
     "markers": [
       {
