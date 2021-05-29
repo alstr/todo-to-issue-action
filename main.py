@@ -409,7 +409,7 @@ class TodoParser(object):
                 separated_user_projects = self._get_projects(f'user projects: {default_user_projects}', 'user')
                 issue.user_projects = separated_user_projects
             if len(issue.org_projects) == 0 and default_org_projects is not None:
-                separated_org_projects = self._get_projects(f'org projects: {default_org_projects}', 'user')
+                separated_org_projects = self._get_projects(f'org projects: {default_org_projects}', 'org')
                 issue.org_projects = separated_org_projects
         return issues
 
