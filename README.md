@@ -7,7 +7,7 @@ The new issue will contain a link to the line in the file containing the TODO, t
 It will also close an issue when a `# TODO` is removed in a pushed commit. A comment will be posted
 with the ref of the commit that it was closed by.
 
-## Important information about v3.0
+## Important information about v3.0+
 
 This version is a complete rewrite of the action. TODO labels are now parsed dynamically based on the file type identified by the action. As such, you no longer need to hard-code the `LABEL` or `COMMENT_MARKER` inputs.
 
@@ -26,6 +26,7 @@ A few basic tests are included if you would like to see how the new action works
     - [Specifying Labels](#specifying-labels)
     - [Specifying Assignees](#specifying-assignees)
     - [Specifying Milestone](#specifying-milestone)
+    - [Specifying Projects](#specifying-projects)
     - [Removing TODOs](#removing-todos)
     - [Updating TODOs](#updating-todos)
     - [Existing TODOs](#existing-todos)
@@ -38,7 +39,7 @@ Create a workflow file in your .github/workflows directory as follows:
 
 ### workflow.yaml
 
-Latest version is `v3.0.5`.
+Latest version is `v4.0-alpha`.
 
     name: "Workflow"
     on: ["push"]
@@ -48,7 +49,7 @@ Latest version is `v3.0.5`.
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v3.0.5"
+            uses: "alstr/todo-to-issue-action@v4.0-alpha"
             id: "todo"
             with:
               TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -72,6 +73,8 @@ Three other inputs are provided automatically by GitHub and should not be includ
 | `REPO` | The path to the repository where the action will be used, e.g. 'alstr/my-repo'. |
 | `BEFORE` | The SHA of the previous commit. |
 | `SHA` | The SHA of the latest commit. |
+
+There are additional inputs if you want to be able to assign issues to projects. See [Specifying Projects](#specifying-projects).
 
 ## Examples
 
@@ -154,6 +157,27 @@ If the assignee is not valid, it will be dropped from the issue creation request
 You can set the issue milestone by specifying the milestone ID. Only a single milestone can be specified.
 
 If the milestone does not already exist, it will be dropped from the issue creation request.
+
+### Specifying Projects
+
+**The action cannot access your projects by default. To enable access, you must [create an encrypted secret in your repo settings](https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository), with the value set to a valid Personal Access Token. Then, assign the secret in the workflow file like `PROJECTS_SECRET: ${{ secrets.NAME_OF_MY_SECRET }}`. Do not enter the raw secret.**
+
+    def hello_world():
+        # TODO Come up with a more imaginative greeting
+        #  Everyone uses hello world and it's boring.
+        #  user projects: alstr/Test User Project/To Do
+        #  org projects: alstrorg/Test Org Project/To Do
+        print('Hello world!')
+
+You can assign the created issue to columns within user or organisation projects.
+
+To assign to a user project, use the `user projects:` prefix. To assign to an organisation project, use `org projects:` prefix.
+
+The syntax is `<user or org name>/project name/column name`. All three must be provided.
+
+You can assign to multiple projects by using commas, for example: `user projects: alstr/Test User Project 1/To Do, alstr/Test User Project 2/Tasks`.
+
+You can also specify default projects in your workflow file using `USER_PROJECTS` or `ORG_PROJECTS`. These will be applied automatically to every issue, but will be overrode by any specified within the TODO.
 
 ### Removing TODOs
 

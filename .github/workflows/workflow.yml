@@ -10,3 +10,4 @@ jobs:
         id: "todo"
         with:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROJECTS_SECRET: ${{ secrets.PROJECTS_SECRET }}
