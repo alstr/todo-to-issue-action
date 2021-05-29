@@ -38,7 +38,7 @@ inputs:
     required: true
     default: true
   PROJECTS_SECRET:
-    description: "Encrypted secret corresponding to your personal access token, e.g. ${{ secrets.MY_SECRET }} (do not enter the actual secret)"
+    description: "Encrypted secret corresponding to your personal access token (do not enter the actual secret)"
     required: false
   USER_PROJECTS:
     description: "Default user projects"
