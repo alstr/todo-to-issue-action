@@ -325,5 +325,17 @@
         "pattern": ";"
       }
     ]
+  },
+  {
+    "language": "Markdown",
+    "markers": [
+      {
+        "type": "block",
+        "pattern": {
+          "start": "<!---",
+          "end": "-->"
+        }
+      }
+    ]
   }
 ]
