@@ -39,7 +39,7 @@ Create a workflow file in your .github/workflows directory as follows:
 
 ### workflow.yaml
 
-Latest version is `v4.0-alpha`.
+Latest version is `v4.0.1-alpha`.
 
     name: "Workflow"
     on: ["push"]
@@ -49,7 +49,7 @@ Latest version is `v4.0-alpha`.
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v4.0-alpha"
+            uses: "alstr/todo-to-issue-action@v4.0.1-alpha"
             id: "todo"
             with:
               TOKEN: ${{ secrets.GITHUB_TOKEN }}
