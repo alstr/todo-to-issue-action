@@ -93,19 +93,33 @@ class GitHubClient(object):
             # Title is too long.
             title = title[:80] + '...'
         url_to_line = f'https://github.com/{self.repo}/blob/{self.sha}/{issue.file_name}#L{issue.start_line}'
-        body = (self.line_break.join(issue.body) + '\n\n'
+        formatted_issue_body = self.line_break.join(issue.body)
+        body = (formatted_issue_body + '\n\n'
                 + url_to_line + '\n\n'
                 + '```' + issue.markdown_language + '\n'
                 + issue.hunk + '\n'
                 + '```')
 
         # Check if the current issue already exists - if so, skip it.
+        # The below is a simple and imperfect check.
         issue_id = hashlib.sha1(body.encode('utf-8')).hexdigest()
         body += '\n\n' + issue_id
         for existing_issue in self.existing_issues:
             if issue_id in existing_issue['body']:
+                # The issue_id matching means the issue issues are identical.
                 print(f'Skipping issue (already exists)')
                 return
+            else:
+                # There may be cases (rebasing) where a different SHA means the above comparison is False but the
+                # issue is otherwise identical.
+                # Long term we should improve how the action handles rebasing.
+                existing_issue_body = existing_issue['body']
+                issue_exists = (formatted_issue_body in existing_issue_body
+                                and issue.file_name in existing_issue_body
+                                and issue.markdown_language in existing_issue_body
+                                and issue.hunk in existing_issue_body)
+                if issue_exists:
+                    return
 
         new_issue_body = {'title': title, 'body': body, 'labels': issue.labels}
 
