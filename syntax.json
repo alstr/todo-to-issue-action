@@ -337,5 +337,14 @@
         }
       }
     ]
+  },
+  {
+    "language": "Shell",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "#"
+      }
+    ]
   }
 ]
