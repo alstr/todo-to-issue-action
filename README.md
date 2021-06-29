@@ -104,7 +104,7 @@ Milestone ID to assign to the issue. Only a single milestone can be specified an
 
 ### Other Options
 
-#### Identifiers
+#### Identifier
 
 As per the [Google Style Guide](https://google.github.io/styleguide/cppguide.html#TODO_Comments), you can provide an identifier after the TODO label. This will be included in the issue title for searchability.
 
@@ -115,13 +115,6 @@ Don't include parentheses within the identifier itself.
 
 #### Projects
 
-    def hello_world():
-        # TODO Come up with a more imaginative greeting
-        #  Everyone uses hello world and it's boring.
-        #  user projects: alstr/Test User Project/To Do
-        #  org projects: alstrorg/Test Org Project/To Do
-        print('Hello world!')
-
 You can assign the created issue to columns within user or organisation projects with some additional setup.
 
 The action cannot access your projects by default. To enable access, you must [create an encrypted secret in your repo settings](https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository), with the value set to a valid Personal Access Token. Then, assign the secret in the workflow file like `PROJECTS_SECRET: ${{ secrets.PROJECTS_SECRET }}`. Do not enter the raw secret.
@@ -129,6 +122,13 @@ The action cannot access your projects by default. To enable access, you must [c
 To assign to a user project, use the `user projects:` prefix. To assign to an organisation project, use `org projects:` prefix.
 
 The syntax is `<user or org name>/project name/column name`. All three must be provided.
+
+    def hello_world():
+        # TODO Come up with a more imaginative greeting
+        #  Everyone uses hello world and it's boring.
+        #  user projects: alstr/Test User Project/To Do
+        #  org projects: alstrorg/Test Org Project/To Do
+        print('Hello world!')
 
 You can assign to multiple projects by using commas, for example: `user projects: alstr/Test User Project 1/To Do, alstr/Test User Project 2/Tasks`.
 
