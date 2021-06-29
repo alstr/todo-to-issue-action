@@ -346,5 +346,24 @@
         "pattern": "#"
       }
     ]
+  },
+  {
+    "language": "Handlebars",
+    "markers": [
+      {
+        "type": "block",
+        "pattern": {
+          "start": "<!---",
+          "end": "-->"
+        }
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "{{!",
+          "end": "}}"
+        }
+      }
+    ]
   }
 ]
