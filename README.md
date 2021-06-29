@@ -1,45 +1,27 @@
 # TODO to Issue Action
 
-This action will convert your `# TODO` comments to GitHub issues when a new commit is pushed.
-
-The new issue will contain a link to the line in the file containing the TODO, together with a code snippet and any defined labels. The action performs a `GET` request to retrieve GitHub's [`languages.yml` file](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) to determine the correct comment syntax to look for, and apply the relevant code highlighting.
-
-It will also close an issue when a `# TODO` is removed in a pushed commit. A comment will be posted
-with the ref of the commit that it was closed by.
-
-## Important information about v3.0+
-
-This version is a complete rewrite of the action. TODO labels are now parsed dynamically based on the file type identified by the action. As such, you no longer need to hard-code the `LABEL` or `COMMENT_MARKER` inputs.
-
-Syntax data for identifying comments is defined in `syntax.json`. Whilst this file is not yet exhaustive, it is provided as a starting point and can be easily updated (pull requests welcome). It has not been tested beyond the current markers specified in this file, so the core parser may need modifying to handle any new types.
-
-A few basic tests are included if you would like to see how the new action works.
-
-## Summary
-- [Usage](#usage)
-    - [workflow.yaml](#workflowyaml)
-    - [Inputs](#inputs)
-- [Examples](#examples)
-    - [Adding TODOs](#adding-todos)
-    - [Multiline TODOs](#multiline-todos)
-    - [Specifying Identifier](#specifying-identifier)
-    - [Specifying Labels](#specifying-labels)
-    - [Specifying Assignees](#specifying-assignees)
-    - [Specifying Milestone](#specifying-milestone)
-    - [Specifying Projects](#specifying-projects)
-    - [Removing TODOs](#removing-todos)
-    - [Updating TODOs](#updating-todos)
-    - [Existing TODOs](#existing-todos)
-- [Contributing & Issues](#contributing--issues)
-- [Thanks](#thanks)
+This action will convert newly committed TODO comments to GitHub issues on push. It will also optionally close the issues if the TODOs are removed in a future commit.
 
 ## Usage
 
-Create a workflow file in your .github/workflows directory as follows:
+Simply add a comment starting with TODO, followed by a colon and/or space:
 
-### workflow.yaml
+    def hello_world():
+        # TODO Come up with a more imaginative greeting
+        
+Multiline TODOs are supported, and a range of options can be provided to apply to the new issue:
 
-Latest version is `v4.0.3`.
+    def hello_world():
+        # TODO Come up with a more imaginative greeting
+        #  Everyone uses hello world and it's boring.
+        #  labels: enhancement, help wanted
+        #  assignees: alstr, bouteillerAlan, hbjydev
+        #  milestone: 1
+        print('Hello world!')
+
+## Setup
+
+Create a `workflow.yml` file in your `.github/workflows` directory like:
 
     name: "Workflow"
     on: ["push"]
@@ -49,16 +31,14 @@ Latest version is `v4.0.3`.
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v4.0.3"
+            uses: "alstr/todo-to-issue-action@v4.0.4"
             id: "todo"
             with:
               TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-**If you use the action in a new repo, you should initialise the repo with an empty commit.**
+See [ Github's workflow syntax ](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions) for further details on this file.
 
-### Inputs
-
-The workflow files takes the following required/optional inputs:
+The workflow files takes the following inputs:
 
 | Input    | Required | Description |
 |----------|----------|-------------|
@@ -66,101 +46,74 @@ The workflow files takes the following required/optional inputs:
 | `CLOSE_ISSUES` | No | Optional boolean input that specifies whether to attempt to close an issue when a TODO is removed. Default: `true`. |
 | `AUTO_P` | No | Optional boolean input that specifies whether to format each line in multiline TODOs as a new paragraph. Default: `true`. |
 
-Three other inputs are provided automatically by GitHub and should not be included in your workflow file, but you may see them referred to in these docs:
+There are additional inputs if you want to be able to assign issues to projects. Consult the relevant section below for more details.
 
-| Input    | Description |
-|----------|-------------|
-| `REPO` | The path to the repository where the action will be used, e.g. 'alstr/my-repo'. |
-| `BEFORE` | The SHA of the previous commit. |
-| `SHA` | The SHA of the latest commit. |
+### Considerations
 
-There are additional inputs if you want to be able to assign issues to projects. See [Specifying Projects](#specifying-projects).
+* TODOs are found by analysing the difference between the new commit and its previous one (i.e., the diff). That means that if this action is implemented during development, any existing TODOs will not be detected. For them to be detected, you would have to remove them, commit, put them back, and commit again.
+* Similarly, if you use the action in a new repo and have TODOs in your first commit, you should initialise the repo with an empty commit beforehand for them to be identified. That is because no diff is available for the first commit.
+* Should you change the TODO text, this will currently create a new issue.
+* Closing TODOs is still somewhat experimental.
 
-## Examples
+## Supported Languages
 
-### Adding TODOs
+* AutoHotkey
+* C
+* C++
+* C#
+* CSS
+* Dart
+* Elixir
+* Handlebars
+* HTML
+* Java
+* JavaScript
+* Kotlin
+* Less
+* Markdown
+* Objective-C
+* PHP
+* Python
+* Ruby
+* Sass
+* Scala
+* Shell
+* Swift
+* TypeScript
+* TSX
+* YAML
 
-    def hello_world():
-        # TODO Come up with a more imaginative greeting
-        print('Hello world!')
-        
-This will create an issue called "Come up with a more imaginative greeting".
- 
-**The action expects a colon and/or space to follow the `TODO` label (so `TODO: ` or just `TODO`).**
+New languages can easily be added to the `syntax.json` file used by the action to identify TODO comments. When adding languages, follow the structure of existing entries, and use the language name defined by GitHub in [ `languages.yml` ](
+https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml). PRs adding new languages are welcome and appreciated.
 
-**Currently only TODOs on their own line are supported, but this may change.**
- 
-Should the title be longer than 80 characters, it will be truncated for the issue title.
- 
-The full title will be included in the issue body and a `todo` label will be attached to the issue.
+## TODO Options
 
-A reference hash is added to the end of the issue body. This is to help prevent duplication of TODOs.
+Unless specified otherwise, options should be on their own line, below the initial TODO declaration.
 
-### Multiline TODOs
+### `assignees:`
 
-    def hello_world():
-        # TODO Come up with a more imaginative greeting
-        #  Everyone uses hello world and it's boring.
-        print('Hello world!')
+Comma-separated list of usernames to assign to the issue.
 
-You can create a multiline todo by continuing below the initial TODO declaration with a comment.
+### `labels:`
 
-The extra line(s) will be posted in the body of the issue.
+Comma-separated list of labels to add to the issue. If any of the labels do not already exist, they will be created. The `todo` label is automatically added to issues to help the action efficiently retrieve them in the future.
 
-Each line in the multiline TODO will be formatted as a paragraph in the issue body. To disable this, set `AUTO_P` to `false`.
+### `milestone:`
 
-### Specifying Identifier
+Milestone ID to assign to the issue. Only a single milestone can be specified and this must already have been created.
+
+### Other Options
+
+#### Identifiers
+
+As per the [Google Style Guide](https://google.github.io/styleguide/cppguide.html#TODO_Comments), you can provide an identifier after the TODO label. This will be included in the issue title for searchability.
 
     def hello_world():
         # TODO(alstr) Come up with a more imaginative greeting
 
-As per the [Google Style Guide](https://google.github.io/styleguide/cppguide.html#TODO_Comments), you can provide an identifier after the TODO label. This will be included in the issue title for searchability.
-
 Don't include parentheses within the identifier itself.
 
-### Specifying Labels
-
-    def hello_world():
-        # TODO Come up with a more imaginative greeting
-        #  Everyone uses hello world and it's boring.
-        #  labels: enhancement, help wanted
-        print('Hello world!')
-
-You can specify the labels to add to your issue in the TODO body.
-
-The labels should be on their own line below the initial TODO declaration.
-
-Include the `labels:` prefix, then a list of comma-separated label titles. If any of the labels do not already exist, they will be created.
-
-The `todo` label is automatically added to issues to help the action efficiently retrieve them in the future.
-
-### Specifying Assignees
-
-    def hello_world():
-        # TODO Come up with a more imaginative greeting
-        #  Everyone uses hello world and it's boring.
-        #  assignees: alstr, bouteillerAlan, hbjydev
-        print('Hello world!')
-
-Similar to labels, you can define assignees as a comma-separated list.
-
-If the assignee is not valid, it will be dropped from the issue creation request.
-
-### Specifying Milestone
-
-    def hello_world():
-        # TODO Come up with a more imaginative greeting
-        #  Everyone uses hello world and it's boring.
-        #  milestone: 1
-        print('Hello world!')
-
-You can set the issue milestone by specifying the milestone ID. Only a single milestone can be specified.
-
-If the milestone does not already exist, it will be dropped from the issue creation request.
-
-### Specifying Projects
-
-**The action cannot access your projects by default. To enable access, you must [create an encrypted secret in your repo settings](https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository), with the value set to a valid Personal Access Token. Then, assign the secret in the workflow file like `PROJECTS_SECRET: ${{ secrets.PROJECTS_SECRET }}`. Do not enter the raw secret.**
+#### Projects
 
     def hello_world():
         # TODO Come up with a more imaginative greeting
@@ -169,7 +122,9 @@ If the milestone does not already exist, it will be dropped from the issue creat
         #  org projects: alstrorg/Test Org Project/To Do
         print('Hello world!')
 
-You can assign the created issue to columns within user or organisation projects.
+You can assign the created issue to columns within user or organisation projects with some additional setup.
+
+The action cannot access your projects by default. To enable access, you must [create an encrypted secret in your repo settings](https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository), with the value set to a valid Personal Access Token. Then, assign the secret in the workflow file like `PROJECTS_SECRET: ${{ secrets.PROJECTS_SECRET }}`. Do not enter the raw secret.
 
 To assign to a user project, use the `user projects:` prefix. To assign to an organisation project, use `org projects:` prefix.
 
@@ -177,44 +132,27 @@ The syntax is `<user or org name>/project name/column name`. All three must be p
 
 You can assign to multiple projects by using commas, for example: `user projects: alstr/Test User Project 1/To Do, alstr/Test User Project 2/Tasks`.
 
-You can also specify default projects in your workflow file using `USER_PROJECTS` or `ORG_PROJECTS`. These will be applied automatically to every issue, but will be overrode by any specified within the TODO.
+You can also specify default projects in the same way by defining `USER_PROJECTS` or `ORG_PROJECTS` in your workflow file. These will be applied automatically to every issue, but will be overrode by any specified within the TODO.
 
-### Removing TODOs
+## Troubleshooting
 
-    def hello_world():
-        print('Hello world!')
+### No issues have been created
 
-Removing the `# TODO` comment will close the issue on push.
+Make sure your file language is in `syntax.json`. Also, the action will not recognise TODOs in the first commit to a new repo, or existing TODOs that have already been committed.
 
-This is still an experimental feature. By default it is enabled, but if you want to disable it, you can set `CLOSE_ISSUES` to `false` as described in [Inputs](#inputs).
+### Multiple issues have been created
 
-### Updating TODOs
-
-    def hello_world():
-        # TODO Come up with a more imaginative greeting, like "Greetings world!"
-        print('Hello world!')
-        
-Should you change the `# TODO` text, this will currently create a new issue, so bear that in mind.
-
-This may be updated in future.
-
-### Existing TODOs
-
-> This action will convert your `# TODO` comments to GitHub issues when a new commit is pushed.
-
-As the TODOs are found by analysing the difference between the new commit and the previous one, this means that if this action is implemented during development any existing TODOs will not be detected. For them to be detected, you would have to remove them, commit, put them back and commit again.
+Issues are created whenever the action runs and finds a newly added TODO in the diff. Rebasing may cause a TODO to show up in a diff multiple times. This is an acknowledged issue, but you may have some luck by adjusting your workflow file.
 
 ## Contributing & Issues
 
-The action was developed for the GitHub Hackathon and is still in an early stage. Whilst every effort is made to ensure it works, it comes with no guarantee.
-
-It may not yet work for [ events ](https://help.github.com/en/actions/reference/events-that-trigger-workflows) other than `push` or those with a complex [ workflow syntax ](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions).
-
-If you do encounter any problems, please file an issue. PRs are welcome and appreciated!
+If you do encounter any problems, please file an issue or submit a PR. Everyone is welcome and encouraged to contribute.
 
 ## Thanks
+
+The action was developed for the GitHub Hackathon. Whilst every effort is made to ensure it works, it comes with no guarantee.
 
 Thanks to Jacob Tomlinson for [his handy overview of GitHub Actions](https://www.jacobtomlinson.co.uk/posts/2019/creating-github-actions-in-python/).
 
 Thanks to GitHub's [linguist repo](https://github.com/github/linguist/) for the [ `languages.yml` ](
-https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) file used by the app to determine the correct highlighting to apply to code snippets.
+https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) file used by the app to look up file extensions and determine the correct highlighting to apply to code snippets.
