@@ -8,6 +8,7 @@ Simply add a comment starting with TODO, followed by a colon and/or space:
 
     def hello_world():
         # TODO Come up with a more imaginative greeting
+        print('Hello world!')
         
 Multiline TODOs are supported, and a range of options can be provided to apply to the new issue:
 
