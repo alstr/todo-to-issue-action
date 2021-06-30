@@ -111,6 +111,7 @@ As per the [Google Style Guide](https://google.github.io/styleguide/cppguide.htm
 
     def hello_world():
         # TODO(alstr) Come up with a more imaginative greeting
+        print('Hello world!')
 
 Don't include parentheses within the identifier itself.
 
