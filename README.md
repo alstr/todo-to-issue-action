@@ -32,7 +32,7 @@ Create a `workflow.yml` file in your `.github/workflows` directory like:
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v4.0.4"
+            uses: "alstr/todo-to-issue-action@v4.0.5"
             id: "todo"
             with:
               TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -73,6 +73,7 @@ There are additional inputs if you want to be able to assign issues to projects.
 * Less
 * Markdown
 * Objective-C
+* Org Mode
 * PHP
 * Python
 * Ruby
