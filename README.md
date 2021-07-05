@@ -39,7 +39,7 @@ Create a `workflow.yml` file in your `.github/workflows` directory like:
 
 See [ Github's workflow syntax ](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions) for further details on this file.
 
-The workflow files takes the following inputs:
+The workflow file takes the following inputs:
 
 | Input    | Required | Description |
 |----------|----------|-------------|
