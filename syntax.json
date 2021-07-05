@@ -365,5 +365,21 @@
         }
       }
     ]
+  },
+  {
+    "language": "Org",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "#"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "#\\+begin_comment",
+          "end": "#\\+end_comment"
+        }
+      }
+    ]
   }
 ]
