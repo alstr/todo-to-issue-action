@@ -397,5 +397,21 @@
         }
       }
     ]
+  },
+  {
+    "language": " TeX",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "%"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "\begin{comment}",
+          "end": "\end{comment}"
+        }
+      }
+    ]
   }
 ]
