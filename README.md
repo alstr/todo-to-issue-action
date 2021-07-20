@@ -1,10 +1,10 @@
 # TODO to Issue Action
 
-This action will convert newly committed TODO comments to GitHub issues on push. It will also optionally close the issues if the TODOs are removed in a future commit.
+This action will convert newly committed TODO comments to GitHub issues on push. It will also optionally close the issues if the TODOs are removed in a future commit. Works with almost any programming language.
 
 ## Usage
 
-Simply add a comment starting with TODO, followed by a colon and/or space:
+Simply add a comment starting with TODO, followed by a colon and/or space. Here's an example for Python:
 
     def hello_world():
         # TODO Come up with a more imaginative greeting
@@ -32,7 +32,7 @@ Create a `workflow.yml` file in your `.github/workflows` directory like:
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v4.0.6"
+            uses: "alstr/todo-to-issue-action@v4.0.7"
             id: "todo"
             with:
               TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -82,8 +82,9 @@ There are additional inputs if you want to be able to assign issues to projects.
 * Scala
 * Shell
 * Swift
-* TypeScript
+* TeX
 * TSX
+* TypeScript
 * YAML
 
 New languages can easily be added to the `syntax.json` file used by the action to identify TODO comments. When adding languages, follow the structure of existing entries, and use the language name defined by GitHub in [ `languages.yml` ](
