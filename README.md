@@ -6,12 +6,15 @@ This action will convert newly committed TODO comments to GitHub issues on push.
 
 Simply add a comment starting with TODO, followed by a colon and/or space. Here's an example for Python:
 
+```python
     def hello_world():
         # TODO Come up with a more imaginative greeting
         print('Hello world!')
-        
+```
+
 Multiline TODOs are supported, and a range of options can be provided to apply to the new issue:
 
+```python
     def hello_world():
         # TODO Come up with a more imaginative greeting
         #  Everyone uses hello world and it's boring.
@@ -19,11 +22,13 @@ Multiline TODOs are supported, and a range of options can be provided to apply t
         #  assignees: alstr, bouteillerAlan, hbjydev
         #  milestone: 1
         print('Hello world!')
+```
 
 ## Setup
 
 Create a `workflow.yml` file in your `.github/workflows` directory like:
 
+```yml
     name: "Workflow"
     on: ["push"]
     jobs:
@@ -36,8 +41,9 @@ Create a `workflow.yml` file in your `.github/workflows` directory like:
             id: "todo"
             with:
               TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
 
-See [ Github's workflow syntax ](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions) for further details on this file.
+See [Github's workflow syntax](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions) for further details on this file.
 
 The workflow file takes the following inputs:
 
@@ -87,8 +93,7 @@ There are additional inputs if you want to be able to assign issues to projects.
 * TypeScript
 * YAML
 
-New languages can easily be added to the `syntax.json` file used by the action to identify TODO comments. When adding languages, follow the structure of existing entries, and use the language name defined by GitHub in [ `languages.yml` ](
-https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml). PRs adding new languages are welcome and appreciated.
+New languages can easily be added to the `syntax.json` file used by the action to identify TODO comments. When adding languages, follow the structure of existing entries, and use the language name defined by GitHub in [`languages.yml`](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml). PRs adding new languages are welcome and appreciated.
 
 ## TODO Options
 
@@ -112,9 +117,11 @@ Milestone ID to assign to the issue. Only a single milestone can be specified an
 
 As per the [Google Style Guide](https://google.github.io/styleguide/cppguide.html#TODO_Comments), you can provide an identifier after the TODO label. This will be included in the issue title for searchability.
 
+```python
     def hello_world():
         # TODO(alstr) Come up with a more imaginative greeting
         print('Hello world!')
+```
 
 Don't include parentheses within the identifier itself.
 
@@ -128,12 +135,14 @@ To assign to a user project, use the `user projects:` prefix. To assign to an or
 
 The syntax is `<user or org name>/project name/column name`. All three must be provided.
 
+```python
     def hello_world():
         # TODO Come up with a more imaginative greeting
         #  Everyone uses hello world and it's boring.
         #  user projects: alstr/Test User Project/To Do
         #  org projects: alstrorg/Test Org Project/To Do
         print('Hello world!')
+```
 
 You can assign to multiple projects by using commas, for example: `user projects: alstr/Test User Project 1/To Do, alstr/Test User Project 2/Tasks`.
 
@@ -159,5 +168,4 @@ The action was developed for the GitHub Hackathon. Whilst every effort is made t
 
 Thanks to Jacob Tomlinson for [his handy overview of GitHub Actions](https://www.jacobtomlinson.co.uk/posts/2019/creating-github-actions-in-python/).
 
-Thanks to GitHub's [linguist repo](https://github.com/github/linguist/) for the [ `languages.yml` ](
-https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) file used by the app to look up file extensions and determine the correct highlighting to apply to code snippets.
+Thanks to GitHub's [linguist repo](https://github.com/github/linguist/) for the [`languages.yml`](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) file used by the app to look up file extensions and determine the correct highlighting to apply to code snippets.
