@@ -23,7 +23,7 @@ inputs:
   TOKEN:
     description: "The GitHub access token to allow us to retrieve, create and update issues (automatically set)"
     required: false
-    default: "${{ github.token }}"
+    default: ${{ github.token }}
   LABEL:
     description: "The label that will be used to identify TODO comments (deprecated)"
     required: false
