@@ -10,7 +10,7 @@ from io import StringIO
 from ruamel.yaml import YAML
 import hashlib
 from enum import Enum
-
+from actions_toolkit import core
 
 class LineStatus(Enum):
     """Represents the status of a line in a diff file."""
@@ -48,7 +48,7 @@ class GitHubClient(object):
         self.repo = os.getenv('INPUT_REPO')
         self.before = os.getenv('INPUT_BEFORE')
         self.sha = os.getenv('INPUT_SHA')
-        self.token = os.getenv('INPUT_TOKEN')
+        self.token = os.getenv('INPUT_TOKEN') or core.get_input('TOKEN')
         self.issues_url = f'{self.repos_url}{self.repo}/issues'
         self.issue_headers = {
             'Content-Type': 'application/json',
