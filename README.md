@@ -37,21 +37,21 @@ Create a `workflow.yml` file in your `.github/workflows` directory like:
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v4.0.7"
+            uses: "alstr/todo-to-issue-action@v4.0.8"
             id: "todo"
-            with:
-              TOKEN: ${{ secrets.GITHUB_TOKEN }} // defaults to ${{ github.token }}
 ```
 
 See [Github's workflow syntax](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions) for further details on this file.
 
-The workflow file takes the following inputs:
+The workflow file takes the following optional inputs:
 
 | Input    | Required | Description |
 |----------|----------|-------------|
-| `TOKEN` | No | The GitHub access token to allow us to retrieve, create and update issues for your repo. Default: `${{ github.token }}` |
+| `TOKEN` | No | The GitHub access token to allow us to retrieve, create and update issues for your repo. Default: `${{ github.token }}`. |
 | `CLOSE_ISSUES` | No | Optional boolean input that specifies whether to attempt to close an issue when a TODO is removed. Default: `true`. |
 | `AUTO_P` | No | Optional boolean input that specifies whether to format each line in multiline TODOs as a new paragraph. Default: `true`. |
+
+These can be specified in `with` in the workflow file.
 
 There are additional inputs if you want to be able to assign issues to projects. Consult the relevant section below for more details.
 
