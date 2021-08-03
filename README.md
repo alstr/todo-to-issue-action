@@ -37,7 +37,7 @@ Create a `workflow.yml` file in your `.github/workflows` directory like:
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v4.0.8"
+            uses: "alstr/todo-to-issue-action@v4.0.9"
             id: "todo"
 ```
 
@@ -113,9 +113,9 @@ Milestone ID to assign to the issue. Only a single milestone can be specified an
 
 ### Other Options
 
-#### Identifier
+#### Reference
 
-As per the [Google Style Guide](https://google.github.io/styleguide/cppguide.html#TODO_Comments), you can provide an identifier after the TODO label. This will be included in the issue title for searchability.
+As per the [Google Style Guide](https://google.github.io/styleguide/cppguide.html#TODO_Comments), you can provide a reference after the TODO label. This will be included in the issue title for searchability.
 
 ```python
     def hello_world():

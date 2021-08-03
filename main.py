@@ -269,7 +269,7 @@ class TodoParser(object):
     LINE_NUMBERS_INNER_PATTERN = re.compile(r'@@[\d\s,\-+]*\s@@')
     ADDITION_PATTERN = re.compile(r'(?<=^\+).*')
     DELETION_PATTERN = re.compile(r'(?<=^-).*')
-    IDENTIFIER_PATTERN = re.compile(r'.+?(?=\))')
+    REF_PATTERN = re.compile(r'.+?(?=\))')
     LABELS_PATTERN = re.compile(r'(?<=labels:\s).+')
     ASSIGNEES_PATTERN = re.compile(r'(?<=assignees:\s).+')
     MILESTONE_PATTERN = re.compile(r'(?<=milestone:\s).+')
@@ -446,10 +446,10 @@ class TodoParser(object):
             for line in lines:
                 line_status, committed_line = self._get_line_status(line)
                 cleaned_line = self._clean_line(committed_line, marker)
-                line_title, identifier = self._get_title(cleaned_line)
+                line_title, ref = self._get_title(cleaned_line)
                 if line_title:
-                    if identifier:
-                        issue_title = f'[{identifier}] {line_title}'
+                    if ref:
+                        issue_title = f'[{ref}] {line_title}'
                     else:
                         issue_title = line_title
                     issue = Issue(
@@ -527,18 +527,23 @@ class TodoParser(object):
         return comment.strip()
 
     def _get_title(self, comment):
-        """Check the passed comment for a new issue title (and identifier, if specified)."""
+        """Check the passed comment for a new issue title (and reference, if specified)."""
         title = None
-        identifier = None
-        title_pattern = re.compile(r'(?<=' + self.identifier + r'[(\s:]).+')
+        ref = None
+        title_pattern = re.compile(r'(?<=' + self.identifier + r'[\s:]).+')
         title_search = title_pattern.search(comment, re.IGNORECASE)
         if title_search:
             title = title_search.group(0).strip()
-            identifier_search = self.IDENTIFIER_PATTERN.search(title)
-            if identifier_search:
-                identifier = identifier_search.group(0)
-                title = title.replace(identifier, '', 1).lstrip(':) ')
-        return title, identifier
+        else:
+            title_ref_pattern = re.compile(r'(?<=' + self.identifier + r'\().+')
+            title_ref_search = title_ref_pattern.search(comment, re.IGNORECASE)
+            if title_ref_search:
+                title = title_ref_search.group(0).strip()
+                ref_search = self.REF_PATTERN.search(title)
+                if ref_search:
+                    ref = ref_search.group(0)
+                    title = title.replace(ref, '', 1).lstrip(':) ')
+        return title, ref
 
     def _get_labels(self, comment):
         """Check the passed comment for issue labels."""
