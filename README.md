@@ -37,7 +37,7 @@ Create a `workflow.yml` file in your `.github/workflows` directory like:
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v4.0.9"
+            uses: "alstr/todo-to-issue-action@v4.1"
             id: "todo"
 ```
 
@@ -154,6 +154,8 @@ You can also specify default projects in the same way by defining `USER_PROJECTS
 
 Make sure your file language is in `syntax.json`. Also, the action will not recognise TODOs in the first commit to a new repo, or existing TODOs that have already been committed.
 
+If a similar TODO appears in the diff as both an addition and deletion, it is assumed to have been moved, so is ignored.
+
 ### Multiple issues have been created
 
 Issues are created whenever the action runs and finds a newly added TODO in the diff. Rebasing may cause a TODO to show up in a diff multiple times. This is an acknowledged issue, but you may have some luck by adjusting your workflow file.
@@ -169,3 +171,5 @@ The action was developed for the GitHub Hackathon. Whilst every effort is made t
 Thanks to Jacob Tomlinson for [his handy overview of GitHub Actions](https://www.jacobtomlinson.co.uk/posts/2019/creating-github-actions-in-python/).
 
 Thanks to GitHub's [linguist repo](https://github.com/github/linguist/) for the [`languages.yml`](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) file used by the app to look up file extensions and determine the correct highlighting to apply to code snippets.
+
+Thanks to all those who have [contributed](https://github.com/alstr/todo-to-issue-action/graphs/contributors) to the further development of this action.

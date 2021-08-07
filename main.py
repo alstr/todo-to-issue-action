@@ -10,6 +10,8 @@ from io import StringIO
 from ruamel.yaml import YAML
 import hashlib
 from enum import Enum
+import itertools
+import operator
 
 
 class LineStatus(Enum):
@@ -107,18 +109,19 @@ class GitHubClient(object):
         for existing_issue in self.existing_issues:
             if issue_id in existing_issue['body']:
                 # The issue_id matching means the issue issues are identical.
-                print(f'Skipping issue (already exists)')
+                print(f'Skipping issue (already exists).')
                 return
             else:
                 # There may be cases (rebasing) where a different SHA means the above comparison is False but the
                 # issue is otherwise identical.
-                # Long term we should improve how the action handles rebasing.
+                # For now, if an issue already exists with the same title and file name, we will ignore it.
+                # This should cover most use cases. Long term we should improve how the action handles rebasing.
                 existing_issue_body = existing_issue['body']
                 issue_exists = (formatted_issue_body in existing_issue_body
                                 and issue.file_name in existing_issue_body
-                                and issue.markdown_language in existing_issue_body
-                                and issue.hunk in existing_issue_body)
+                                and issue.markdown_language in existing_issue_body)
                 if issue_exists:
+                    print(f'Skipping issue (already exists).')
                     return
 
         new_issue_body = {'title': title, 'body': body, 'labels': issue.labels}
@@ -596,9 +599,24 @@ if __name__ == "__main__":
         last_diff = StringIO(client.get_last_diff())
         # Parse the diff for TODOs and create an Issue object for each.
         raw_issues = TodoParser().parse(last_diff)
+        # This is a simple, non-perfect check to filter out any TODOs that have just been moved.
+        # It looks for items that appear in the diff as both an addition and deletion.
+        # It is based on the assumption that TODOs will not have identical titles in identical files.
+        issues_to_process = []
+        for values, similar_issues in itertools.groupby(raw_issues, key=operator.attrgetter('title', 'file_name',
+                                                                                            'markdown_language')):
+            similar_issues = list(similar_issues)
+            if (len(similar_issues) == 2 and ((similar_issues[0].status == LineStatus.ADDED and
+                                               similar_issues[1].status == LineStatus.DELETED) or
+                                              (similar_issues[1].status == LineStatus.ADDED and
+                                               similar_issues[0].status == LineStatus.DELETED))):
+                print(f'Issue "{values[0]}" appears as both addition and deletion. '
+                      f'Assuming this issue has been moved so skipping.')
+                continue
+            issues_to_process.extend(similar_issues)
         # Cycle through the Issue objects and create or close a corresponding GitHub issue for each.
-        for j, raw_issue in enumerate(raw_issues):
-            print(f'Processing issue {j + 1} of {len(raw_issues)}')
+        for j, raw_issue in enumerate(issues_to_process):
+            print(f'Processing issue {j + 1} of {len(issues_to_process)}')
             if raw_issue.status == LineStatus.ADDED:
                 status_code = client.create_issue(raw_issue)
                 if status_code == 201:
