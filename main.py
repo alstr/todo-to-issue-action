@@ -63,7 +63,11 @@ class GitHubClient(object):
 
     def get_last_diff(self):
         """Get the last diff based on the SHA of the last two commits."""
-        diff_url = f'{self.repos_url}{self.repo}/compare/{self.before}...{self.sha}'
+        if not self.before or self.before.startswith('000000'):
+            # Last commit SHA is empty which means this is the first commit of the branch
+            diff_url = f'{self.repos_url}{self.repo}/commits/{self.sha}'
+        else:    
+            diff_url = f'{self.repos_url}{self.repo}/compare/{self.before}...{self.sha}'
         diff_headers = {
             'Accept': 'application/vnd.github.v3.diff',
             'Authorization': f'token {self.token}'
