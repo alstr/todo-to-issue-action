@@ -12,7 +12,9 @@ import hashlib
 from enum import Enum
 import itertools
 import operator
+import logging
 
+logging.basicConfig(filename='main.py', encoding='utf-8', level=logging.DEBUG)
 
 class LineStatus(Enum):
     """Represents the status of a line in a diff file."""
@@ -58,6 +60,10 @@ class GitHubClient(object):
         }
         auto_p = os.getenv('INPUT_AUTO_P', 'true') == 'true'
         self.line_break = '\n\n' if auto_p else '\n'
+
+        logging.debug('Repo %', self.repo)
+        logging.debug('Before %', self.before)
+
         # Retrieve the existing repo issues now so we can easily check them later.
         self._get_existing_issues()
 
