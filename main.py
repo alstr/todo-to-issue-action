@@ -14,6 +14,8 @@ import itertools
 import operator
 import logging
 
+logging.basicConfig(level=logging.DEBUG)
+
 class LineStatus(Enum):
     """Represents the status of a line in a diff file."""
     ADDED = 0
