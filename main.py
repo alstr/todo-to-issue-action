@@ -596,42 +596,41 @@ class TodoParser(object):
 
 
 if __name__ == "__main__":
-    if os.getenv('INPUT_BEFORE') != '0000000000000000000000000000000000000000':
-        # Create a basic client for communicating with GitHub, automatically initialised with environment variables.
-        client = GitHubClient()
-        # Get the diff from the last pushed commit.
-        last_diff = StringIO(client.get_last_diff())
-        # Parse the diff for TODOs and create an Issue object for each.
-        raw_issues = TodoParser().parse(last_diff)
-        # This is a simple, non-perfect check to filter out any TODOs that have just been moved.
-        # It looks for items that appear in the diff as both an addition and deletion.
-        # It is based on the assumption that TODOs will not have identical titles in identical files.
-        issues_to_process = []
-        for values, similar_issues in itertools.groupby(raw_issues, key=operator.attrgetter('title', 'file_name',
-                                                                                            'markdown_language')):
-            similar_issues = list(similar_issues)
-            if (len(similar_issues) == 2 and ((similar_issues[0].status == LineStatus.ADDED and
-                                               similar_issues[1].status == LineStatus.DELETED) or
-                                              (similar_issues[1].status == LineStatus.ADDED and
-                                               similar_issues[0].status == LineStatus.DELETED))):
-                print(f'Issue "{values[0]}" appears as both addition and deletion. '
-                      f'Assuming this issue has been moved so skipping.')
-                continue
-            issues_to_process.extend(similar_issues)
-        # Cycle through the Issue objects and create or close a corresponding GitHub issue for each.
-        for j, raw_issue in enumerate(issues_to_process):
-            print(f'Processing issue {j + 1} of {len(issues_to_process)}')
-            if raw_issue.status == LineStatus.ADDED:
-                status_code = client.create_issue(raw_issue)
-                if status_code == 201:
-                    print('Issue created')
-                else:
-                    print('Issue could not be created')
-            elif raw_issue.status == LineStatus.DELETED and os.getenv('INPUT_CLOSE_ISSUES', 'true') == 'true':
-                status_code = client.close_issue(raw_issue)
-                if status_code == 201:
-                    print('Issue closed')
-                else:
-                    print('Issue could not be closed')
-            # Stagger the requests to be on the safe side.
-            sleep(1)
+    # Create a basic client for communicating with GitHub, automatically initialised with environment variables.
+    client = GitHubClient()
+    # Get the diff from the last pushed commit.
+    last_diff = StringIO(client.get_last_diff())
+    # Parse the diff for TODOs and create an Issue object for each.
+    raw_issues = TodoParser().parse(last_diff)
+    # This is a simple, non-perfect check to filter out any TODOs that have just been moved.
+    # It looks for items that appear in the diff as both an addition and deletion.
+    # It is based on the assumption that TODOs will not have identical titles in identical files.
+    issues_to_process = []
+    for values, similar_issues in itertools.groupby(raw_issues, key=operator.attrgetter('title', 'file_name',
+                                                                                        'markdown_language')):
+        similar_issues = list(similar_issues)
+        if (len(similar_issues) == 2 and ((similar_issues[0].status == LineStatus.ADDED and
+                                           similar_issues[1].status == LineStatus.DELETED) or
+                                          (similar_issues[1].status == LineStatus.ADDED and
+                                           similar_issues[0].status == LineStatus.DELETED))):
+            print(f'Issue "{values[0]}" appears as both addition and deletion. '
+                  f'Assuming this issue has been moved so skipping.')
+            continue
+        issues_to_process.extend(similar_issues)
+    # Cycle through the Issue objects and create or close a corresponding GitHub issue for each.
+    for j, raw_issue in enumerate(issues_to_process):
+        print(f'Processing issue {j + 1} of {len(issues_to_process)}')
+        if raw_issue.status == LineStatus.ADDED:
+            status_code = client.create_issue(raw_issue)
+            if status_code == 201:
+                print('Issue created')
+            else:
+                print('Issue could not be created')
+        elif raw_issue.status == LineStatus.DELETED and os.getenv('INPUT_CLOSE_ISSUES', 'true') == 'true':
+            status_code = client.close_issue(raw_issue)
+            if status_code == 201:
+                print('Issue closed')
+            else:
+                print('Issue could not be closed')
+        # Stagger the requests to be on the safe side.
+        sleep(1)
