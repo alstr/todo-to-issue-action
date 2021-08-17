@@ -12,10 +12,6 @@ inputs:
     description: "The path to the repository where the action will be used, e.g. 'alstr/my-repo' (automatically set)"
     required: true
     default: "${{ github.repository }}"
-  BEFORE:
-    description: "The SHA of the last pushed commit (automatically set)"
-    required: true
-    default: "${{ github.event.before }}"
   SHA:
     description: "The SHA of the latest commit (automatically set)"
     required: true
