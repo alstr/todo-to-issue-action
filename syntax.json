@@ -429,5 +429,21 @@
         }
       }
     ]
+  },
+  {
+    "language": "Vue",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": {
+          "start": "<--",
+          "end": "-->"
+        }
+      },
+      {
+        "type": "line",
+        "pattern": "//"
+      }
+    ]
   }
 ]
