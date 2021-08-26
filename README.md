@@ -153,7 +153,7 @@ You can also specify default projects in the same way by defining `USER_PROJECTS
 
 ### No issues have been created
 
-Make sure your file language is in `syntax.json`. Also, the action will not recognise TODOs in the first commit to a new repo, or existing TODOs that have already been committed.
+Make sure your file language is in `syntax.json`. Also, the action will not recognise existing TODOs that have already been pushed.
 
 If a similar TODO appears in the diff as both an addition and deletion, it is assumed to have been moved, so is ignored.
 
