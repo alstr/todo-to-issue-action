@@ -58,7 +58,6 @@ There are additional inputs if you want to be able to assign issues to projects.
 ### Considerations
 
 * TODOs are found by analysing the difference between the new commit and its previous one (i.e., the diff). That means that if this action is implemented during development, any existing TODOs will not be detected. For them to be detected, you would have to remove them, commit, put them back, and commit again.
-* Similarly, if you use the action in a new repo and have TODOs in your first commit, you should initialise the repo with an empty commit beforehand for them to be identified. That is because no diff is available for the first commit.
 * Should you change the TODO text, this will currently create a new issue.
 * Closing TODOs is still somewhat experimental.
 
