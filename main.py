@@ -67,8 +67,8 @@ class GitHubClient(object):
 
     def get_last_diff(self):
         """Get the last diff."""
-        if self.before != '0000000000000000000000000000000000000000':
-            # There is a valid before SHA to compare with
+        if self.before != '0000000000000000000000000000000000000000' or len(self.commits) == 0:
+            # There is a valid before SHA to compare with, or this is a release being created
             diff_url = f'{self.repos_url}{self.repo}/compare/{self.before}...{self.sha}'
         elif len(self.commits) == 1:
             # There is only one commit
