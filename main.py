@@ -48,7 +48,9 @@ class GitHubClient(object):
 
     def __init__(self):
         self.repo = os.getenv('INPUT_REPO')
+        self.before = os.getenv('INPUT_BEFORE')
         self.sha = os.getenv('INPUT_SHA')
+        self.commits = json.loads(os.getenv('INPUT_COMMITS'))
         self.token = os.getenv('INPUT_TOKEN')
         self.issues_url = f'{self.repos_url}{self.repo}/issues'
         self.issue_headers = {
@@ -60,9 +62,22 @@ class GitHubClient(object):
         # Retrieve the existing repo issues now so we can easily check them later.
         self._get_existing_issues()
 
+    def get_timestamp(self, commit):
+        return commit.get('timestamp')
+
     def get_last_diff(self):
-        """Get the last commit diff."""
-        diff_url = f'{self.repos_url}{self.repo}/commits/{self.sha}'
+        """Get the last diff."""
+        if self.before != '0000000000000000000000000000000000000000':
+            # There is a valid before SHA to compare with
+            diff_url = f'{self.repos_url}{self.repo}/compare/{self.before}...{self.sha}'
+        elif len(self.commits) == 1:
+            # There is only one commit
+            diff_url = f'{self.repos_url}{self.repo}/commits/{self.sha}'
+        else: 
+            # There are several commits: compare with the oldest one
+            oldest = sorted(self.commits, key=self.get_timestamp)[0]['id']
+            diff_url = f'{self.repos_url}{self.repo}/compare/{oldest}...{self.sha}'    
+        
         diff_headers = {
             'Accept': 'application/vnd.github.v3.diff',
             'Authorization': f'token {self.token}'
@@ -259,7 +274,6 @@ class GitHubClient(object):
                 print('Issue card added to project')
             else:
                 print('Issue card could not be added to project')
-
 
 class TodoParser(object):
     """Parser for extracting information from a given diff file."""
@@ -588,7 +602,6 @@ class TodoParser(object):
             projects = projects_search.group(0).replace(', ', ',')
             projects = list(filter(None, projects.split(',')))
         return projects
-
 
 if __name__ == "__main__":
     # Create a basic client for communicating with GitHub, automatically initialised with environment variables.
