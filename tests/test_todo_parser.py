@@ -1,3 +1,4 @@
+import os
 import unittest
 from main import TodoParser
 
@@ -52,3 +53,16 @@ class ClosedIssueTests(unittest.TestCase):
 
     def test_ruby_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
+
+class IgnorePatternTests(unittest.TestCase):
+
+    def test_single_ignore(self):
+        os.environ['INPUT_IGNORE'] = '.*\.java'
+        diff_file = open('tests/test_new.diff', 'r')
+        self.raw_issues = TodoParser().parse(diff_file)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 4)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 0)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
+        os.environ['INPUT_IGNORE'] = ''
