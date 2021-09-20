@@ -66,3 +66,14 @@ class IgnorePatternTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 0)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
         os.environ['INPUT_IGNORE'] = ''
+
+    def test_multiple_ignores(self):
+        os.environ['INPUT_IGNORE'] = '.*\.java, tests/example-file\.php'
+        diff_file = open('tests/test_new.diff', 'r')
+        self.raw_issues = TodoParser().parse(diff_file)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 0)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 0)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
+        os.environ['INPUT_IGNORE'] = ''

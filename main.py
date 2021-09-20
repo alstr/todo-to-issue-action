@@ -607,10 +607,11 @@ class TodoParser(object):
         return projects
 
     def _should_ignore(self, file):
-        ignore_pattern = os.getenv('INPUT_IGNORE', None)
-        if ignore_pattern:
-            if re.match(ignore_pattern, file):
-                return True
+        ignore_patterns = os.getenv('INPUT_IGNORE', None)
+        if ignore_patterns:
+            for pattern in filter(None, [pattern.strip() for pattern in ignore_patterns.split(',')]):
+                if re.match(pattern, file):
+                    return True
         return False
 
 

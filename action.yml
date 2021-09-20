@@ -52,5 +52,5 @@ inputs:
     description: "Default organisation projects"
     required: false
   IGNORE:
-    description: "A regular expression that matches files that should be ignored when searching for TODOs"
+    description: "A collection of comma-delimited regular expression that matches files that should be ignored when searching for TODOs"
     required: false
