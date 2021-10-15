@@ -348,6 +348,8 @@ class TodoParser(object):
             if not filename_search:
                 continue
             curr_file = filename_search.group(0)
+            if self._should_ignore(curr_file):
+                continue
             curr_markers, curr_markdown_language = self._get_file_details(curr_file)
             if not curr_markers or not curr_markdown_language:
                 print(f'Could not check {curr_file} for TODOs as this language is not yet supported by default.')
@@ -603,6 +605,14 @@ class TodoParser(object):
             projects = projects_search.group(0).replace(', ', ',')
             projects = list(filter(None, projects.split(',')))
         return projects
+
+    def _should_ignore(self, file):
+        ignore_patterns = os.getenv('INPUT_IGNORE', None)
+        if ignore_patterns:
+            for pattern in filter(None, [pattern.strip() for pattern in ignore_patterns.split(',')]):
+                if re.match(pattern, file):
+                    return True
+        return False
 
 
 if __name__ == "__main__":

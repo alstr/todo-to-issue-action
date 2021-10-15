@@ -50,6 +50,7 @@ The workflow file takes the following optional inputs:
 | `TOKEN` | No | The GitHub access token to allow us to retrieve, create and update issues for your repo. Default: `${{ github.token }}`. |
 | `CLOSE_ISSUES` | No | Optional boolean input that specifies whether to attempt to close an issue when a TODO is removed. Default: `true`. |
 | `AUTO_P` | No | Optional boolean input that specifies whether to format each line in multiline TODOs as a new paragraph. Default: `true`. |
+| `IGNORE` | No | Optional string input that provides comma-delimited regular expressions that match files in the repo that we should not scan for TODOs. By default, we will scan all files. |
 
 These can be specified in `with` in the workflow file.
 
