@@ -62,6 +62,10 @@ class GitHubClient(object):
         # Retrieve the existing repo issues now so we can easily check them later.
         self._get_existing_issues()
 
+    def __repr__(self):
+        formatted_commits = json.dumps(self.commits, indent=2)
+        return f"GitHubClient(repo={self.repo}, before={self.before}, sha={self.sha}, commits={formatted_commits})"
+
     def get_timestamp(self, commit):
         return commit.get('timestamp')
 
@@ -618,6 +622,7 @@ class TodoParser(object):
 if __name__ == "__main__":
     # Create a basic client for communicating with GitHub, automatically initialised with environment variables.
     client = GitHubClient()
+    print(f"Instantiated {client}")
     if len(client.commits) != 0:
         # Get the diff from the last pushed commit.
         last_diff = StringIO(client.get_last_diff())
