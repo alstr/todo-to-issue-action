@@ -51,6 +51,7 @@ class GitHubClient(object):
         self.before = os.getenv('INPUT_BEFORE')
         self.sha = os.getenv('INPUT_SHA')
         self.commits = json.loads(os.getenv('INPUT_COMMITS'))
+        self.diff_url = os.getenv('DIFF_URL')
         self.token = os.getenv('INPUT_TOKEN')
         self.issues_url = f'{self.repos_url}{self.repo}/issues'
         self.issue_headers = {
@@ -64,14 +65,17 @@ class GitHubClient(object):
 
     def __repr__(self):
         formatted_commits = json.dumps(self.commits, indent=2)
-        return f"GitHubClient(repo={self.repo}, before={self.before}, sha={self.sha}, commits={formatted_commits})"
+        return f"GitHubClient(repo={self.repo}, before={self.before}, sha={self.sha}, diff_url={self.diff_url}, commits={formatted_commits})"
 
     def get_timestamp(self, commit):
         return commit.get('timestamp')
 
     def get_last_diff(self):
         """Get the last diff."""
-        if self.before != '0000000000000000000000000000000000000000':
+        if self.diff_url:
+            # Diff url was directly passed in config, likely due to this being a PR
+            diff_url = self.diff_url
+        elif self.before != '0000000000000000000000000000000000000000':
             # There is a valid before SHA to compare with, or this is a release being created
             diff_url = f'{self.repos_url}{self.repo}/compare/{self.before}...{self.sha}'
         elif len(self.commits) == 1:
@@ -89,7 +93,9 @@ class GitHubClient(object):
         print(f"Requesting {diff_url} to get changes")
         diff_request = requests.get(url=diff_url, headers=diff_headers)
         if diff_request.status_code == 200:
-            return diff_request.text
+            text = diff_request.text
+            print("Diff text:\n{text}")
+            return text
         raise Exception('Could not retrieve diff. Operation will abort.')
 
     def _get_existing_issues(self, page=1):
@@ -624,10 +630,9 @@ if __name__ == "__main__":
     # Create a basic client for communicating with GitHub, automatically initialised with environment variables.
     client = GitHubClient()
     print(f"Instantiated {client}")
-    if len(client.commits) != 0:
+    if client.diff_url or len(client.commits) != 0:
         # Get the diff from the last pushed commit.
         last_diff = StringIO(client.get_last_diff())
-        print(f"Got changes: {last_diff}")
         # Parse the diff for TODOs and create an Issue object for each.
         raw_issues = TodoParser().parse(last_diff)
         print(f"Got raw issues: {raw_issues}")
