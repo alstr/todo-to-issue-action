@@ -90,9 +90,12 @@ class GitHubClient(object):
             'Accept': 'application/vnd.github.v3.diff',
             'Authorization': f'token {self.token}'
         }
+        print(f"Requesting {diff_url} to get changes")
         diff_request = requests.get(url=diff_url, headers=diff_headers)
         if diff_request.status_code == 200:
-            return diff_request.text
+            text = diff_request.text
+            print(f"Diff text:\n{text}")
+            return text
         raise Exception('Could not retrieve diff. Operation will abort.')
 
     def _get_existing_issues(self, page=1):
@@ -632,6 +635,7 @@ if __name__ == "__main__":
         last_diff = StringIO(client.get_last_diff())
         # Parse the diff for TODOs and create an Issue object for each.
         raw_issues = TodoParser().parse(last_diff)
+        print(f"Got raw issues: {raw_issues}")
         # This is a simple, non-perfect check to filter out any TODOs that have just been moved.
         # It looks for items that appear in the diff as both an addition and deletion.
         # It is based on the assumption that TODOs will not have identical titles in identical files.
