@@ -51,7 +51,7 @@ class GitHubClient(object):
         self.before = os.getenv('INPUT_BEFORE')
         self.sha = os.getenv('INPUT_SHA')
         self.commits = json.loads(os.getenv('INPUT_COMMITS'))
-        self.diff_url = os.getenv('DIFF_URL')
+        self.diff_url = os.getenv('INPUT_DIFF_URL')
         self.token = os.getenv('INPUT_TOKEN')
         self.issues_url = f'{self.repos_url}{self.repo}/issues'
         self.issue_headers = {
