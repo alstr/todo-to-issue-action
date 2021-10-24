@@ -94,7 +94,7 @@ class GitHubClient(object):
         diff_request = requests.get(url=diff_url, headers=diff_headers)
         if diff_request.status_code == 200:
             text = diff_request.text
-            print("Diff text:\n{text}")
+            print(f"Diff text:\n{text}")
             return text
         raise Exception('Could not retrieve diff. Operation will abort.')
 
