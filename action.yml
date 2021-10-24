@@ -23,7 +23,7 @@ inputs:
   DIFF_URL:
     description: "The URL to use to get the diff (automatically set)"
     required: true
-    default: "${{ github.event.pull_request?.diff_url }}"
+    default: "${{ github.event.pull_request.diff_url }}"
   SHA:
     description: "The SHA of the latest commit (automatically set)"
     required: true
