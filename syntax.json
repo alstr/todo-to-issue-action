@@ -429,5 +429,28 @@
         }
       }
     ]
+  },
+  {
+    "language": "Razor",
+    "marksers": [
+      {
+        "type": "block",
+        "pattern": {
+          "start": "<!--",
+          "end": "-->"
+        }
+      },
+      {
+        "type": "line",
+        "pattern": "//"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "/\\*",
+          "end": "\\*/"
+        }
+      }
+    ]  
   }
 ]
