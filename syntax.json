@@ -429,5 +429,14 @@
         }
       }
     ]
+  },
+    {
+    "language": "Rust",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "//"
+      }
+    ]
   }
 ]
