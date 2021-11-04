@@ -83,7 +83,9 @@ There are additional inputs if you want to be able to assign issues to projects.
 * Org Mode
 * PHP
 * Python
+* Razor
 * Ruby
+* Rust
 * Sass
 * Scala
 * Shell
