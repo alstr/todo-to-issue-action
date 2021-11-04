@@ -432,7 +432,7 @@
   },
   {
     "language": "Razor",
-    "marksers": [
+    "markers": [
       {
         "type": "block",
         "pattern": {
