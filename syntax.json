@@ -431,7 +431,7 @@
     ]
   },
   {
-    "language": "Razor",
+    "language": "HTML+Razor",
     "markers": [
       {
         "type": "block",
