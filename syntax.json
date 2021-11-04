@@ -451,7 +451,7 @@
           "end": "\\*/"
         }
       }
-    ]  
+    ]
   },
   {
     "language": "Rust",
@@ -466,6 +466,22 @@
           "start": "/\\*",
           "end": "\\*/"
         }
+      }
+    ]
+  },
+  {
+    "language": "Vue",
+    "markers": [
+      {
+        "type": "block",
+        "pattern": {
+          "start": "<!--",
+          "end": "-->"
+        }
+      },
+      {
+        "type": "line",
+        "pattern": "//"
       }
     ]
   }
