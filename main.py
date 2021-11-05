@@ -51,6 +51,7 @@ class GitHubClient(object):
         self.before = os.getenv('INPUT_BEFORE')
         self.sha = os.getenv('INPUT_SHA')
         self.commits = json.loads(os.getenv('INPUT_COMMITS'))
+        self.diff_url = os.getenv('INPUT_DIFF_URL')
         self.token = os.getenv('INPUT_TOKEN')
         self.issues_url = f'{self.repos_url}{self.repo}/issues'
         self.issue_headers = {
@@ -67,7 +68,10 @@ class GitHubClient(object):
 
     def get_last_diff(self):
         """Get the last diff."""
-        if self.before != '0000000000000000000000000000000000000000':
+        if self.diff_url:
+            # Diff url was directly passed in config, likely due to this being a PR
+            diff_url = self.diff_url
+        elif self.before != '0000000000000000000000000000000000000000':
             # There is a valid before SHA to compare with, or this is a release being created
             diff_url = f'{self.repos_url}{self.repo}/compare/{self.before}...{self.sha}'
         elif len(self.commits) == 1:
@@ -618,7 +622,7 @@ class TodoParser(object):
 if __name__ == "__main__":
     # Create a basic client for communicating with GitHub, automatically initialised with environment variables.
     client = GitHubClient()
-    if len(client.commits) != 0:
+    if client.diff_url or len(client.commits) != 0:
         # Get the diff from the last pushed commit.
         last_diff = StringIO(client.get_last_diff())
         # Parse the diff for TODOs and create an Issue object for each.
