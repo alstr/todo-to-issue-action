@@ -37,7 +37,7 @@ Create a `workflow.yml` file in your `.github/workflows` directory like:
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v4.3.1"
+            uses: "alstr/todo-to-issue-action@v4.4"
             id: "todo"
 ```
 
@@ -51,6 +51,7 @@ The workflow file takes the following optional inputs:
 | `CLOSE_ISSUES` | No | Optional boolean input that specifies whether to attempt to close an issue when a TODO is removed. Default: `true`. |
 | `AUTO_P` | No | Optional boolean input that specifies whether to format each line in multiline TODOs as a new paragraph. Default: `true`. |
 | `IGNORE` | No | Optional string input that provides comma-delimited regular expressions that match files in the repo that we should not scan for TODOs. By default, we will scan all files. |
+| `AUTO_ASSIGN` | No | Optional boolean input that specifies whether to assign the newly created issue to the user who triggered the action. If users are manually assigned to an issue, this setting is ignored. Default: `false`. |
 
 These can be specified in `with` in the workflow file.
 

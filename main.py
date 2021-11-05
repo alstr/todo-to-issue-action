@@ -62,6 +62,8 @@ class GitHubClient(object):
         self.line_break = '\n\n' if auto_p else '\n'
         # Retrieve the existing repo issues now so we can easily check them later.
         self._get_existing_issues()
+        self.auto_assign = os.getenv('INPUT_AUTO_ASSIGN', 'false') == 'true'
+        self.actor = os.getenv('INPUT_ACTOR')
 
     def get_timestamp(self, commit):
         return commit.get('timestamp')
@@ -146,6 +148,8 @@ class GitHubClient(object):
 
         # We need to check if any assignees/milestone specified exist, otherwise issue creation will fail.
         valid_assignees = []
+        if len(issue.assignees) == 0 and self.auto_assign:
+            valid_assignees.append(self.actor)
         for assignee in issue.assignees:
             assignee_url = f'{self.repos_url}{self.repo}/assignees/{assignee}'
             assignee_request = requests.get(url=assignee_url, headers=self.issue_headers)
