@@ -484,5 +484,34 @@
         "pattern": "//"
       }
     ]
+  },
+  {
+    "language": "ABAP",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "\""
+      },
+      {
+        "type": "line",
+        "pattern": "*"
+      }
+    ]
+  },
+  {
+    "language": "ABAP CDS",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "//"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "/\\*",
+          "end": "\\*/"
+        }
+      }
+    ]
   }
 ]
