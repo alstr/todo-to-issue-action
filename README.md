@@ -65,6 +65,8 @@ There are additional inputs if you want to be able to assign issues to projects.
 
 ## Supported Languages
 
+* ABAP
+* ABAP CDS
 * AutoHotkey
 * C
 * C++
