@@ -404,7 +404,7 @@ class TodoParser(object):
             for marker in block['markers']:
                 # Check if there are line or block comments.
                 if marker['type'] == 'line':
-                    comment_pattern = r'(^[+\-\s]\s*' + marker['pattern'] + '.+$)'
+                    comment_pattern = r'(^[+\-\s].*' + marker['pattern'] + '.+$)'
                     comments = re.finditer(comment_pattern, block['hunk'], re.MULTILINE)
                     extracted_comments = []
                     prev_comment = None

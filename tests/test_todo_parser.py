@@ -12,7 +12,7 @@ def count_issues_for_file_type(raw_issues, file_type):
 
 
 class NewIssueTests(unittest.TestCase):
-    # Check for newly added TODOs across the files specified (covers all current marker types).
+    # Check for newly added TODOs across the files specified.
     def setUp(self):
         diff_file = open('tests/test_new.diff', 'r')
         self.raw_issues = TodoParser().parse(diff_file)
@@ -32,9 +32,18 @@ class NewIssueTests(unittest.TestCase):
     def test_ruby_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
 
+    def test_abap_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'abap'), 2)
+
+    def test_sql_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'sql'), 1)
+
+    # TODO: Update tests
+    #  Need tests for Julia, AutoHotKey, Handlebars, Org and TeX, as these markers are not currently covered.
+
 
 class ClosedIssueTests(unittest.TestCase):
-    # Check for removed TODOs across the files specified (covers all current marker types).
+    # Check for removed TODOs across the files specified.
     def setUp(self):
         diff_file = open('tests/test_closed.diff', 'r')
         self.raw_issues = TodoParser().parse(diff_file)
@@ -54,10 +63,17 @@ class ClosedIssueTests(unittest.TestCase):
     def test_ruby_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
 
+    def test_abap_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'abap'), 2)
+
+    def test_sql_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'sql'), 1)
+
+
 class IgnorePatternTests(unittest.TestCase):
 
     def test_single_ignore(self):
-        os.environ['INPUT_IGNORE'] = '.*\.java'
+        os.environ['INPUT_IGNORE'] = '.*\\.java'
         diff_file = open('tests/test_new.diff', 'r')
         self.raw_issues = TodoParser().parse(diff_file)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 2)
@@ -68,7 +84,7 @@ class IgnorePatternTests(unittest.TestCase):
         os.environ['INPUT_IGNORE'] = ''
 
     def test_multiple_ignores(self):
-        os.environ['INPUT_IGNORE'] = '.*\.java, tests/example-file\.php'
+        os.environ['INPUT_IGNORE'] = '.*\\.java, tests/example-file\\.php'
         diff_file = open('tests/test_new.diff', 'r')
         self.raw_issues = TodoParser().parse(diff_file)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 2)

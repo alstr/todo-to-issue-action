@@ -94,3 +94,22 @@ index 0000000..6397789
 +# TODO: Define inputs
 +#  Need to do this before the action is released
 +#  labels: urgent
+diff --git a/tests/example_file.prog.abap b/src/tests/example_file.prog.abap
+new file mode 100644
+index 0000000..7cccc5b
+--- /dev/null
++++ b/tests/example_file.prog.abap
+@@ -0,0 +1,5 @@
++REPORT ztest_todo_2.
++
++DATA moo TYPE i VALUE 2.
++WRITE moo. " TODO This is an end-of-line to-do
++moo = 4. * TODO This is another end-of-line to-do
+diff --git a/tests/example_file.sql b/src/tests/example_file.sql
+new file mode 100644
+index 0000000..7cccc5b
+--- /dev/null
++++ b/src/tests/example_file.sql
+@@ -0,0 +1,2 @@
++-- TODO Select all:
++SELECT * FROM Products;
