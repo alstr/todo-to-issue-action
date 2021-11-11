@@ -37,7 +37,7 @@ Create a `workflow.yml` file in your `.github/workflows` directory like:
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v4.4.1"
+            uses: "alstr/todo-to-issue-action@v4.5"
             id: "todo"
 ```
 
