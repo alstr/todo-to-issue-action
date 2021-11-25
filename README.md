@@ -76,6 +76,7 @@ There are additional inputs if you want to be able to assign issues to projects.
 * Elixir
 * Go
 * Handlebars
+* HCL
 * HTML
 * Java
 * JavaScript
