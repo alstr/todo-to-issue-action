@@ -544,8 +544,8 @@
       {
         "type": "block",
         "pattern": {
-          "start": "/*",
-          "end": "*/"
+          "start": "/\\*",
+          "end": "\\*/"
         }
       }
     ]
