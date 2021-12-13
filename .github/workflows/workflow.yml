@@ -9,4 +9,4 @@ jobs:
         uses: "alstr/todo-to-issue-action@master"
         id: "todo"
         with:
-          PROJECTS_SECRET: ${{ secrets.PROJECTS_SECRET }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
