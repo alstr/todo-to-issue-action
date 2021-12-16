@@ -408,8 +408,8 @@
       {
         "type": "block",
         "pattern": {
-          "start": "\\begin{comment}",
-          "end": "\\end{comment}"
+          "start": "\\\\begin{comment}",
+          "end": "\\\\end{comment}"
         }
       }
     ]

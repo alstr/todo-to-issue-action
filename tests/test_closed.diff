@@ -107,3 +107,64 @@ index 6397789..494d42f 100644
 @@ -1,2 +0,0 @@
 --- TODO Select all:
 -SELECT * FROM Products;
+diff --git a/tests/example_file.tex b/src/tests/example_file.tex
+new file mode 100644
+index 0000000..7cccc5b
+--- /dev/null
++++ b/src/tests/example_file.tex
+@@ -0,0 +1,2 @@
+-% TODO Add in preamble details
+-\begin{document}
+-  \begin{comment}
+-     TODO This document needs content
+-     label: urgent
+-  \end{comment}
+-\end{document}
+diff --git a/tests/example_file.jl b/src/tests/example_file.jl
+new file mode 100644
+index 0000000..7cccc5b
+--- /dev/null
++++ b/src/tests/example_file.jl
+@@ -0,0 +1,2 @@
+- # TODO: Hopefully this comment turns into an issue
+- print("Hello World")
+- #= TODO: Multiline comments
+-   also need to be turned into task, and hopefully 
+-   kept together as one.
+- =#
+diff --git a/tests/example_file.ahk b/src/tests/example_file.ahk
+new file mode 100644
+index 0000000..7cccc5b
+--- /dev/null
++++ b/src/tests/example_file.ahk
+@@ -0,0 +1,2 @@
+- ; TODO: Find a better way to manage hotkeys
+- ; Maybe just switch to vim??
+- #h::
+- RegRead, HiddenFiles_Status, HKEY_CURRENT_USER, Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced, Hidden 
+diff --git a/tests/example_file.hbs b/src/tests/example_file.hbs
+new file mode 100644
+index 0000000..7cccc5b
+--- /dev/null
++++ b/src/tests/example_file.hbs
+@@ -0,0 +1,2 @@
+- <!-- TODO: Hopefully this comment turns into a todo issue -->
+- {{! 
+-   TODO: Make a handlebar templtate
+-    This is really just a test, but hopefully this works~!
+- }}
+diff --git a/tests/example_file.org b/src/tests/example_file.org
+new file mode 100644
+index 0000000..7cccc5b
+--- /dev/null
++++ b/src/tests/example_file.org
+@@ -0,0 +1,2 @@
+- # TODO: Hopefully this comment turns into a todo issue
+- #+begin_src python
+- print("Hello World")
+- #+end_src
+- + #+begin_comment
+-  TODO: Multiline comments
+-   also need to be turned into todos, and hopefully 
+-   kept together as one todo
+- #+end_comment

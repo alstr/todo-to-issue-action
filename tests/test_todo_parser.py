@@ -1,5 +1,6 @@
 import os
 import unittest
+import json
 from main import TodoParser
 
 
@@ -15,7 +16,10 @@ class NewIssueTests(unittest.TestCase):
     # Check for newly added TODOs across the files specified.
     def setUp(self):
         diff_file = open('tests/test_new.diff', 'r')
-        self.raw_issues = TodoParser().parse(diff_file)
+        parser = TodoParser()
+        with open('syntax.json', 'r') as syntax_json: 
+            parser.syntax_dict = json.load(syntax_json)
+        self.raw_issues = parser.parse(diff_file)
 
     def test_python_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 2)
@@ -38,15 +42,29 @@ class NewIssueTests(unittest.TestCase):
     def test_sql_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'sql'), 1)
 
-    # TODO: Update tests
-    #  Need tests for Julia, AutoHotKey, Handlebars, Org and TeX, as these markers are not currently covered.
+    def test_tex_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'tex'), 2)
 
+    def test_julia_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'julia'), 2)
+
+    def test_autohotkey_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'autohotkey'), 1)
+    
+    def test_handlebars_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
+    
+    def test_org_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 2)
 
 class ClosedIssueTests(unittest.TestCase):
     # Check for removed TODOs across the files specified.
     def setUp(self):
         diff_file = open('tests/test_closed.diff', 'r')
-        self.raw_issues = TodoParser().parse(diff_file)
+        parser = TodoParser()
+        with open('syntax.json', 'r') as syntax_json: 
+            parser.syntax_dict = json.load(syntax_json)
+        self.raw_issues = parser.parse(diff_file)
 
     def test_python_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 2)
@@ -68,14 +86,32 @@ class ClosedIssueTests(unittest.TestCase):
 
     def test_sql_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'sql'), 1)
+
+    def test_tex_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'tex'), 2)
+    
+    def test_julia_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'julia'), 2)
+
+    def test_autohotkey_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'autohotkey'), 1)
+    
+    def test_handlebars_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
+    
+    def test_org_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 2)
 
 
 class IgnorePatternTests(unittest.TestCase):
 
     def test_single_ignore(self):
         os.environ['INPUT_IGNORE'] = '.*\\.java'
-        diff_file = open('tests/test_new.diff', 'r')
-        self.raw_issues = TodoParser().parse(diff_file)
+        parser = TodoParser()
+        with open('syntax.json', 'r') as syntax_json: 
+            parser.syntax_dict = json.load(syntax_json)
+        diff_file = open('tests/test_closed.diff', 'r')
+        self.raw_issues = parser.parse(diff_file)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 2)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 4)
@@ -85,8 +121,11 @@ class IgnorePatternTests(unittest.TestCase):
 
     def test_multiple_ignores(self):
         os.environ['INPUT_IGNORE'] = '.*\\.java, tests/example-file\\.php'
-        diff_file = open('tests/test_new.diff', 'r')
-        self.raw_issues = TodoParser().parse(diff_file)
+        parser = TodoParser()
+        with open('syntax.json', 'r') as syntax_json: 
+            parser.syntax_dict = json.load(syntax_json)
+        diff_file = open('tests/test_closed.diff', 'r')
+        self.raw_issues = parser.parse(diff_file)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 2)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 0)
