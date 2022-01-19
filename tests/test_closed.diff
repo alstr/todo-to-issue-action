@@ -51,7 +51,7 @@ diff --git a/tests/example_file.py b/tests/example_file.py
 index 525e25d..ba4e68d 100644
 --- a/tests/example_file.py
 +++ b/tests/example_file.py
-@@ -1,7 +1,2 @@
+@@ -1,23 +1,2 @@
  def hello_world():
 -    # TODO: Come up with a more imaginative greeting
      print('Hello world')
