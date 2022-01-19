@@ -61,6 +61,22 @@ index 0000000..525e25d
 +    # TODO: Do more stuff
 +    #  This function should probably do something more interesting
 +    #  labels: help wanted
++
++def my_method(arg):
++    """
++    TODO: Second multiline comment
++    also need to be turned into task, and hopefully
++    kept together as one.
++    """
++    pass
++
++def MyClass:
++    '''
++    TODO: Third multiline comment
++    also need to be turned into task, and hopefully
++    kept together as one.
++    '''
++    pass
 diff --git a/tests/example_file.rb b/tests/example_file.rb
 new file mode 100644
 index 0000000..e6da2ec
