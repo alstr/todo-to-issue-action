@@ -46,6 +46,10 @@ class NewIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'tex'), 2)
 
     def test_julia_issues(self):
+        # TODO: Fix Julia markers
+        #  The Julia tests are currently failing as @qwinters noticed in #96.
+        #  It looks to be counting block comments twice as the line marker appears within the block marker.
+        #  labels: bug
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'julia'), 2)
 
     def test_autohotkey_issues(self):
@@ -59,6 +63,7 @@ class NewIssueTests(unittest.TestCase):
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
+
 
 class ClosedIssueTests(unittest.TestCase):
     # Check for removed TODOs across the files specified.
