@@ -168,3 +168,19 @@ index 0000000..7cccc5b
 -   also need to be turned into todos, and hopefully 
 -   kept together as one todo
 - #+end_comment
+diff --git a/tests/example_file.scss b/tests/example_file.scss
+index 525e25d..ba4e68d 100644
+--- a/tests/example_file.scss
++++ b/tests/example_file.scss
+@@ -1,11 +0,0 @@
+-// TODO: Hopefully this comment turns into a todo issue
+-.my-class {
+-  font-weight: bold;
+-  .my-second-class {
+-    /* TODO: Multiline comments
+-     * also need to be turned into todos, and hopefully 
+-     * kept together as one todo
+-     */  
+-    text-align: center;
+-  }
+-}
