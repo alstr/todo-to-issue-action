@@ -51,7 +51,7 @@ diff --git a/tests/example_file.py b/tests/example_file.py
 index 525e25d..ba4e68d 100644
 --- a/tests/example_file.py
 +++ b/tests/example_file.py
-@@ -1,7 +1,2 @@
+@@ -1,23 +1,2 @@
  def hello_world():
 -    # TODO: Come up with a more imaginative greeting
      print('Hello world')
@@ -59,6 +59,22 @@ index 525e25d..ba4e68d 100644
 -    # TODO: Do more stuff
 -    #  This function should probably do something more interesting
 -    #  labels: help wanted
+-
+-def my_method(arg):
+-    """
+-    TODO: Second multiline comment
+-    also need to be turned into task, and hopefully 
+-    kept together as one.
+-    """
+-    pass
+-
+-def MyClass:
+-    '''
+-    TODO: Third multiline comment
+-    also need to be turned into task, and hopefully 
+-    kept together as one.
+-    '''
+-    pass
 diff --git a/tests/example_file.rb b/tests/example_file.rb
 index e6da2ec..67f14dd 100644
 --- a/tests/example_file.rb
@@ -163,7 +179,7 @@ index 0000000..7cccc5b
 - #+begin_src python
 - print("Hello World")
 - #+end_src
-- + #+begin_comment
+- #+begin_comment
 -  TODO: Multiline comments
 -   also need to be turned into todos, and hopefully 
 -   kept together as one todo

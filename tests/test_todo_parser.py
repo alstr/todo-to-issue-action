@@ -22,7 +22,7 @@ class NewIssueTests(unittest.TestCase):
         self.raw_issues = parser.parse(diff_file)
 
     def test_python_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 4)
 
     def test_yaml_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
@@ -70,7 +70,7 @@ class ClosedIssueTests(unittest.TestCase):
         self.raw_issues = parser.parse(diff_file)
 
     def test_python_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 4)
 
     def test_yaml_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
