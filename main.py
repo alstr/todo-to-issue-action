@@ -324,6 +324,17 @@ class TodoParser(object):
         else:
             raise Exception('Cannot retrieve syntax data. Operation will abort.')
 
+        custom_languages = os.getenv('INPUT_CUSTOM').json()
+        for lang in custom_languages:
+            self.syntax_dict.append({
+                'language': lang.name,
+                'markers': lang.markers
+            })
+
+            self.languages_dict[lang.name] = {
+                'extensions': lang.extensions
+            }
+
     # noinspection PyTypeChecker
     def parse(self, diff_file):
         issues = []
