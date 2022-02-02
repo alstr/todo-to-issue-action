@@ -79,11 +79,11 @@ class GitHubClient(object):
         elif len(self.commits) == 1:
             # There is only one commit
             diff_url = f'{self.repos_url}{self.repo}/commits/{self.sha}'
-        else: 
+        else:
             # There are several commits: compare with the oldest one
             oldest = sorted(self.commits, key=self.get_timestamp)[0]['id']
-            diff_url = f'{self.repos_url}{self.repo}/compare/{oldest}...{self.sha}'    
-        
+            diff_url = f'{self.repos_url}{self.repo}/compare/{oldest}...{self.sha}'
+
         diff_headers = {
             'Accept': 'application/vnd.github.v3.diff',
             'Authorization': f'token {self.token}'
@@ -324,16 +324,21 @@ class TodoParser(object):
         else:
             raise Exception('Cannot retrieve syntax data. Operation will abort.')
 
-        custom_languages = os.getenv('INPUT_CUSTOM').json()
-        for lang in custom_languages:
-            self.syntax_dict.append({
-                'language': lang.name,
-                'markers': lang.markers
-            })
-
-            self.languages_dict[lang.name] = {
-                'extensions': lang.extensions
-            }
+        custom_languages = os.getenv('INPUT_CUSTOM_LANGUAGES', None)
+        if custom_languages is not None:
+            try:
+                custom_languages = json.loads(custom_languages)
+                for lang in custom_languages:
+                    self.syntax_dict.append({
+                        'language': lang['name'],
+                        'markers': lang['markers']
+                    })
+                    self.languages_dict[lang['name']] = {
+                        'extensions': lang['extensions'],
+                        'ace_mode': ''
+                    }
+            except json.JSONDecodeError:
+                print('Custom language definitions could not be parsed, ignoring.')
 
     # noinspection PyTypeChecker
     def parse(self, diff_file):
@@ -398,7 +403,7 @@ class TodoParser(object):
                 if prev_block and prev_block['file'] == block['file']:
                     code_blocks[prev_index]['hunk_end'] = line_numbers.start()
                     code_blocks[prev_index]['hunk'] = (prev_block['hunk']
-                                                       [prev_block['hunk_start']:line_numbers.start()])
+                    [prev_block['hunk_start']:line_numbers.start()])
                 elif prev_block:
                     code_blocks[prev_index]['hunk'] = prev_block['hunk'][prev_block['hunk_start']:]
 
