@@ -4,7 +4,7 @@ This action will convert newly committed TODO comments to GitHub issues on push.
 
 ## Usage
 
-Simply add a comment starting with TODO, followed by a colon and/or space. Here's an example for Python:
+Simply add a comment starting with TODO, followed by a colon and/or space. Here's an example for Python that creates an issue named after the TODO:
 
 ```python
     def hello_world():
@@ -12,7 +12,7 @@ Simply add a comment starting with TODO, followed by a colon and/or space. Here'
         print('Hello world!')
 ```
 
-Multiline TODOs are supported, and a range of options can be provided to apply to the new issue:
+Multiline TODOs are supported, with additional lines inserted into the issue body. A range of options can also be provided to apply to the new issue:
 
 ```python
     def hello_world():
@@ -37,7 +37,7 @@ Create a `workflow.yml` file in your `.github/workflows` directory like:
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v4.5"
+            uses: "alstr/todo-to-issue-action@v4.6"
             id: "todo"
 ```
 
@@ -45,13 +45,14 @@ See [Github's workflow syntax](https://help.github.com/en/actions/reference/work
 
 The workflow file takes the following optional inputs:
 
-| Input    | Required | Description |
-|----------|----------|-------------|
-| `TOKEN` | No | The GitHub access token to allow us to retrieve, create and update issues for your repo. Default: `${{ github.token }}`. |
-| `CLOSE_ISSUES` | No | Optional boolean input that specifies whether to attempt to close an issue when a TODO is removed. Default: `true`. |
-| `AUTO_P` | No | Optional boolean input that specifies whether to format each line in multiline TODOs as a new paragraph. Default: `true`. |
-| `IGNORE` | No | Optional string input that provides comma-delimited regular expressions that match files in the repo that we should not scan for TODOs. By default, we will scan all files. |
-| `AUTO_ASSIGN` | No | Optional boolean input that specifies whether to assign the newly created issue to the user who triggered the action. If users are manually assigned to an issue, this setting is ignored. Default: `false`. |
+| Input            | Required | Description                                                                                                                                                                                                  |
+|------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `TOKEN`          | No | The GitHub access token to allow us to retrieve, create and update issues for your repo. Default: `${{ github.token }}`.                                                                                     |
+| `CLOSE_ISSUES`   | No | Optional boolean input that specifies whether to attempt to close an issue when a TODO is removed. Default: `true`.                                                                                          |
+| `AUTO_P`         | No | Optional boolean input that specifies whether to format each line in multiline TODOs as a new paragraph. Default: `true`.                                                                                    |
+| `IGNORE`         | No | Optional string input that provides comma-delimited regular expressions that match files in the repo that we should not scan for TODOs. By default, we will scan all files.                                  |
+| `AUTO_ASSIGN`    | No | Optional boolean input that specifies whether to assign the newly created issue to the user who triggered the action. If users are manually assigned to an issue, this setting is ignored. Default: `false`. |
+| `ISSUE_TEMPLATE` | No | You can override the default issue template by providing your own here. Markdown is supported, and you can inject the issue title, body, code URL and snippet. Example: `"This is my issue title: **{{ title }}**\n\nThis is my issue body: **{{ body }}**\n\nThis is my code URL: **{{ url }}**\n\nThis is my snippet:\n\n{{ snippet }}"`                                     |
 
 These can be specified in `with` in the workflow file.
 
@@ -174,13 +175,20 @@ Issues are created whenever the action runs and finds a newly added TODO in the 
 
 If you do encounter any problems, please file an issue or submit a PR. Everyone is welcome and encouraged to contribute.
 
-
 ## Running tests locally 
 
 To run the tests locally, simply run the following in the main repo:
 ```shell
 python -m unittest
 ```
+
+## Customising
+
+If you want to fork this action to customise its behaviour, there are a few steps you should take to ensure your changes run:
+
+* In `workflow.yml`, set `uses: ` to your action.
+* In `action.yml`, set `image: ` to `Dockerfile`, rather than the prebuilt image.
+* If customising `syntax.json`, you will want to update the URL in `main.py` to target your version of the file.
 
 ## Thanks
 
