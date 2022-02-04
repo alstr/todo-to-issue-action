@@ -52,6 +52,9 @@ inputs:
   USER_PROJECTS:
     description: "Default user projects"
     required: false
+  CUSTOM_LANGUAGES:
+    description: "Include given custom languages (as JSON) not already included in Linguist"
+    required: false
   ORG_PROJECTS:
     description: "Default organisation projects"
     required: false
