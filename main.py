@@ -8,7 +8,6 @@ import json
 from time import sleep
 from io import StringIO
 from ruamel.yaml import YAML
-import hashlib
 from enum import Enum
 import itertools
 import operator
@@ -114,37 +113,29 @@ class GitHubClient(object):
         if len(title) > 80:
             # Title is too long.
             title = title[:80] + '...'
-        url_to_line = f'https://github.com/{self.repo}/blob/{self.sha}/{issue.file_name}#L{issue.start_line}'
         formatted_issue_body = self.line_break.join(issue.body)
-        body = (formatted_issue_body + '\n\n'
-                + url_to_line + '\n\n'
-                + '```' + issue.markdown_language + '\n'
-                + issue.hunk + '\n'
-                + '```')
+        url_to_line = f'https://github.com/{self.repo}/blob/{self.sha}/{issue.file_name}#L{issue.start_line}'
+        snippet = '```' + issue.markdown_language + '\n' + issue.hunk + '\n' + '```'
 
+        issue_template = os.getenv('INPUT_ISSUE_TEMPLATE', None)
+        if issue_template:
+            issue_contents = (issue_template.replace('{{ title }}', issue.title)
+                              .replace('{{ body }}', formatted_issue_body)
+                              .replace('{{ url }}', url_to_line)
+                              .replace('{{ snippet }}', snippet)
+                              )
+        elif len(issue.body) != 0:
+            issue_contents = formatted_issue_body + '\n\n' + url_to_line + '\n\n' + snippet
+        else:
+            issue_contents = url_to_line + '\n\n' + snippet
         # Check if the current issue already exists - if so, skip it.
-        # The below is a simple and imperfect check.
-        issue_id = hashlib.sha1(body.encode('utf-8')).hexdigest()
-        body += '\n\n' + issue_id
+        # The below is a simple and imperfect check based on the issue title.
         for existing_issue in self.existing_issues:
-            if issue_id in existing_issue['body']:
-                # The issue_id matching means the issue issues are identical.
+            if issue.title == existing_issue['title']:
                 print(f'Skipping issue (already exists).')
                 return
-            else:
-                # There may be cases (rebasing) where a different SHA means the above comparison is False but the
-                # issue is otherwise identical.
-                # For now, if an issue already exists with the same title and file name, we will ignore it.
-                # This should cover most use cases. Long term we should improve how the action handles rebasing.
-                existing_issue_body = existing_issue['body']
-                issue_exists = (formatted_issue_body in existing_issue_body
-                                and issue.file_name in existing_issue_body
-                                and issue.markdown_language in existing_issue_body)
-                if issue_exists:
-                    print(f'Skipping issue (already exists).')
-                    return
 
-        new_issue_body = {'title': title, 'body': body, 'labels': issue.labels}
+        new_issue_body = {'title': title, 'body': issue_contents, 'labels': issue.labels}
 
         # We need to check if any assignees/milestone specified exist, otherwise issue creation will fail.
         valid_assignees = []
@@ -486,7 +477,7 @@ class TodoParser(object):
                         milestone=None,
                         user_projects=[],
                         org_projects=[],
-                        body=[line_title],
+                        body=[],
                         hunk=code_block['hunk'],
                         file_name=code_block['file'],
                         start_line=code_block['start_line'],

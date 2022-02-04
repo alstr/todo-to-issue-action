@@ -66,3 +66,6 @@ inputs:
     description: "The username of the person who triggered the action"
     required: true
     default: "${{ github.actor }}"
+  ISSUE_TEMPLATE:
+    description: "The template used to format new issues"
+    required: false
