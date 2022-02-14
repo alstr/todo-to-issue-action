@@ -208,3 +208,15 @@ index 0000000..7cccc5b
 +    text-align: center;
 +  }
 +}
+diff --git a/tests/example_file.twig b/src/tests/example_file.twig
+new file mode 100644
+index 0000000..7cccc5b
+--- /dev/null
++++ b/src/tests/example_file.scss
+@@ -0,0 +1,11 @@
++ {# TODO: Hopefully this comment turns into a todo issue #}
++ {#
++   TODO:Multiline comments
++   also need to be turned into todos, and hopefully
++   kept together as one todo
++ #}
