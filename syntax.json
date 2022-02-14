@@ -579,5 +579,17 @@
         }
       }
      ]
+  },
+  {
+    "language": "Twig",
+    "markers" : [
+      {
+        "type": "block",
+        "pattern": {
+          "start": "{#",
+          "end": "#}"
+        }
+      }
+    ]
   }
 ]
