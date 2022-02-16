@@ -212,8 +212,8 @@ diff --git a/tests/example_file.twig b/src/tests/example_file.twig
 new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
-+++ b/src/tests/example_file.scss
-@@ -0,0 +1,11 @@
++++ b/src/tests/example_file.twig
+@@ -0,0 +1,6 @@
 + {# TODO: Hopefully this comment turns into a todo issue #}
 + {#
 +   TODO:Multiline comments

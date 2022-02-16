@@ -60,6 +60,9 @@ class NewIssueTests(unittest.TestCase):
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
 
+    def test_twig_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'twig'), 2)
+
 
 class ClosedIssueTests(unittest.TestCase):
     # Check for removed TODOs across the files specified.
@@ -108,6 +111,9 @@ class ClosedIssueTests(unittest.TestCase):
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
+
+    def test_twig_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'twig'), 2)
 
 
 class IgnorePatternTests(unittest.TestCase):
