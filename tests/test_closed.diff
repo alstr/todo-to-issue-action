@@ -200,3 +200,14 @@ index 525e25d..ba4e68d 100644
 -    text-align: center;
 -  }
 -}
+diff --git a/tests/example_file.twig b/src/tests/example_file.twig
+index 525e25d..ba4e68d 100644
+--- a/src/tests/example_file.twig
++++ b/src/tests/example_file.twig
+@@ -1,6 +0,0 @@
+- {# TODO: Hopefully this comment turns into a todo issue #}
+- {#
+-   TODO:Multiline comments
+-   also need to be turned into todos, and hopefully
+-   kept together as one todo
+- #}
