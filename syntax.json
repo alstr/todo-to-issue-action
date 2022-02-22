@@ -362,7 +362,7 @@
       {
         "type": "block",
         "pattern": {
-          "start": "<!---",
+          "start": "<!--",
           "end": "-->"
         }
       }
