@@ -33,6 +33,9 @@ class NewIssueTests(unittest.TestCase):
     def test_java_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 2)
 
+    def test_crystal_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'crystal'), 2)
+
     def test_ruby_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
 
@@ -50,10 +53,10 @@ class NewIssueTests(unittest.TestCase):
 
     def test_autohotkey_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'autohotkey'), 1)
-    
+
     def test_handlebars_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
-    
+
     def test_org_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 2)
 
@@ -85,6 +88,9 @@ class ClosedIssueTests(unittest.TestCase):
     def test_java_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 2)
 
+    def test_crystal_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'crystal'), 2)
+
     def test_ruby_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
 
@@ -96,16 +102,16 @@ class ClosedIssueTests(unittest.TestCase):
 
     def test_tex_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'tex'), 2)
-    
+
     def test_julia_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'julia'), 2)
 
     def test_autohotkey_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'autohotkey'), 1)
-    
+
     def test_handlebars_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
-    
+
     def test_org_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 2)
 
