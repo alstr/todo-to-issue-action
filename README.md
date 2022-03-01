@@ -73,6 +73,7 @@ There are additional inputs if you want to be able to assign issues to projects.
 * C++
 * C#
 * CSS
+* Crystal
 * Dart
 * Elixir
 * Go
