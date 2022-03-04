@@ -591,5 +591,14 @@
         }
       }
     ]
+  },
+  {
+    "language": "Crystal",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "#"
+      }
+    ]
   }
 ]

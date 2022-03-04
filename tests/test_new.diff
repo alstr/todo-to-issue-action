@@ -78,6 +78,18 @@ index 0000000..525e25d
 +    '''
 +    pass
 \ No newline at end of file
+diff --git a/tests/example_file.cr b/tests/example_file.cr
+new file mode 100644
+index 0000000..e6da2ec
+--- /dev/null
++++ b/tests/example_file.cr
+@@ -0,0 +1,14 @@
++# TODO: Come up with a more imaginative greeting
++puts "Greetings"
++
++# TODO: Do even more stuff
++# This function should probably do something more interesting
++# labels: help wanted
 diff --git a/tests/example_file.rb b/tests/example_file.rb
 new file mode 100644
 index 0000000..e6da2ec

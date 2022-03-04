@@ -33,8 +33,12 @@ class NewIssueTests(unittest.TestCase):
     def test_java_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 2)
 
+    def test_crystal_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'crystal'), 2)
+
     def test_ruby_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
+        # Includes 2 tests for Crystal.
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
 
     def test_abap_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'abap'), 2)
@@ -50,10 +54,10 @@ class NewIssueTests(unittest.TestCase):
 
     def test_autohotkey_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'autohotkey'), 1)
-    
+
     def test_handlebars_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
-    
+
     def test_org_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 2)
 
@@ -86,7 +90,8 @@ class ClosedIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 2)
 
     def test_ruby_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
+        # Includes 2 tests for Crystal.
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
 
     def test_abap_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'abap'), 2)
@@ -96,16 +101,16 @@ class ClosedIssueTests(unittest.TestCase):
 
     def test_tex_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'tex'), 2)
-    
+
     def test_julia_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'julia'), 2)
 
     def test_autohotkey_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'autohotkey'), 1)
-    
+
     def test_handlebars_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
-    
+
     def test_org_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 2)
 
