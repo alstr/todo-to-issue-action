@@ -169,6 +169,8 @@ Make sure your file language is in `syntax.json`. Also, the action will not reco
 
 If a similar TODO appears in the diff as both an addition and deletion, it is assumed to have been moved, so is ignored.
 
+In case, your workflow is executed but no issue is generated, check if you have given permissions to Workflows. Go to your GitHub Project, Settings->Actions(General)->Workflow permissions and Enable "Read and write permissions".
+
 ### Multiple issues have been created
 
 Issues are created whenever the action runs and finds a newly added TODO in the diff. Rebasing may cause a TODO to show up in a diff multiple times. This is an acknowledged issue, but you may have some luck by adjusting your workflow file.
