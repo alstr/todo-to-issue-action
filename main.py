@@ -308,7 +308,7 @@ class TodoParser(object):
             raise Exception('Cannot retrieve languages data. Operation will abort.')
 
         # Load the comment syntax data for identifying comments.
-        syntax_url = 'https://raw.githubusercontent.com/alstr/todo-to-issue-action/master/syntax.json'
+        syntax_url = 'https://raw.githubusercontent.com/thomasfkjorna/todo-to-issue-action/master/syntax.json'
         syntax_request = requests.get(url=syntax_url)
         if syntax_request.status_code == 200:
             self.syntax_dict = syntax_request.json()

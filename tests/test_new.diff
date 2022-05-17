@@ -232,3 +232,15 @@ index 0000000..7cccc5b
 +   also need to be turned into todos, and hopefully
 +   kept together as one todo
 + #}
+diff --git a/tests/example_file.md b/src/tests/example_file.md
+new file mode 100644
+index 0000000..7cccc5b
+--- /dev/null
++++ b/src/tests/example_file.md
+@@ -0,0 +1,6 @@
++ {/* TODO: Hopefully this comment turns into a todo issue */}
++ {/* 
++   TODO:Multiline comments
++   also need to be turned into todos, and hopefully
++   kept together as one todo
++ */}
