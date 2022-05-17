@@ -65,7 +65,7 @@ class NewIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'twig'), 2)
 
     def test_md_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'markdown'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'markdown'), 4)
 
 
 class ClosedIssueTests(unittest.TestCase):
@@ -121,7 +121,7 @@ class ClosedIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'twig'), 2)
 
     def test_md_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'markdown'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'markdown'), 4)
 
 
 class IgnorePatternTests(unittest.TestCase):
