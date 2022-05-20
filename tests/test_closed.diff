@@ -222,6 +222,30 @@ index 525e25d..ba4e68d 100644
 -   also need to be turned into todos, and hopefully
 -   kept together as one todo
 - #}
+diff --git a/tests/example_file.md b/src/tests/example_file.md
+index 525e25d..ba4e68d 100644
+--- a/src/tests/example_file.md
++++ b/src/tests/example_file.md
+@@ -1,7 +0,0 @@
+- {/* TODO: Hopefully this comment turns into a todo issue */}
+- {/*
+-   TODO:Multiline comments
+-   also need to be turned into todos, and hopefully
+-   kept together as one todo
+- */}
+- - [ ] TODO: An inline todo that's NOT a comment (what)
+diff --git a/tests/example_file.mdx b/src/tests/example_file.mdx
+index 525e25d..ba4e68d 100644
+--- a/src/tests/example_file.mdx
++++ b/src/tests/example_file.mdx
+@@ -1,7 +0,0 @@
+- {/* TODO: Hopefully this comment turns into a todo issue */}
+- {/*
+-   TODO:Multiline comments
+-   also need to be turned into todos, and hopefully
+-   kept together as one todo
+- */}
+- - [ ] TODO: An inline todo that's NOT a comment (what)
 diff --git a/tests/example_file.py b/tests/example_file.R
 index 525e25d..ba4e68d 100644
 --- a/tests/example_file.R
@@ -234,4 +258,4 @@ hello_world <- function() {
 -    # TODO: Do more stuff
 -    #  This function should probably do something more interesting
 -    #  labels: help wanted
-
+}

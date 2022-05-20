@@ -365,6 +365,17 @@
           "start": "<!--",
           "end": "-->"
         }
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "{/\\*",
+          "end": "\\*/}"
+        }
+      },
+      {
+        "type": "line",
+        "pattern": "- \\[ \\]"
       }
     ]
   },
@@ -546,7 +557,7 @@
   },
   {
     "language": "HCL",
-    "markers" : [
+    "markers": [
       {
         "type": "line",
         "pattern": "#"
@@ -566,7 +577,7 @@
   },
   {
     "language": "SCSS",
-    "markers" : [
+    "markers": [
       {
         "type": "line",
         "pattern": "//"
@@ -578,11 +589,11 @@
           "end": "\\*/"
         }
       }
-     ]
+    ]
   },
   {
     "language": "Twig",
-    "markers" : [
+    "markers": [
       {
         "type": "block",
         "pattern": {

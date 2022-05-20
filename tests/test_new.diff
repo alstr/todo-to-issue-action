@@ -232,6 +232,32 @@ index 0000000..7cccc5b
 +   also need to be turned into todos, and hopefully
 +   kept together as one todo
 + #}
+diff --git a/tests/example_file.md b/src/tests/example_file.md
+new file mode 100644
+index 0000000..7cccc5b
+--- /dev/null
++++ b/src/tests/example_file.md
+@@ -0,0 +1,7 @@
++ {/* TODO: Hopefully this comment turns into a todo issue */}
++ {/* 
++   TODO:Multiline comments
++   also need to be turned into todos, and hopefully
++   kept together as one todo
++ */}
++ - [ ] TODO: An inline todo that's NOT a comment (what)
+diff --git a/tests/example_file.mdx b/src/tests/example_file.mdx
+new file mode 100644
+index 0000000..7cccc5b
+--- /dev/null
++++ b/src/tests/example_file.mdx
+@@ -0,0 +1,7 @@
++ {/* TODO: Hopefully this comment turns into a todo issue */}
++ {/* 
++   TODO:Multiline comments
++   also need to be turned into todos, and hopefully
++   kept together as one todo
++ */}
++ - [ ] TODO: An inline todo that's NOT a comment (what)
 diff --git a/tests/example_file.py b/tests/example_file.R
 new file mode 100644
 index 0000000..525e25d
