@@ -246,3 +246,16 @@ index 525e25d..ba4e68d 100644
 -   kept together as one todo
 - */}
 - - [ ] TODO: An inline todo that's NOT a comment (what)
+diff --git a/tests/example_file.r b/tests/example_file.r
+index 525e25d..ba4e68d 100644
+--- a/tests/example_file.r
++++ b/tests/example_file.r
+@@ -1,23 +1,2 @@
+hello_world <- function() {
+-    # TODO: Come up with a more imaginative greeting
+     message("Hello world")
+-
+-    # TODO: Do more stuff
+-    #  This function should probably do something more interesting
+-    #  labels: help wanted
+}

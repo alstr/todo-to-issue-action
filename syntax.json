@@ -611,5 +611,14 @@
         "pattern": "#"
       }
     ]
+  },
+  {
+    "language": "R",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "#"
+      }
+    ]
   }
 ]
