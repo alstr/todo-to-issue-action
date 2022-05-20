@@ -232,3 +232,17 @@ index 0000000..7cccc5b
 +   also need to be turned into todos, and hopefully
 +   kept together as one todo
 + #}
+diff --git a/tests/example_file.py b/tests/example_file.R
+new file mode 100644
+index 0000000..525e25d
+--- /dev/null
++++ b/tests/example_file.R
+@@ -0,0 +1,23 @@
++hello_world <- function() {
++    # TODO: Come up with a more imaginative greeting
++    message("Hello world")
++
++    # TODO: Do more stuff
++    #  This function should probably do something more interesting
++    #  labels: help wanted
++}

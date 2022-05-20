@@ -222,3 +222,16 @@ index 525e25d..ba4e68d 100644
 -   also need to be turned into todos, and hopefully
 -   kept together as one todo
 - #}
+diff --git a/tests/example_file.py b/tests/example_file.R
+index 525e25d..ba4e68d 100644
+--- a/tests/example_file.R
++++ b/tests/example_file.R
+@@ -1,23 +1,2 @@
+hello_world <- function() {
+-    # TODO: Come up with a more imaginative greeting
+     message("Hello world")
+-
+-    # TODO: Do more stuff
+-    #  This function should probably do something more interesting
+-    #  labels: help wanted
+
