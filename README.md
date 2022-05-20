@@ -37,7 +37,7 @@ Create a `workflow.yml` file in your `.github/workflows` directory like:
         steps:
           - uses: "actions/checkout@master"
           - name: "TODO to Issue"
-            uses: "alstr/todo-to-issue-action@v4.6.4"
+            uses: "alstr/todo-to-issue-action@v4.6.5"
             id: "todo"
 ```
 
@@ -90,6 +90,7 @@ There are additional inputs if you want to be able to assign issues to projects.
 * Org Mode
 * PHP
 * Python
+* R
 * Razor
 * Ruby
 * Rust
