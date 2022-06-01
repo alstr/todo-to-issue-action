@@ -431,6 +431,10 @@
         "pattern": "%"
       },
       {
+        "type": "line",
+        "pattern": "\\\\todo{"
+      },
+      {
         "type": "block",
         "pattern": {
           "start": "\\\\begin{comment}",
