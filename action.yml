@@ -69,3 +69,7 @@ inputs:
   ISSUE_TEMPLATE:
     description: 'The template used to format new issues'
     required: false
+  PR:
+    description: 'The current PR number'
+    required: true
+    default: '${{ steps.findPr.outputs.pr }}'
