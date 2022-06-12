@@ -57,6 +57,7 @@ class GitHubClient(object):
             'Content-Type': 'application/json',
             'Authorization': f'token {self.token}'
         }
+        self.pr_number - os.getenv('INPUT_PR')
         auto_p = os.getenv('INPUT_AUTO_P', 'true') == 'true'
         self.line_break = '\n\n' if auto_p else '\n'
         # Retrieve the existing repo issues now so we can easily check them later.
@@ -172,6 +173,13 @@ class GitHubClient(object):
                 self.add_issue_to_projects(issue_id, issue.org_projects, 'org')
 
         return new_issue_request.status_code
+
+    def comment_todo_status(self, issue):
+        print (self.pr)
+        title = issue.title
+        comment_url = f'{self.repos_url}{self.repo}/pull/{self.pr_number}'
+
+        print (comment_url)
 
     def close_issue(self, issue):
         """Check to see if this issue can be found on GitHub and if so close it."""
@@ -641,7 +649,8 @@ if __name__ == "__main__":
         for j, raw_issue in enumerate(issues_to_process):
             print(f'Processing issue {j + 1} of {len(issues_to_process)}')
             if raw_issue.status == LineStatus.ADDED:
-                status_code = client.create_issue(raw_issue)
+                # status_code = client.create_issue(raw_issue)
+                status_code = client.comment_todo_status(raw_issue)
                 if status_code == 201:
                     print('Issue created')
                 else:
