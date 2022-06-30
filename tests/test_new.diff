@@ -78,6 +78,26 @@ index 0000000..525e25d
 +    '''
 +    pass
 \ No newline at end of file
+diff --git a/src/Swarm/Game/example.hs b/src/Swarm/Game/example.hs
+new file mode 100644
+index 0000000..0ce9b1a
+--- /dev/null
++++ b/src/Swarm/Game/example.hs
+@@ -0,0 +1,14 @@
++-- | Standard devices that are always installed.
++-- 
++-- TODO: Remove standard devices
++--   In the future, make a way to build these and just start the base
++--   out with a large supply of each?
++--   labels: redesign
++stdDeviceList =
++  ["treads", "grabber", "solar panel", "scanner", "plasma cutter"]
++
++{- | Very complicated function.
++
++TODO: Create an issue for TODO
++-}
++sum a b = a + b
 diff --git a/tests/example_file.cr b/tests/example_file.cr
 new file mode 100644
 index 0000000..e6da2ec
