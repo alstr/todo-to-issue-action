@@ -324,6 +324,22 @@
     ]
   },
   {
+    "language": "Haskell",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "--"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "{-",
+          "end": "-}"
+        }
+      }
+    ]
+  },
+  {
     "language": "HTML",
     "markers": [
       {

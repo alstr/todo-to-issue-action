@@ -70,6 +70,8 @@ class NewIssueTests(unittest.TestCase):
     def test_r_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'r'), 2)
 
+    def test_haskell_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'haskell'), 2)
 
 class ClosedIssueTests(unittest.TestCase):
     # Check for removed TODOs across the files specified.
