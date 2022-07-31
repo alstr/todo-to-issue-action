@@ -145,11 +145,12 @@ class IgnorePatternTests(unittest.TestCase):
             parser.syntax_dict = json.load(syntax_json)
         diff_file = open('tests/test_closed.diff', 'r')
         self.raw_issues = parser.parse(diff_file)
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 4)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 4)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 0)
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
+        # Includes 2 tests for Crystal.
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
         os.environ['INPUT_IGNORE'] = ''
 
     def test_multiple_ignores(self):
@@ -159,9 +160,10 @@ class IgnorePatternTests(unittest.TestCase):
             parser.syntax_dict = json.load(syntax_json)
         diff_file = open('tests/test_closed.diff', 'r')
         self.raw_issues = parser.parse(diff_file)
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 4)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 0)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 0)
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
+        # Includes 2 tests for Crystal.
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
         os.environ['INPUT_IGNORE'] = ''
