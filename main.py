@@ -24,7 +24,7 @@ class Issue(object):
     """Basic Issue model for collecting the necessary info to send to GitHub."""
 
     def __init__(self, title, labels, assignees, milestone, user_projects, org_projects, body, hunk, file_name,
-                 start_line, markdown_language, status):
+                 start_line, markdown_language, status, identifier):
         self.title = title
         self.labels = labels
         self.assignees = assignees
@@ -37,6 +37,7 @@ class Issue(object):
         self.start_line = start_line
         self.markdown_language = markdown_language
         self.status = status
+        self.identifier = identifier
 
 
 class GitHubClient(object):
@@ -78,11 +79,11 @@ class GitHubClient(object):
         elif len(self.commits) == 1:
             # There is only one commit
             diff_url = f'{self.repos_url}{self.repo}/commits/{self.sha}'
-        else: 
+        else:
             # There are several commits: compare with the oldest one
             oldest = sorted(self.commits, key=self.get_timestamp)[0]['id']
-            diff_url = f'{self.repos_url}{self.repo}/compare/{oldest}...{self.sha}'    
-        
+            diff_url = f'{self.repos_url}{self.repo}/compare/{oldest}...{self.sha}'
+
         diff_headers = {
             'Accept': 'application/vnd.github.v3.diff',
             'Authorization': f'token {self.token}'
@@ -293,8 +294,20 @@ class TodoParser(object):
     ORG_PROJECTS_PATTERN = re.compile(r'(?<=org projects:\s).+')
 
     def __init__(self):
-        # We could support more identifiers later quite easily.
-        self.identifier = 'TODO'
+        # Load any custom identifiers, otherwise use the default.
+        custom_identifiers = os.getenv('INPUT_IDENTIFIERS')
+        if custom_identifiers:
+            try:
+                self.identifiers_dict = json.loads(custom_identifiers)
+                for identifier_dict in self.identifiers_dict:
+                    if type(identifier_dict['name']) != str or type(identifier_dict['labels']) != list:
+                        raise TypeError
+                self.identifiers = [identifier['name'] for identifier in self.identifiers_dict]
+            except (json.JSONDecodeError, KeyError, TypeError):
+                print('Invalid identifiers dict, ignoring.')
+                self.identifiers_dict = None
+                self.identifiers = ['TODO']
+
         self.languages_dict = None
 
         # Load the languages data for ascertaining file types.
@@ -400,7 +413,7 @@ class TodoParser(object):
                     extracted_comments = []
                     prev_comment = None
                     for i, comment in enumerate(comments):
-                        if i == 0 or self.identifier in comment.group(0):
+                        if i == 0 or re.search('|'.join(self.identifiers), comment.group(0)):
                             extracted_comments.append([comment])
                         else:
                             if comment.start() == prev_comment.end() + 1:
@@ -416,7 +429,7 @@ class TodoParser(object):
                     comments = re.finditer(comment_pattern, block['hunk'], re.DOTALL)
                     extracted_comments = []
                     for i, comment in enumerate(comments):
-                        if self.identifier in comment.group(0):
+                        if re.search('|'.join(self.identifiers), comment.group(0)):
                             extracted_comments.append([comment])
 
                     for comment in extracted_comments:
@@ -464,7 +477,7 @@ class TodoParser(object):
             for line in lines:
                 line_status, committed_line = self._get_line_status(line)
                 cleaned_line = self._clean_line(committed_line, marker)
-                line_title, ref = self._get_title(cleaned_line)
+                line_title, ref, identifier = self._get_title(cleaned_line)
                 if line_title:
                     if ref:
                         issue_title = f'[{ref}] {line_title}'
@@ -482,7 +495,8 @@ class TodoParser(object):
                         file_name=code_block['file'],
                         start_line=code_block['start_line'],
                         markdown_language=code_block['markdown_language'],
-                        status=line_status
+                        status=line_status,
+                        identifier=identifier
                     )
 
                     # Calculate the file line number that this issue references.
@@ -514,6 +528,14 @@ class TodoParser(object):
                         issue.org_projects.extend(org_projects)
                     elif len(cleaned_line):
                         issue.body.append(cleaned_line)
+
+        if issue is not None and issue.identifier is not None and self.identifiers_dict is not None:
+            for identifier_dict in self.identifiers_dict:
+                if identifier_dict['name'] == issue.identifier:
+                    for label in identifier_dict['labels']:
+                        if label not in issue.labels:
+                            issue.labels.append(label)
+
         return issue
 
     def _get_line_status(self, comment):
@@ -548,20 +570,25 @@ class TodoParser(object):
         """Check the passed comment for a new issue title (and reference, if specified)."""
         title = None
         ref = None
-        title_pattern = re.compile(r'(?<=' + self.identifier + r'[\s:]).+')
-        title_search = title_pattern.search(comment, re.IGNORECASE)
-        if title_search:
-            title = title_search.group(0).strip()
-        else:
-            title_ref_pattern = re.compile(r'(?<=' + self.identifier + r'\().+')
-            title_ref_search = title_ref_pattern.search(comment, re.IGNORECASE)
-            if title_ref_search:
-                title = title_ref_search.group(0).strip()
-                ref_search = self.REF_PATTERN.search(title)
-                if ref_search:
-                    ref = ref_search.group(0)
-                    title = title.replace(ref, '', 1).lstrip(':) ')
-        return title, ref
+        title_identifier = None
+        for identifier in self.identifiers:
+            title_identifier = identifier
+            title_pattern = re.compile(r'(?<=' + identifier + r'[\s:]).+')
+            title_search = title_pattern.search(comment, re.IGNORECASE)
+            if title_search:
+                title = title_search.group(0).strip()
+                break
+            else:
+                title_ref_pattern = re.compile(r'(?<=' + identifier + r'\().+')
+                title_ref_search = title_ref_pattern.search(comment, re.IGNORECASE)
+                if title_ref_search:
+                    title = title_ref_search.group(0).strip()
+                    ref_search = self.REF_PATTERN.search(title)
+                    if ref_search:
+                        ref = ref_search.group(0)
+                        title = title.replace(ref, '', 1).lstrip(':) ')
+                    break
+        return title, ref, title_identifier
 
     def _get_labels(self, comment):
         """Check the passed comment for issue labels."""
