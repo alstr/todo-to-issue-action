@@ -296,17 +296,18 @@ class TodoParser(object):
     def __init__(self):
         # Load any custom identifiers, otherwise use the default.
         custom_identifiers = os.getenv('INPUT_IDENTIFIERS')
+        self.identifiers = ['TODO']
+        self.identifiers_dict = None
         if custom_identifiers:
             try:
-                self.identifiers_dict = json.loads(custom_identifiers)
-                for identifier_dict in self.identifiers_dict:
+                custom_identifiers_dict = json.loads(custom_identifiers)
+                for identifier_dict in custom_identifiers_dict:
                     if type(identifier_dict['name']) != str or type(identifier_dict['labels']) != list:
                         raise TypeError
-                self.identifiers = [identifier['name'] for identifier in self.identifiers_dict]
+                self.identifiers = [identifier['name'] for identifier in custom_identifiers_dict]
+                self.identifiers_dict = custom_identifiers_dict
             except (json.JSONDecodeError, KeyError, TypeError):
                 print('Invalid identifiers dict, ignoring.')
-                self.identifiers_dict = None
-                self.identifiers = ['TODO']
 
         self.languages_dict = None
 
