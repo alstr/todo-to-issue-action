@@ -63,7 +63,7 @@ index 525e25d..ba4e68d 100644
 -def my_method(arg):
 -    """
 -    TODO: Second multiline comment
--    also need to be turned into task, and hopefully 
+-    also need to be turned into task, and hopefully
 -    kept together as one.
 -    """
 -    pass
@@ -71,7 +71,7 @@ index 525e25d..ba4e68d 100644
 -def MyClass:
 -    '''
 -    TODO: Third multiline comment
--    also need to be turned into task, and hopefully 
+-    also need to be turned into task, and hopefully
 -    kept together as one.
 -    '''
 -    pass
@@ -156,7 +156,7 @@ index 0000000..7cccc5b
 - # TODO: Hopefully this comment turns into an issue
 - print("Hello World")
 - #= TODO: Multiline comments
--   also need to be turned into task, and hopefully 
+-   also need to be turned into task, and hopefully
 -   kept together as one.
 - =#
 diff --git a/tests/example_file.ahk b/src/tests/example_file.ahk
@@ -168,7 +168,7 @@ index 0000000..7cccc5b
 - ; TODO: Find a better way to manage hotkeys
 - ; Maybe just switch to vim??
 - #h::
-- RegRead, HiddenFiles_Status, HKEY_CURRENT_USER, Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced, Hidden 
+- RegRead, HiddenFiles_Status, HKEY_CURRENT_USER, Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced, Hidden
 diff --git a/tests/example_file.hbs b/src/tests/example_file.hbs
 new file mode 100644
 index 0000000..7cccc5b
@@ -176,7 +176,7 @@ index 0000000..7cccc5b
 +++ b/src/tests/example_file.hbs
 @@ -0,0 +1,2 @@
 - <!-- TODO: Hopefully this comment turns into a todo issue -->
-- {{! 
+- {{!
 -   TODO: Make a handlebar templtate
 -    This is really just a test, but hopefully this works~!
 - }}
@@ -192,7 +192,7 @@ index 0000000..7cccc5b
 - #+end_src
 - #+begin_comment
 -  TODO: Multiline comments
--   also need to be turned into todos, and hopefully 
+-   also need to be turned into todos, and hopefully
 -   kept together as one todo
 - #+end_comment
 diff --git a/tests/example_file.scss b/tests/example_file.scss
@@ -205,9 +205,9 @@ index 525e25d..ba4e68d 100644
 -  font-weight: bold;
 -  .my-second-class {
 -    /* TODO: Multiline comments
--     * also need to be turned into todos, and hopefully 
+-     * also need to be turned into todos, and hopefully
 -     * kept together as one todo
--     */  
+-     */
 -    text-align: center;
 -  }
 -}
@@ -278,3 +278,10 @@ index 525e25d..ba4e68d 100644
 -TODO: Create an issue for TODO
 --}
 -sum a b = a + b
+
+diff --git a/tests/config.json5 b/tests/config.json5
+index 0000000..525e25d 100644
+--- a/tests/config.json5
++++ b/tests/config.json5
+@@ -0,0 +0,1 @@
+- // TODO: Delete this line from the codebase

@@ -17,7 +17,7 @@ class NewIssueTests(unittest.TestCase):
     def setUp(self):
         diff_file = open('tests/test_new.diff', 'r')
         parser = TodoParser()
-        with open('syntax.json', 'r') as syntax_json: 
+        with open('syntax.json', 'r') as syntax_json:
             parser.syntax_dict = json.load(syntax_json)
         self.raw_issues = parser.parse(diff_file)
 
@@ -34,7 +34,7 @@ class NewIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 2)
 
     def test_json5_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'json5'), 1)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 1)
 
     def test_ruby_issues(self):
         # Includes 2 tests for Crystal.
@@ -69,7 +69,7 @@ class NewIssueTests(unittest.TestCase):
 
     def test_md_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'markdown'), 6)
-        
+
     def test_r_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'r'), 2)
 
@@ -82,7 +82,7 @@ class ClosedIssueTests(unittest.TestCase):
     def setUp(self):
         diff_file = open('tests/test_closed.diff', 'r')
         parser = TodoParser()
-        with open('syntax.json', 'r') as syntax_json: 
+        with open('syntax.json', 'r') as syntax_json:
             parser.syntax_dict = json.load(syntax_json)
         self.raw_issues = parser.parse(diff_file)
 
@@ -113,6 +113,9 @@ class ClosedIssueTests(unittest.TestCase):
 
     def test_julia_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'julia'), 2)
+
+    def test_json5_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 1)
 
     def test_autohotkey_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'autohotkey'), 1)
@@ -144,7 +147,7 @@ class IgnorePatternTests(unittest.TestCase):
     def test_single_ignore(self):
         os.environ['INPUT_IGNORE'] = '.*\\.java'
         parser = TodoParser()
-        with open('syntax.json', 'r') as syntax_json: 
+        with open('syntax.json', 'r') as syntax_json:
             parser.syntax_dict = json.load(syntax_json)
         diff_file = open('tests/test_closed.diff', 'r')
         self.raw_issues = parser.parse(diff_file)
@@ -159,7 +162,7 @@ class IgnorePatternTests(unittest.TestCase):
     def test_multiple_ignores(self):
         os.environ['INPUT_IGNORE'] = '.*\\.java, tests/example-file\\.php'
         parser = TodoParser()
-        with open('syntax.json', 'r') as syntax_json: 
+        with open('syntax.json', 'r') as syntax_json:
             parser.syntax_dict = json.load(syntax_json)
         diff_file = open('tests/test_closed.diff', 'r')
         self.raw_issues = parser.parse(diff_file)
