@@ -292,3 +292,17 @@ index 0000000..525e25d
 +    #  This function should probably do something more interesting
 +    #  labels: help wanted
 +}
+diff --git a/tests/example_file.r b/tests/config.json5
+new file mode 100644
+index 0000000..525f56e
+--- /dev/null
++++ b/tests/example_file.json5
+@@ -0,0 +1,7 @@
++{
++  "myConfig": [
++ // GitRepository where 'Git release/tag' matches 'Helm' version
++ "itIsWonderful",
++ // TODO: Delete this line from the codebase 
++ "butItHasSomePendingActivities"
++ ]
++}

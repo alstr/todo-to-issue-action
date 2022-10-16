@@ -164,6 +164,15 @@
     ]
   },
   {
+    "language": "JSON5",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "//"
+      }
+    ]
+  },
+  {
     "language": "Julia",
     "markers": [
       {

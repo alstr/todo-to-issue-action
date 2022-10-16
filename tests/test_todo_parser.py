@@ -33,6 +33,9 @@ class NewIssueTests(unittest.TestCase):
     def test_java_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 2)
 
+    def test_json5_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'json5'), 1)
+
     def test_ruby_issues(self):
         # Includes 2 tests for Crystal.
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
