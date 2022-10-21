@@ -351,7 +351,7 @@ class TodoParser(object):
         prev_block = None
         # Iterate through each section extracted above.
         for hunk in extracted_file_hunks:
-            # Extract the file information so we can figure out the markdown language and comment syntax.
+            # Extract the file information so we can figure out the Markdown language and comment syntax.
             header_search = re.search(self.HEADER_PATTERN, hunk, re.MULTILINE)
             if not header_search:
                 continue
@@ -460,14 +460,15 @@ class TodoParser(object):
         return issues
 
     def _get_file_details(self, file):
-        """Try and get the markdown language and comment syntax data for the given file."""
+        """Try and get the Markdown language and comment syntax data for the given file."""
         file_name, extension = os.path.splitext(os.path.basename(file))
         for language_name in self.languages_dict:
-            if ('extensions' in self.languages_dict[language_name]
-                    and extension in self.languages_dict[language_name]['extensions']):
-                for syntax_details in self.syntax_dict:
-                    if syntax_details['language'] == language_name:
-                        return syntax_details['markers'], self.languages_dict[language_name]['ace_mode']
+            if 'extensions' in self.languages_dict[language_name]:
+                language_extensions = [ex.lower() for ex in self.languages_dict[language_name]['extensions']]
+                if extension.lower() in language_extensions:
+                    for syntax_details in self.syntax_dict:
+                        if syntax_details['language'] == language_name:
+                            return syntax_details['markers'], self.languages_dict[language_name]['ace_mode']
         return None, None
 
     def _extract_issue_if_exists(self, comment, marker, code_block):
