@@ -84,6 +84,7 @@ There are additional inputs if you want to be able to assign issues to projects.
 * HTML
 * Java
 * JavaScript
+* JSON5
 * Julia
 * Kotlin
 * Less
@@ -109,7 +110,7 @@ There are additional inputs if you want to be able to assign issues to projects.
 * Vue
 * YAML
 
-New languages can easily be added to the `syntax.json` file used by the action to identify TODO comments. When adding languages, follow the structure of existing entries, and use the language name defined by GitHub in [`languages.yml`](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml). PRs adding new languages are welcome and appreciated. Please add a test for your language in order for your PR to be accepted. 
+New languages can easily be added to the `syntax.json` file used by the action to identify TODO comments. When adding languages, follow the structure of existing entries, and use the language name defined by GitHub in [`languages.yml`](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml). PRs adding new languages are welcome and appreciated. Please add a test for your language in order for your PR to be accepted.
 
 ## TODO Options
 
@@ -182,7 +183,7 @@ Issues are created whenever the action runs and finds a newly added TODO in the 
 
 If you do encounter any problems, please file an issue or submit a PR. Everyone is welcome and encouraged to contribute.
 
-## Running tests locally 
+## Running tests locally
 
 To run the tests locally, simply run the following in the main repo:
 ```shell
