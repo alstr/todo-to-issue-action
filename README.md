@@ -107,6 +107,7 @@ There are additional inputs if you want to be able to assign issues to projects.
 * TSX
 * Twig
 * TypeScript
+* V
 * Vue
 * YAML
 
