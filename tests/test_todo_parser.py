@@ -76,6 +76,9 @@ class NewIssueTests(unittest.TestCase):
     def test_haskell_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'haskell'), 2)
 
+    def test_clojure_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'clojure'), 2)
+
 
 class ClosedIssueTests(unittest.TestCase):
     # Check for removed TODOs across the files specified.
@@ -140,6 +143,9 @@ class ClosedIssueTests(unittest.TestCase):
 
     def test_haskell_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'haskell'), 2)
+
+    def test_clojure_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'clojure'), 2)
 
 
 class IgnorePatternTests(unittest.TestCase):

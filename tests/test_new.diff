@@ -306,12 +306,11 @@ index 0000000..525e25d
 + "butItHasSomePendingActivities"
 + ]
 +}
-
-diff·--git·a/tests/example.clj·b/tests/example.clj
-new·file·mode·100644
-index·0000000..525e25d
----·/dev/null
-+++·b/tests/example.clj
+diff --git a/tests/example.clj b/tests/example.clj
+new file mode 100644
+index 0000000..525e25d
+--- /dev/null
++++ b/tests/example.clj
 @@ -0,0 +1,8 @@
 +(ns example)
 +
