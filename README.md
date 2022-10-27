@@ -2,7 +2,7 @@
 
 This action will convert newly committed TODO comments to GitHub issues on push. It will also optionally close the issues if the TODOs are removed in a future commit.
 
-Todo to Issue works with almost any programming language.
+TODO to Issue works with almost any programming language.
 
 ## Usage
 
@@ -31,7 +31,7 @@ Multiline TODOs are supported, with additional lines inserted into the issue bod
 Create a `workflow.yml` file in your `.github/workflows` directory like:
 
 ```yml
-    name: "Run Todo to Issue"
+    name: "Run TODO to Issue"
     on: ["push"]
     jobs:
       build:
