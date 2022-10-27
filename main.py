@@ -646,14 +646,14 @@ class TodoParser(object):
 if __name__ == "__main__":
     # Create a basic client for communicating with GitHub, automatically initialised with environment variables.
     client = GitHubClient()
-    base_manual = os.getenv('BASE_MANUAL')
-    head_manual = os.getenv('HEAD_MANUAL')
-    if base_manual and head_manual:
-        print(f'Manually comparing {base_manual}...{head_manual}')
-        client.diff_url = f'{client.repos_url}{client.repo}/compare/{base_manual}...{head_manual}'
-    elif base_manual:
-        print(f'Manual checking {base_manual}')
-        client.diff_url = f'{client.repos_url}{client.repo}/commits/{base_manual}'
+    manual_commit_ref = os.getenv('MANUAL_COMMIT_REF')
+    manual_base_ref = os.getenv('MANUAL_BASE_REF')
+    if manual_commit_ref and manual_base_ref:
+        print(f'Manually comparing {manual_base_ref}...{manual_commit_ref}')
+        client.diff_url = f'{client.repos_url}{client.repo}/compare/{manual_base_ref}...{manual_commit_ref}'
+    elif manual_commit_ref:
+        print(f'Manual checking {manual_commit_ref}')
+        client.diff_url = f'{client.repos_url}{client.repo}/commits/{manual_commit_ref}'
     if client.diff_url or len(client.commits) != 0:
         # Get the diff from the last pushed commit.
         last_diff = StringIO(client.get_last_diff())
