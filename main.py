@@ -646,8 +646,12 @@ class TodoParser(object):
 if __name__ == "__main__":
     # Create a basic client for communicating with GitHub, automatically initialised with environment variables.
     client = GitHubClient()
+    # Check to see if the workflow has been run manually.
+    # If so, adjust the client SHA and diff URL to use the manually supplied inputs.
     manual_commit_ref = os.getenv('MANUAL_COMMIT_REF')
     manual_base_ref = os.getenv('MANUAL_BASE_REF')
+    if manual_commit_ref:
+        client.sha = manual_commit_ref
     if manual_commit_ref and manual_base_ref:
         print(f'Manually comparing {manual_base_ref}...{manual_commit_ref}')
         client.diff_url = f'{client.repos_url}{client.repo}/compare/{manual_base_ref}...{manual_commit_ref}'
