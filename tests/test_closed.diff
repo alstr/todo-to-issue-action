@@ -285,3 +285,17 @@ index 0000000..525e25d 100644
 +++ b/tests/config.json5
 @@ -0,0 +0,1 @@
 - // TODO: Delete this line from the codebase
+
+diff·--git·a/tests/example.clj·b/tests/example.clj
+index·0000000..525e25d·100644
+---·a/tests/example.clj
++++·b/tests/example.clj
+@@ -1,8 +0,0 @@
+-(ns example)
+-
+-(defn function-test [name]
+-  ;; TODO: first todo to test parser
+-  (prn (str "hello" name))
+-  ;; TODO: todo with description (sub-level)
+-  ;;  Body of the issue should stay here
+-  (str "hello" name))

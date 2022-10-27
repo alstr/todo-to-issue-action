@@ -75,6 +75,7 @@ There are additional inputs if you want to be able to assign issues to projects.
 * C#
 * CSS
 * Crystal
+* Clojure
 * Dart
 * Elixir
 * Go
