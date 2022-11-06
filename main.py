@@ -50,7 +50,7 @@ class GitHubClient(object):
         self.repo = os.getenv('INPUT_REPO')
         self.before = os.getenv('INPUT_BEFORE')
         self.sha = os.getenv('INPUT_SHA')
-        self.commits = json.loads(os.getenv('INPUT_COMMITS'))
+        self.commits = json.loads(os.getenv('INPUT_COMMITS')) or []
         self.diff_url = os.getenv('INPUT_DIFF_URL')
         self.token = os.getenv('INPUT_TOKEN')
         self.issues_url = f'{self.repos_url}{self.repo}/issues'
@@ -646,6 +646,18 @@ class TodoParser(object):
 if __name__ == "__main__":
     # Create a basic client for communicating with GitHub, automatically initialised with environment variables.
     client = GitHubClient()
+    # Check to see if the workflow has been run manually.
+    # If so, adjust the client SHA and diff URL to use the manually supplied inputs.
+    manual_commit_ref = os.getenv('MANUAL_COMMIT_REF')
+    manual_base_ref = os.getenv('MANUAL_BASE_REF')
+    if manual_commit_ref:
+        client.sha = manual_commit_ref
+    if manual_commit_ref and manual_base_ref:
+        print(f'Manually comparing {manual_base_ref}...{manual_commit_ref}')
+        client.diff_url = f'{client.repos_url}{client.repo}/compare/{manual_base_ref}...{manual_commit_ref}'
+    elif manual_commit_ref:
+        print(f'Manual checking {manual_commit_ref}')
+        client.diff_url = f'{client.repos_url}{client.repo}/commits/{manual_commit_ref}'
     if client.diff_url or len(client.commits) != 0:
         # Get the diff from the last pushed commit.
         last_diff = StringIO(client.get_last_diff())

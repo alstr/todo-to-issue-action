@@ -665,5 +665,14 @@
         "pattern": "#"
       }
     ]
+  },
+  {
+    "language": "Clojure",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": ";;"
+      }
+    ]
   }
 ]
