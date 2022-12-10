@@ -569,6 +569,15 @@
     ]
   },
   {
+    "language": "GDScript",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "#"
+      }
+    ]
+  },
+  {
     "language": "Go",
     "markers": [
       {

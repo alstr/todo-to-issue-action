@@ -40,6 +40,9 @@ class NewIssueTests(unittest.TestCase):
         # Includes 2 tests for Crystal.
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
 
+    def test_gdscript_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'GDScript'), 2)
+
     def test_abap_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'abap'), 2)
 
@@ -104,6 +107,9 @@ class ClosedIssueTests(unittest.TestCase):
     def test_ruby_issues(self):
         # Includes 2 tests for Crystal.
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
+
+    def test_gdscript_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'GDScript'), 2)
 
     def test_abap_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'abap'), 2)
