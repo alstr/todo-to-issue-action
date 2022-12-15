@@ -40,9 +40,6 @@ class NewIssueTests(unittest.TestCase):
         # Includes 2 tests for Crystal.
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
 
-    def test_gdscript_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'GDScript'), 2)
-
     def test_abap_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'abap'), 2)
 
@@ -62,7 +59,7 @@ class NewIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_org_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 4)
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
@@ -108,9 +105,6 @@ class ClosedIssueTests(unittest.TestCase):
         # Includes 2 tests for Crystal.
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
 
-    def test_gdscript_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'GDScript'), 2)
-
     def test_abap_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'abap'), 2)
 
@@ -133,7 +127,7 @@ class ClosedIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_org_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 4)
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
