@@ -102,6 +102,7 @@ jobs:
 -   Kotlin
 -   Less
 -   Markdown
+-   Nix
 -   Objective-C
 -   Org Mode
 -   PHP
