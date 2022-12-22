@@ -297,3 +297,13 @@ index 0000000..525e25d 100644
 -  ;; TODO: todo with description (sub-level)
 -  ;;  Body of the issue should stay here
 -  (str "hello" name))
+diff --git a/tests/example.gd b/tests/example.gd
+index 0000000..525e25d 100644
+--- a/tests/example.gd
++++ b/tests/example.gd
+@@ -1,5 +0,0 @@
+-# TODO Store all the players here
+-var _players: = []
+-
+-# TODO Play the level music
+-export: var music_path: String
