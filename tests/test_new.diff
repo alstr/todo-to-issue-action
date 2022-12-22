@@ -320,6 +320,17 @@ index 0000000..525e25d
 +  ;; TODO: todo with description (sub-level)
 +  ;;  Body of the issue should stay here
 +  (str "hello" name))
+diff --git a/tests/example.gd b/tests/example.gd
+new file mode 100644
+index 0000000..525e25d
+--- /dev/null
++++ b/tests/example.gd
+@@ -0,0 +1,5 @@
++# TODO Store all the players here
++var _players: = []
++
++# TODO Play the level music
++export: var music_path: String
 diff --git a/tests/example.nix b/tests/example.nix
 new file mode 100644
 index 0000000..a6c6cb0
