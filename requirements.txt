@@ -1,5 +1,5 @@
 attrs==22.1.0
-certifi==2021.10.8
+certifi==2022.12.07
 charset-normalizer==2.0.7
 exceptiongroup==1.0.0
 idna==3.3
