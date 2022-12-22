@@ -90,6 +90,7 @@ jobs:
 -   Clojure
 -   Dart
 -   Elixir
+-   GDScript
 -   Go
 -   Handlebars
 -   HCL
