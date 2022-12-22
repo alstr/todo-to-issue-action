@@ -667,5 +667,21 @@
         "pattern": ";;"
       }
     ]
+  },
+  {
+    "language": "Nix",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "#"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "/\\*",
+          "end": "\\*/"
+        }
+      }
+    ]
   }
 ]

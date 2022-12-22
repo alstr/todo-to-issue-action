@@ -331,3 +331,20 @@ index 0000000..525e25d
 +
 +# TODO Play the level music
 +export: var music_path: String
+diff --git a/tests/example.nix b/tests/example.nix
+new file mode 100644
+index 0000000..a6c6cb0
+--- /dev/null
++++ b/tests/example.nix
+@@ -0,0 +1,11 @@
++{
++  # TODO add missing devices
++  stdDeviceList = [
++    "treads"
++    "grabber"
++  ];
++  /*
++    TODO add missing c
++  */
++  sum = a: b: a + b;
++}
