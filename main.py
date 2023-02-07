@@ -46,7 +46,7 @@ class GitHubClient(object):
 
     def __init__(self):
         self.github_url = os.getenv('INPUT_GITHUB_URL')
-        self.base_url = f'{self.base_url}/'
+        self.base_url = f'{self.github_url}/'
         self.repos_url = f'{self.base_url}repos/'
         self.repo = os.getenv('INPUT_REPO')
         self.before = os.getenv('INPUT_BEFORE')
