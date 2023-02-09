@@ -683,5 +683,17 @@
         }
       }
     ]
+  },
+  {
+    "language": "XML",
+    "markers": [
+      {
+        "type": "block",
+        "pattern": {
+          "start": "<!--",
+          "end": "-->"
+        }
+      }
+    ]
   }
 ]

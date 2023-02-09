@@ -323,3 +323,15 @@ index a6c6cb0..25d195f 100644
 -  */
    sum = a: b: a + b;
  }
+diff --git a/tests/example.xaml b/tests/example.xaml
+new file mode 100644
+index 0000000..a6c6cb0
+--- /dev/null
++++ b/tests/example.xaml
+@@ -1,4 +1,2 @@
+-<!-- TODO: Add xaml support -->
+-<Label Text="why"/>
+-<!-- TODO: please -->
+-<Label Text="ok"/>
+<Label Text="There you go"/>
+<Label Text="Thank you"/>
