@@ -72,3 +72,7 @@ inputs:
   IDENTIFIERS:
     description: 'Dictionary of custom identifiers'
     required: false
+  GITHUB_URL:
+    description: 'Base url of GitHub API'
+    required: false
+    default: ${{ github.api_url }}

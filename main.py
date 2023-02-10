@@ -43,10 +43,11 @@ class Issue(object):
 class GitHubClient(object):
     """Basic client for getting the last diff and creating/closing issues."""
     existing_issues = []
-    base_url = 'https://api.github.com/'
-    repos_url = f'{base_url}repos/'
 
     def __init__(self):
+        self.github_url = os.getenv('INPUT_GITHUB_URL')
+        self.base_url = f'{self.github_url}/'
+        self.repos_url = f'{self.base_url}repos/'
         self.repo = os.getenv('INPUT_REPO')
         self.before = os.getenv('INPUT_BEFORE')
         self.sha = os.getenv('INPUT_SHA')
