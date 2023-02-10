@@ -1,12 +1,24 @@
 # TODO to Issue Action
 
-This action will convert newly committed TODO comments to GitHub issues on push. It will also optionally close the issues if the TODOs are removed in a future commit.
+This action will convert newly committed TODO comments to GitHub issues on push.
 
-TODO to Issue works with almost any programming language.
+Optionally, issues can also be closed when the TODOs are removed in a future commit.
+
+Action supports:
+
+* Multiple, customizable comments identifiers (FIXME, etc.),
+* Configurable auto-labeling,
+* Assignees,
+* Milestones,
+* Projects (classic).
+
+`todo-to-issue` works with almost any programming language.
 
 ## Usage
 
-Simply add a comment starting with TODO, followed by a colon and/or space. Here's an example for Python that creates an issue named after the TODO:
+Simply add a comment starting with TODO (or any other comment identifiers configured), followed by a colon and/or space.
+
+Here's an example for Python creating an issue named after the TODO _description_:
 
 ```python
     def hello_world():
@@ -14,68 +26,105 @@ Simply add a comment starting with TODO, followed by a colon and/or space. Here'
         print('Hello world!')
 ```
 
-Multiline TODOs are supported, with additional lines inserted into the issue body. A range of options can also be provided to apply to the new issue:
+_Multiline_ TODOs are supported, with additional lines inserted into the issue body:
+
+```python
+    def hello_world():
+        # TODO: Come up with a more imaginative greeting
+        #  Everyone uses hello world and it's boring.
+        print('Hello world!')
+```
+
+As per the [Google Style Guide](https://google.github.io/styleguide/cppguide.html#TODO_Comments), you can provide a _reference_ after the TODO identifier. This will be included in the issue title for searchability.
+
+```python
+    def hello_world():
+        # TODO(alstr) Come up with a more imaginative greeting
+        #  Everyone uses hello world and it's boring.
+        print('Hello world!')
+```
+
+Don't include parentheses within the reference itself.
+
+## TODO Options
+
+A range of options can also be provided to apply to the new issue.
+
+Options follow the `name: value` syntax.
+Unless otherwise specified, options should be on their own line, below the initial TODO declaration and 'body'.
+
+### Assignees
+
+Comma-separated list of usernames to assign to the issue:
+
+```python
+    def hello_world():
+        # TODO(alstr): Come up with a more imaginative greeting
+        #  Everyone uses hello world and it's boring.
+        #  assignees: alstr, bouteillerAlan, hbjydev
+        print('Hello world!')
+```
+
+### Labels
+
+Comma-separated list of labels to add to the issue:
+
+```python
+    def hello_world():
+        # TODO(alstr): Come up with a more imaginative greeting
+        #  Everyone uses hello world and it's boring.
+        #  labels: enhancement, help wanted
+        print('Hello world!')
+```
+
+If any of the labels do not already exist, they will be created.
+
+The `todo` label is automatically added to issues to help the action efficiently retrieve them in the future.
+
+### Milestone
+
+Milestone `ID` to assign to the issue:
+
+```python
+    def hello_world():
+        # TODO(alstr): Come up with a more imaginative greeting
+        #  Everyone uses hello world and it's boring.
+        #  milestone: 1
+        print('Hello world!')
+```
+
+Only a single milestone can be specified and it must already exist.
+
+### Projects
+
+_Please note, the action currently only supports classic user and organisation projects, and not 'new' projects._
+
+With some additional setup, you can assign the created issues a status (column) within user or organisation projects.
+
+By default, the action cannot access your projects. To enable it, you must:
+
+* [Create a Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token),
+* [Create an encrypted secret in your repo settings](https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository), with the value set to the Personal Access Token,
+* Assign the secret in the workflow file like `PROJECTS_SECRET: ${{ secrets.PROJECTS_SECRET }}`. _Do not enter the raw secret_.
+
+Projects are identified by their `full project name and issue status` (column) reference with the `<user or org name>/project name/status name` syntax.
+
+* To assign to a _user project_, use the `user projects:` option.
+* To assign to an _organisation project_, use `org projects:` option.
 
 ```python
     def hello_world():
         # TODO Come up with a more imaginative greeting
         #  Everyone uses hello world and it's boring.
-        #  labels: enhancement, help wanted
-        #  assignees: alstr, bouteillerAlan, hbjydev
-        #  milestone: 1
+        #  user projects: alstr/Test User Project/To Do
+        #  org projects: alstrorg/Test Org Project/To Do
         print('Hello world!')
 ```
 
-## Setup
+You can assign issues to multiple projects separating them with commas, i.e. `user projects: alstr/Test User Project 1/To Do, alstr/Test User Project 2/Tasks`.
 
-Create a `workflow.yml` file in your `.github/workflows` directory like:
-
-```yml
-name: "Run TODO to Issue"
-on: ["push"]
-jobs:
-    build:
-        runs-on: "ubuntu-latest"
-        steps:
-            - uses: "actions/checkout@v3"
-            - name: "TODO to Issue"
-              uses: "alstr/todo-to-issue-action@v4"
-```
-
-See [Github's workflow syntax](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions) for further details on this file.
-
-The workflow file takes the following optional inputs:
-
-| Input            | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| ---------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CLOSE_ISSUES`   | No       | Optional boolean input that specifies whether to attempt to close an issue when a TODO is removed. Default: `true`.                                                                                                                                                                                                                                                                                                                                                    |
-| `AUTO_P`         | No       | Optional boolean input that specifies whether to format each line in multiline TODOs as a new paragraph. Default: `true`.                                                                                                                                                                                                                                                                                                                                              |
-| `IGNORE`         | No       | Optional string input that provides comma-delimited regular expressions that match files in the repo that we should not scan for TODOs. By default, we will scan all files.                                                                                                                                                                                                                                                                                            |
-| `AUTO_ASSIGN`    | No       | Optional boolean input that specifies whether to assign the newly created issue to the user who triggered the action. If users are manually assigned to an issue, this setting is ignored. Default: `false`.                                                                                                                                                                                                                                                           |
-| `ISSUE_TEMPLATE` | No       | You can override the default issue template by providing your own here. Markdown is supported, and you can inject the issue title, body, code URL and snippet. Example: `"This is my issue title: **{{ title }}**\n\nThis is my issue body: **{{ body }}**\n\nThis is my code URL: **{{ url }}**\n\nThis is my snippet:\n\n{{ snippet }}"`                                                                                                                             |
-| `IDENTIFIERS`    | No       | A list of dictionaries specifying the identifiers for the action to recognise. `TODO` is the default, but you can override this here, and specify default labels to be applied when creating issues for each identifier. JSON string must be valid with double quoted keys/values and itself single-quoted (or double-quoted and escaped). Example: `'[{"name": "TODO", "labels": ["help wanted"]}, {"name": "FIXME", "labels": ["bug"]}]'` (`labels` should be an empty list if no default labels are wanted) |
-
-These can be specified in `with` in the workflow file, as below:
-
-```yml
-name: "Run TODO to Issue"
-on: ["push"]
-jobs:
-    build:
-        runs-on: "ubuntu-latest"
-        steps:
-            - uses: "actions/checkout@v3"
-            - name: "TODO to Issue"
-              uses: "alstr/todo-to-issue-action@v4"
-              with:
-                  AUTO_ASSIGN: true
-```
-
-### Considerations
-
--   TODOs are found by analysing the difference between the new commit and its previous one (i.e., the diff). That means that if this action is implemented during development, any existing TODOs will not be detected. For them to be detected, you would have to remove them, commit, put them back, and commit again, or [run the action manually](#running-the-action-manually).
--   Should you change the TODO text, this will currently create a new issue.
--   Closing TODOs is still somewhat experimental.
+You can also specify `default projects` in the same way by defining `USER_PROJECTS` or `ORG_PROJECTS` in your workflow file.
+These will be applied automatically to every issue, but will be overrode by any specified within the TODO.
 
 ## Supported Languages
 
@@ -126,62 +175,62 @@ jobs:
 -   XML
 -   YAML
 
-New languages can easily be added to the `syntax.json` file used by the action to identify TODO comments. When adding languages, follow the structure of existing entries, and use the language name defined by GitHub in [`languages.yml`](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml). PRs adding new languages are welcome and appreciated. Please add a test for your language in order for your PR to be accepted. See [Contributing](#contributing--issues).
+New languages can easily be added to the `syntax.json` file, used by the action to identify TODO comments.
 
-## TODO Options
+When adding languages, follow the structure of existing entries, and use the language name defined by GitHub in [`languages.yml`](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml).
 
-Unless specified otherwise, options should be on their own line, below the initial TODO declaration.
+Of course, PRs adding new languages are welcome and appreciated. Please add a test for your language in order for your PR to be accepted. See [Contributing](#contributing--issues).
 
-### `assignees:`
+## Setup
 
-Comma-separated list of usernames to assign to the issue.
+Create a `workflow.yml` file in your `.github/workflows` directory like:
 
-### `labels:`
-
-Comma-separated list of labels to add to the issue. If any of the labels do not already exist, they will be created. The `todo` label is automatically added to issues to help the action efficiently retrieve them in the future.
-
-### `milestone:`
-
-Milestone ID to assign to the issue. Only a single milestone can be specified and this must already have been created.
-
-## Other Options
-
-### Reference
-
-As per the [Google Style Guide](https://google.github.io/styleguide/cppguide.html#TODO_Comments), you can provide a reference after the TODO label. This will be included in the issue title for searchability.
-
-```python
-    def hello_world():
-        # TODO(alstr) Come up with a more imaginative greeting
-        print('Hello world!')
+```yml
+name: "Run TODO to Issue"
+on: ["push"]
+jobs:
+    build:
+        runs-on: "ubuntu-latest"
+        steps:
+            - uses: "actions/checkout@v3"
+            - name: "TODO to Issue"
+              uses: "alstr/todo-to-issue-action@v4"
 ```
 
-Don't include parentheses within the identifier itself.
+See [Github's workflow syntax](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions) for further details on this file.
 
-### Projects
+The workflow file takes the following optional inputs:
 
-_Please note, the action currently only supports classic user and organisation projects, and not 'new' projects._
+| Input            | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CLOSE_ISSUES`   | No       | Optional boolean input that specifies whether to attempt to close an issue when a TODO is removed. Default: `true`.                                                                                                                                                                                                                                                                                                                                                    |
+| `AUTO_P`         | No       | Optional boolean input that specifies whether to format each line in multiline TODOs as a new paragraph. Default: `true`.                                                                                                                                                                                                                                                                                                                                              |
+| `IGNORE`         | No       | Optional string input that provides comma-delimited regular expressions that match files in the repo that we should not scan for TODOs. By default, we will scan all files.                                                                                                                                                                                                                                                                                            |
+| `AUTO_ASSIGN`    | No       | Optional boolean input that specifies whether to assign the newly created issue to the user who triggered the action. If users are manually assigned to an issue, this setting is ignored. Default: `false`.                                                                                                                                                                                                                                                           |
+| `ISSUE_TEMPLATE` | No       | You can override the default issue template by providing your own here. Markdown is supported, and you can inject the issue title, body, code URL and snippet. Example: `"This is my issue title: **{{ title }}**\n\nThis is my issue body: **{{ body }}**\n\nThis is my code URL: **{{ url }}**\n\nThis is my snippet:\n\n{{ snippet }}"`                                                                                                                             |
+| `IDENTIFIERS`    | No       | A list of dictionaries specifying the identifiers for the action to recognise. `TODO` is the default, but you can override this here, and specify default labels to be applied when creating issues for each identifier. JSON string must be valid with double quoted keys/values and itself single-quoted (or double-quoted and escaped). Example: `'[{"name": "TODO", "labels": ["help wanted"]}, {"name": "FIXME", "labels": ["bug"]}]'` (`labels` should be an empty list if no default labels are wanted) |
 
-You can assign the created issue to columns within user or organisation projects with some additional setup.
+These can be specified using `with` parameter in the workflow file, as below:
 
-The action cannot access your projects by default. To enable access, you must [create an encrypted secret in your repo settings](https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository), with the value set to a valid Personal Access Token. Then, assign the secret in the workflow file like `PROJECTS_SECRET: ${{ secrets.PROJECTS_SECRET }}`. Do not enter the raw secret.
-
-To assign to a user project, use the `user projects:` prefix. To assign to an organisation project, use `org projects:` prefix.
-
-The syntax is `<user or org name>/project name/column name`. All three must be provided.
-
-```python
-    def hello_world():
-        # TODO Come up with a more imaginative greeting
-        #  Everyone uses hello world and it's boring.
-        #  user projects: alstr/Test User Project/To Do
-        #  org projects: alstrorg/Test Org Project/To Do
-        print('Hello world!')
+```yml
+name: "Run TODO to Issue"
+on: ["push"]
+jobs:
+    build:
+        runs-on: "ubuntu-latest"
+        steps:
+            - uses: "actions/checkout@v3"
+            - name: "TODO to Issue"
+              uses: "alstr/todo-to-issue-action@v4"
+              with:
+                  AUTO_ASSIGN: true
 ```
 
-You can assign to multiple projects by using commas, for example: `user projects: alstr/Test User Project 1/To Do, alstr/Test User Project 2/Tasks`.
+### Considerations
 
-You can also specify default projects in the same way by defining `USER_PROJECTS` or `ORG_PROJECTS` in your workflow file. These will be applied automatically to every issue, but will be overrode by any specified within the TODO.
+-   TODOs are found by analysing the difference between the new commit and its previous one (i.e., the diff). That means that if this action is implemented during development, any existing TODOs will not be detected. For them to be detected, you would have to remove them, commit, put them back, and commit again, or [run the action manually](#running-the-action-manually).
+-   Should you change the TODO text, this will currently create a new issue.
+-   Closing TODOs is still somewhat experimental.
 
 ## Running the action manually
 
@@ -215,9 +264,9 @@ jobs:
 
 Head to the Actions section of your repo, select the workflow and then 'Run workflow'.
 
-You can run the workflow for a single commit, whereby the action will compare the commit to the one directly before it. Enter the commit SHA in the first box.
+You can run the workflow for a single commit by entering the commit SHA in the first box. In this case, the action will compare the commit to the one directly before it.
 
-You can also compare a broader range of commits. In this case, also enter the 'from'/base commit SHA in the second box.
+You can also compare a broader range of commits. For that, also enter the 'from'/base commit SHA in the second box.
 
 ## Troubleshooting
 
