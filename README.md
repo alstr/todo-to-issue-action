@@ -123,6 +123,7 @@ jobs:
 -   Twig
 -   TypeScript
 -   Vue
+-   XML
 -   YAML
 
 New languages can easily be added to the `syntax.json` file used by the action to identify TODO comments. When adding languages, follow the structure of existing entries, and use the language name defined by GitHub in [`languages.yml`](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml). PRs adding new languages are welcome and appreciated. Please add a test for your language in order for your PR to be accepted. See [Contributing](#contributing--issues).
