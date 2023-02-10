@@ -26,108 +26,6 @@ Multiline TODOs are supported, with additional lines inserted into the issue bod
         print('Hello world!')
 ```
 
-## Setup
-
-Create a `workflow.yml` file in your `.github/workflows` directory like:
-
-```yml
-name: "Run TODO to Issue"
-on: ["push"]
-jobs:
-    build:
-        runs-on: "ubuntu-latest"
-        steps:
-            - uses: "actions/checkout@v3"
-            - name: "TODO to Issue"
-              uses: "alstr/todo-to-issue-action@v4"
-```
-
-See [Github's workflow syntax](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions) for further details on this file.
-
-The workflow file takes the following optional inputs:
-
-| Input            | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| ---------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CLOSE_ISSUES`   | No       | Optional boolean input that specifies whether to attempt to close an issue when a TODO is removed. Default: `true`.                                                                                                                                                                                                                                                                                                                                                    |
-| `AUTO_P`         | No       | Optional boolean input that specifies whether to format each line in multiline TODOs as a new paragraph. Default: `true`.                                                                                                                                                                                                                                                                                                                                              |
-| `IGNORE`         | No       | Optional string input that provides comma-delimited regular expressions that match files in the repo that we should not scan for TODOs. By default, we will scan all files.                                                                                                                                                                                                                                                                                            |
-| `AUTO_ASSIGN`    | No       | Optional boolean input that specifies whether to assign the newly created issue to the user who triggered the action. If users are manually assigned to an issue, this setting is ignored. Default: `false`.                                                                                                                                                                                                                                                           |
-| `ISSUE_TEMPLATE` | No       | You can override the default issue template by providing your own here. Markdown is supported, and you can inject the issue title, body, code URL and snippet. Example: `"This is my issue title: **{{ title }}**\n\nThis is my issue body: **{{ body }}**\n\nThis is my code URL: **{{ url }}**\n\nThis is my snippet:\n\n{{ snippet }}"`                                                                                                                             |
-| `IDENTIFIERS`    | No       | A list of dictionaries specifying the identifiers for the action to recognise. `TODO` is the default, but you can override this here, and specify default labels to be applied when creating issues for each identifier. JSON string must be valid with double quoted keys/values and itself single-quoted (or double-quoted and escaped). Example: `'[{"name": "TODO", "labels": ["help wanted"]}, {"name": "FIXME", "labels": ["bug"]}]'` (`labels` should be an empty list if no default labels are wanted) |
-
-These can be specified in `with` in the workflow file, as below:
-
-```yml
-name: "Run TODO to Issue"
-on: ["push"]
-jobs:
-    build:
-        runs-on: "ubuntu-latest"
-        steps:
-            - uses: "actions/checkout@v3"
-            - name: "TODO to Issue"
-              uses: "alstr/todo-to-issue-action@v4"
-              with:
-                  AUTO_ASSIGN: true
-```
-
-### Considerations
-
--   TODOs are found by analysing the difference between the new commit and its previous one (i.e., the diff). That means that if this action is implemented during development, any existing TODOs will not be detected. For them to be detected, you would have to remove them, commit, put them back, and commit again, or [run the action manually](#running-the-action-manually).
--   Should you change the TODO text, this will currently create a new issue.
--   Closing TODOs is still somewhat experimental.
-
-## Supported Languages
-
--   ABAP
--   ABAP CDS
--   AutoHotkey
--   C
--   C++
--   C#
--   CSS
--   Crystal
--   Clojure
--   Dart
--   Elixir
--   GDScript
--   Go
--   Handlebars
--   HCL
--   Haskell
--   HTML
--   Java
--   JavaScript
--   JSON5
--   Julia
--   Kotlin
--   Less
--   Markdown
--   Nix
--   Objective-C
--   Org Mode
--   PHP
--   Python
--   R
--   Razor
--   Ruby
--   Rust
--   Sass
--   Scala
--   SCSS
--   Shell
--   SQL
--   Swift
--   TeX
--   TSX
--   Twig
--   TypeScript
--   Vue
--   XML
--   YAML
-
-New languages can easily be added to the `syntax.json` file used by the action to identify TODO comments. When adding languages, follow the structure of existing entries, and use the language name defined by GitHub in [`languages.yml`](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml). PRs adding new languages are welcome and appreciated. Please add a test for your language in order for your PR to be accepted. See [Contributing](#contributing--issues).
-
 ## TODO Options
 
 Unless specified otherwise, options should be on their own line, below the initial TODO declaration.
@@ -182,6 +80,108 @@ The syntax is `<user or org name>/project name/column name`. All three must be p
 You can assign to multiple projects by using commas, for example: `user projects: alstr/Test User Project 1/To Do, alstr/Test User Project 2/Tasks`.
 
 You can also specify default projects in the same way by defining `USER_PROJECTS` or `ORG_PROJECTS` in your workflow file. These will be applied automatically to every issue, but will be overrode by any specified within the TODO.
+
+## Supported Languages
+
+-   ABAP
+-   ABAP CDS
+-   AutoHotkey
+-   C
+-   C++
+-   C#
+-   CSS
+-   Crystal
+-   Clojure
+-   Dart
+-   Elixir
+-   GDScript
+-   Go
+-   Handlebars
+-   HCL
+-   Haskell
+-   HTML
+-   Java
+-   JavaScript
+-   JSON5
+-   Julia
+-   Kotlin
+-   Less
+-   Markdown
+-   Nix
+-   Objective-C
+-   Org Mode
+-   PHP
+-   Python
+-   R
+-   Razor
+-   Ruby
+-   Rust
+-   Sass
+-   Scala
+-   SCSS
+-   Shell
+-   SQL
+-   Swift
+-   TeX
+-   TSX
+-   Twig
+-   TypeScript
+-   Vue
+-   XML
+-   YAML
+
+New languages can easily be added to the `syntax.json` file used by the action to identify TODO comments. When adding languages, follow the structure of existing entries, and use the language name defined by GitHub in [`languages.yml`](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml). PRs adding new languages are welcome and appreciated. Please add a test for your language in order for your PR to be accepted. See [Contributing](#contributing--issues).
+
+## Setup
+
+Create a `workflow.yml` file in your `.github/workflows` directory like:
+
+```yml
+name: "Run TODO to Issue"
+on: ["push"]
+jobs:
+    build:
+        runs-on: "ubuntu-latest"
+        steps:
+            - uses: "actions/checkout@v3"
+            - name: "TODO to Issue"
+              uses: "alstr/todo-to-issue-action@v4"
+```
+
+See [Github's workflow syntax](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions) for further details on this file.
+
+The workflow file takes the following optional inputs:
+
+| Input            | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CLOSE_ISSUES`   | No       | Optional boolean input that specifies whether to attempt to close an issue when a TODO is removed. Default: `true`.                                                                                                                                                                                                                                                                                                                                                    |
+| `AUTO_P`         | No       | Optional boolean input that specifies whether to format each line in multiline TODOs as a new paragraph. Default: `true`.                                                                                                                                                                                                                                                                                                                                              |
+| `IGNORE`         | No       | Optional string input that provides comma-delimited regular expressions that match files in the repo that we should not scan for TODOs. By default, we will scan all files.                                                                                                                                                                                                                                                                                            |
+| `AUTO_ASSIGN`    | No       | Optional boolean input that specifies whether to assign the newly created issue to the user who triggered the action. If users are manually assigned to an issue, this setting is ignored. Default: `false`.                                                                                                                                                                                                                                                           |
+| `ISSUE_TEMPLATE` | No       | You can override the default issue template by providing your own here. Markdown is supported, and you can inject the issue title, body, code URL and snippet. Example: `"This is my issue title: **{{ title }}**\n\nThis is my issue body: **{{ body }}**\n\nThis is my code URL: **{{ url }}**\n\nThis is my snippet:\n\n{{ snippet }}"`                                                                                                                             |
+| `IDENTIFIERS`    | No       | A list of dictionaries specifying the identifiers for the action to recognise. `TODO` is the default, but you can override this here, and specify default labels to be applied when creating issues for each identifier. JSON string must be valid with double quoted keys/values and itself single-quoted (or double-quoted and escaped). Example: `'[{"name": "TODO", "labels": ["help wanted"]}, {"name": "FIXME", "labels": ["bug"]}]'` (`labels` should be an empty list if no default labels are wanted) |
+
+These can be specified in `with` in the workflow file, as below:
+
+```yml
+name: "Run TODO to Issue"
+on: ["push"]
+jobs:
+    build:
+        runs-on: "ubuntu-latest"
+        steps:
+            - uses: "actions/checkout@v3"
+            - name: "TODO to Issue"
+              uses: "alstr/todo-to-issue-action@v4"
+              with:
+                  AUTO_ASSIGN: true
+```
+
+### Considerations
+
+-   TODOs are found by analysing the difference between the new commit and its previous one (i.e., the diff). That means that if this action is implemented during development, any existing TODOs will not be detected. For them to be detected, you would have to remove them, commit, put them back, and commit again, or [run the action manually](#running-the-action-manually).
+-   Should you change the TODO text, this will currently create a new issue.
+-   Closing TODOs is still somewhat experimental.
 
 ## Running the action manually
 
