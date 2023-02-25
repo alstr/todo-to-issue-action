@@ -278,6 +278,12 @@ index 525e25d..ba4e68d 100644
 -TODO: Create an issue for TODO
 --}
 -sum a b = a + b
+diff --git a/tests/config.jsonc b/tests/config.jsonc
+index 0000000..525e25d 100644
+--- a/tests/config.jsonc
++++ b/tests/config.jsonc
+@@ -0,0 +0,1 @@
+- // TODO: Delete this line from the codebase
 diff --git a/tests/config.json5 b/tests/config.json5
 index 0000000..525e25d 100644
 --- a/tests/config.json5
