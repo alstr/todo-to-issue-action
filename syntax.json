@@ -189,6 +189,15 @@
     ]
   },
   {
+    "language": "Starlark",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "#"
+      }
+    ]
+  },
+  {
     "language": "TypeScript",
     "markers": [
       {
