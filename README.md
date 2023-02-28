@@ -148,6 +148,7 @@ These will be applied automatically to every issue, but will be overrode by any 
 -   Java
 -   JavaScript
 -   JSON5
+-   JSON with Comments
 -   Julia
 -   Kotlin
 -   Less
@@ -166,6 +167,7 @@ These will be applied automatically to every issue, but will be overrode by any 
 -   SCSS
 -   Shell
 -   SQL
+-   Starlark
 -   Swift
 -   TeX
 -   TSX
