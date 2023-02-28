@@ -107,10 +107,14 @@ By default, the action cannot access your projects. To enable it, you must:
 * [Create an encrypted secret in your repo settings](https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository), with the value set to the Personal Access Token,
 * Assign the secret in the workflow file like `PROJECTS_SECRET: ${{ secrets.PROJECTS_SECRET }}`. _Do not enter the raw secret_.
 
+Alternatively, you can also use `PROJECTS_SECRET: ${{ GITHUB_TOKEN }}` if your github token has read/write permissions enabled.
+
 Projects are identified by their `full project name and issue status` (column) reference with the `<user or org name>/project name/status name` syntax.
+If you are specifying an organization repo project to assign the issue, the project identification string takes an additional argument of "repo name" in the syntax and _must_ supply an org name (not user name): `org name/repo name/project name/status name`
 
 * To assign to a _user project_, use the `user projects:` option.
 * To assign to an _organisation project_, use `org projects:` option.
+* To assign to a _repo project_ for an organization, use `repo projects:` option.
 
 ```python
     def hello_world():
@@ -123,7 +127,7 @@ Projects are identified by their `full project name and issue status` (column) r
 
 You can assign issues to multiple projects separating them with commas, i.e. `user projects: alstr/Test User Project 1/To Do, alstr/Test User Project 2/Tasks`.
 
-You can also specify `default projects` in the same way by defining `USER_PROJECTS` or `ORG_PROJECTS` in your workflow file.
+You can also specify `default projects` in the same way by defining `USER_PROJECTS`, `ORG_PROJECTS`, or `REPO_PROJECTS` in your workflow file.
 These will be applied automatically to every issue, but will be overrode by any specified within the TODO.
 
 ## Supported Languages
