@@ -306,6 +306,23 @@ index 0000000..525e25d
 +    #  This function should probably do something more interesting
 +    #  labels: help wanted
 +}
+diff --git a/tests/config.jsonc b/tests/config.jsonc
+new file mode 100644
+index 0000000..525e25d
+--- /dev/null
++++ b/tests/config.jsonc
+@@ -0,0 +0,11 @@
++{
++  "myConfig": [
++ /*
++   GitRepository where 'Git release/tag'
++   matches 'Helm' version
++ */
++ "itIsWonderful",
++ // TODO: Delete this line from the codebase
++ "butItHasSomePendingActivities"
++ ]
++}
 diff --git a/tests/config.json5 b/tests/config.json5
 new file mode 100644
 index 0000000..525e25d

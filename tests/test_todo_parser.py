@@ -35,8 +35,11 @@ class NewIssueTests(unittest.TestCase):
     def test_java_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 2)
 
+    def test_json_with_comments_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 2)
+
     def test_json5_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 1)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 2)
 
     def test_ruby_issues(self):
         # Includes 2 tests for Crystal.
@@ -131,8 +134,11 @@ class ClosedIssueTests(unittest.TestCase):
     def test_starlark_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 5)
 
+    def test_json_with_comments_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 2)
+
     def test_json5_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 1)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 2)
 
     def test_autohotkey_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'autohotkey'), 1)
