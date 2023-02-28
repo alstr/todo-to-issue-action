@@ -23,7 +23,7 @@ class LineStatus(Enum):
 class Issue(object):
     """Basic Issue model for collecting the necessary info to send to GitHub."""
 
-    def __init__(self, title, labels, assignees, milestone, user_projects, org_projects, body, hunk, file_name,
+    def __init__(self, title, labels, assignees, milestone, user_projects, org_projects, repo_projects, body, hunk, file_name,
                  start_line, markdown_language, status, identifier):
         self.title = title
         self.labels = labels
@@ -31,6 +31,7 @@ class Issue(object):
         self.milestone = milestone
         self.user_projects = user_projects
         self.org_projects = org_projects
+        self.repo_projects = repo_projects
         self.body = body
         self.hunk = hunk
         self.file_name = file_name
@@ -164,7 +165,7 @@ class GitHubClient(object):
                                           data=json.dumps(new_issue_body))
 
         # Check if we should assign this issue to any projects.
-        if new_issue_request.status_code == 201 and (len(issue.user_projects) > 0 or len(issue.org_projects) > 0):
+        if new_issue_request.status_code == 201 and (len(issue.user_projects) > 0 or len(issue.org_projects) > 0 or len(issue.repo_projects) > 0):
             issue_json = new_issue_request.json()
             issue_id = issue_json['id']
 
@@ -172,6 +173,8 @@ class GitHubClient(object):
                 self.add_issue_to_projects(issue_id, issue.user_projects, 'user')
             if len(issue.org_projects) > 0:
                 self.add_issue_to_projects(issue_id, issue.org_projects, 'org')
+            if len(issue.repo_projects) > 0:
+                self.add_issue_to_projects(issue_id, issue.repo_projects, 'repo')
 
         return new_issue_request.status_code
 
@@ -217,11 +220,16 @@ class GitHubClient(object):
             print(f'Adding issue to {projects_type} project {i + 1} of {len(projects)}')
             project = project.replace(' / ', '/')
             try:
-                entity_name, project_name, column_name = project.split('/')
+                if projects_type == 'repo':
+                    entity_name, repo_name, project_name, column_name = project.split('/')
+                else:
+                    entity_name, project_name, column_name = project.split('/')
+                    repo_name = ''
             except ValueError:
                 print('Invalid project syntax')
                 continue
             entity_name = entity_name.strip()
+            repo_name = repo_name.strip()
             project_name = project_name.strip()
             column_name = column_name.strip()
 
@@ -229,6 +237,8 @@ class GitHubClient(object):
                 projects_url = f'{self.base_url}users/{entity_name}/projects'
             elif projects_type == 'org':
                 projects_url = f'{self.base_url}orgs/{entity_name}/projects'
+            elif projects_type == 'repo':
+                projects_url = f'{self.base_url}orgs/{entity_name}/{repo_name}/projects'
             else:
                 return
 
@@ -293,6 +303,7 @@ class TodoParser(object):
     MILESTONE_PATTERN = re.compile(r'(?<=milestone:\s).+')
     USER_PROJECTS_PATTERN = re.compile(r'(?<=user projects:\s).+')
     ORG_PROJECTS_PATTERN = re.compile(r'(?<=org projects:\s).+')
+    REPO_PROJECTS_PATTERN = re.compile(r'(?<=repo projects:\s).+')
 
     def __init__(self):
         # Load any custom identifiers, otherwise use the default.
@@ -441,6 +452,7 @@ class TodoParser(object):
 
         default_user_projects = os.getenv('INPUT_USER_PROJECTS', None)
         default_org_projects = os.getenv('INPUT_ORG_PROJECTS', None)
+        default_repo_projects = os.getenv('INPUT_REPO_PROJECTS', None)
         for i, issue in enumerate(issues):
             # Strip some of the diff symbols so it can be included as a code snippet in the issue body.
             # Strip removed lines.
@@ -458,6 +470,9 @@ class TodoParser(object):
             if len(issue.org_projects) == 0 and default_org_projects is not None:
                 separated_org_projects = self._get_projects(f'org projects: {default_org_projects}', 'org')
                 issue.org_projects = separated_org_projects
+            if len(issue.repo_projects) == 0 and default_repo_projects is not None:
+                separated_repo_projects = self._get_projects(f'repo projects: {default_repo_projects}', 'repo')
+                issue.repo_projects = separated_repo_projects
         return issues
 
     def _get_file_details(self, file):
@@ -493,6 +508,7 @@ class TodoParser(object):
                         milestone=None,
                         user_projects=[],
                         org_projects=[],
+                        repo_projects=[],
                         body=[],
                         hunk=code_block['hunk'],
                         file_name=code_block['file'],
@@ -519,6 +535,7 @@ class TodoParser(object):
                     line_milestone = self._get_milestone(cleaned_line)
                     user_projects = self._get_projects(cleaned_line, 'user')
                     org_projects = self._get_projects(cleaned_line, 'org')
+                    repo_projects = self._get_projects(cleaned_line, 'repo')
                     if line_labels:
                         issue.labels.extend(line_labels)
                     elif line_assignees:
@@ -529,6 +546,8 @@ class TodoParser(object):
                         issue.user_projects.extend(user_projects)
                     elif org_projects:
                         issue.org_projects.extend(org_projects)
+                    elif repo_projects:
+                        issue.repo_projects.extend(repo_projects)
                     elif len(cleaned_line):
                         issue.body.append(cleaned_line)
 
@@ -628,6 +647,8 @@ class TodoParser(object):
             projects_search = self.USER_PROJECTS_PATTERN.search(comment, re.IGNORECASE)
         elif projects_type == 'org':
             projects_search = self.ORG_PROJECTS_PATTERN.search(comment, re.IGNORECASE)
+        elif projects_type == 'repo':
+            projects_search = self.REPO_PROJECTS_PATTERN.search(comment, re.IGNORECASE)
         else:
             return projects
         if projects_search:
