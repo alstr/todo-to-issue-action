@@ -187,6 +187,20 @@ index 0000000..7cccc5b
 +   also need to be turned into task, and hopefully
 +   kept together as one.
 + =#
+diff --git a/tests/defs.bzl b/tests/defs.bzl
+new file mode 100644
+index 0000000..525e25d
+--- /dev/null
++++ b/tests/defs.bzl
+@@ -0,0 +1,23 @@
++def hello_world():
++    # TODO: Come up with a more imaginative greeting
++    print('Hello world')
++
++    # TODO: Do more stuff
++    #  This function should probably do something more interesting
++    #  labels: help wanted
++    pass
 diff --git a/tests/example_file.ahk b/src/tests/example_file.ahk
 new file mode 100644
 index 0000000..7cccc5b

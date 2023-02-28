@@ -23,7 +23,8 @@ class NewIssueTests(unittest.TestCase):
         self.raw_issues = parser.parse(diff_file)
 
     def test_python_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 4)
+        # Includes 2 tests for Starlark.
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 6)
 
     def test_yaml_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
@@ -55,6 +56,9 @@ class NewIssueTests(unittest.TestCase):
 
     def test_julia_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'julia'), 2)
+
+    def test_starlark_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 6)
 
     def test_autohotkey_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'autohotkey'), 1)
@@ -99,7 +103,8 @@ class ClosedIssueTests(unittest.TestCase):
         self.raw_issues = parser.parse(diff_file)
 
     def test_python_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 4)
+        # Includes 1 test for Starlark.
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 5)
 
     def test_yaml_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
@@ -125,6 +130,9 @@ class ClosedIssueTests(unittest.TestCase):
 
     def test_julia_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'julia'), 2)
+
+    def test_starlark_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 5)
 
     def test_json_with_comments_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 2)
@@ -174,7 +182,7 @@ class IgnorePatternTests(unittest.TestCase):
             parser.syntax_dict = json.load(syntax_json)
         diff_file = open('tests/test_closed.diff', 'r')
         self.raw_issues = parser.parse(diff_file)
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 4)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 5)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 4)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 0)
@@ -189,7 +197,7 @@ class IgnorePatternTests(unittest.TestCase):
             parser.syntax_dict = json.load(syntax_json)
         diff_file = open('tests/test_closed.diff', 'r')
         self.raw_issues = parser.parse(diff_file)
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 4)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 5)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 0)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 0)
