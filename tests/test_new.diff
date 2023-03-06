@@ -279,6 +279,8 @@ index 0000000..7cccc5b
 +   kept together as one todo
 + */}
 + - [ ] TODO: An inline todo that's NOT a comment (what)
++ [//]: # "TODO Learn how to use haystack?"
++ [//]: # (TODO Learn how to use haystack?)
 diff --git a/tests/example_file.mdx b/src/tests/example_file.mdx
 new file mode 100644
 index 0000000..7cccc5b
@@ -292,6 +294,8 @@ index 0000000..7cccc5b
 +   kept together as one todo
 + */}
 + - [ ] TODO: An inline todo that's NOT a comment (what)
++ [//]: # "TODO Learn how to use haystack?"
++ [//]: # (TODO Learn how to use haystack?)
 diff --git a/tests/example_file.r b/tests/example_file.r
 new file mode 100644
 index 0000000..525e25d

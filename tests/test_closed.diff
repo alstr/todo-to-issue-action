@@ -240,6 +240,8 @@ index 525e25d..ba4e68d 100644
 -   kept together as one todo
 - */}
 - - [ ] TODO: An inline todo that's NOT a comment (what)
+- [//]: # "TODO Learn how to use haystack?"
+- [//]: # (TODO Learn how to use haystack?)
 diff --git a/tests/example_file.mdx b/src/tests/example_file.mdx
 index 525e25d..ba4e68d 100644
 --- a/src/tests/example_file.mdx
@@ -252,6 +254,8 @@ index 525e25d..ba4e68d 100644
 -   kept together as one todo
 - */}
 - - [ ] TODO: An inline todo that's NOT a comment (what)
+- [//]: # "TODO Learn how to use haystack?"
+- [//]: # (TODO Learn how to use haystack?)
 diff --git a/tests/example_file.r b/tests/example_file.r
 index 525e25d..ba4e68d 100644
 --- a/tests/example_file.r
