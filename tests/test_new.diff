@@ -319,7 +319,6 @@ index 0000000..525e25d
 --- /dev/null
 +++ b/src/tests/example_file.qmd
 @@ -0,0 +1,7 @@
-+<!-- TODO: Check RMarkdown comments work -->
 diff --git a/tests/config.jsonc b/tests/config.jsonc
 new file mode 100644
 index 0000000..525e25d
