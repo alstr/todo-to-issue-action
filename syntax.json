@@ -430,6 +430,29 @@
     ]
   },
   {
+    "language": "Rmarkdown",
+    "markers": [
+      {
+        "type": "block",
+        "pattern": {
+          "start": "<!--",
+          "end": "-->"
+        }
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "{/\\*",
+          "end": "\\*/}"
+        }
+      },
+      {
+        "type": "line",
+        "pattern": "- \\[ \\]"
+      }
+    ]
+  },
+  {
     "language": "Shell",
     "markers": [
       {
