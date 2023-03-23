@@ -430,7 +430,7 @@
     ]
   },
   {
-    "language": "Rmarkdown",
+    "language": "RMarkdown",
     "markers": [
       {
         "type": "block",

@@ -240,18 +240,6 @@ index 525e25d..ba4e68d 100644
 -   kept together as one todo
 - */}
 - - [ ] TODO: An inline todo that's NOT a comment (what)
-diff --git a/tests/example_file.md b/src/tests/example_file.rmd
-index 525e25d..ba4e68d 100644
---- a/src/tests/example_file.rmd
-+++ b/src/tests/example_file.rmd
-@@ -1,7 +0,0 @@
-- {/* TODO: Hopefully this comment turns into a todo issue */}
-- {/*
--   TODO:Multiline comments
--   also need to be turned into todos, and hopefully
--   kept together as one todo
-- */}
-- - [ ] TODO: An inline todo that's NOT a comment (what)
 diff --git a/tests/example_file.mdx b/src/tests/example_file.mdx
 index 525e25d..ba4e68d 100644
 --- a/src/tests/example_file.mdx
@@ -277,6 +265,30 @@ hello_world <- function() {
 -    #  This function should probably do something more interesting
 -    #  labels: help wanted
 }
+diff --git a/tests/example_file.rmd b/src/tests/example_file.rmd
+index 525e25d..ba4e68d 100644
+--- a/src/tests/example_file.rmd
++++ b/src/tests/example_file.rmd
+@@ -1,7 +0,0 @@
+- {/* TODO: Hopefully this comment turns into a todo issue */}
+- {/*
+-   TODO:Multiline comments
+-   also need to be turned into todos, and hopefully
+-   kept together as one todo
+- */}
+- - [ ] TODO: An inline todo that's NOT a comment (what)
+diff --git a/tests/example_file.qmd b/src/tests/example_file.qmd
+index 525e25d..ba4e68d 100644
+--- a/src/tests/example_file.qmd
++++ b/src/tests/example_file.qmd
+@@ -1,7 +0,0 @@
+- {/* TODO: Hopefully this comment turns into a todo issue */}
+- {/*
+-   TODO:Multiline comments
+-   also need to be turned into todos, and hopefully
+-   kept together as one todo
+- */}
+- - [ ] TODO: An inline todo that's NOT a comment (what)
 diff --git a/src/Swarm/Game/example.hs b/src/Swarm/Game/example.hs
 index 525e25d..ba4e68d 100644
 --- a/src/Swarm/Game/example.hs
