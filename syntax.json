@@ -438,17 +438,6 @@
           "start": "<!--",
           "end": "-->"
         }
-      },
-      {
-        "type": "block",
-        "pattern": {
-          "start": "{/\\*",
-          "end": "\\*/}"
-        }
-      },
-      {
-        "type": "line",
-        "pattern": "- \\[ \\]"
       }
     ]
   },
