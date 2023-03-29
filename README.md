@@ -160,6 +160,7 @@ These will be applied automatically to every issue, but will be overrode by any 
 -   Python
 -   R
 -   Razor
+-   RMarkdown
 -   Ruby
 -   Rust
 -   Sass
