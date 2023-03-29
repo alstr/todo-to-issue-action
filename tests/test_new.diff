@@ -306,6 +306,20 @@ index 0000000..525e25d
 +    #  This function should probably do something more interesting
 +    #  labels: help wanted
 +}
+diff --git a/tests/example_file.rmd b/src/tests/example_file.rmd
+new file mode 100644
+index 0000000..525e25d
+--- /dev/null
++++ b/src/tests/example_file.rmd
+@@ -0,0 +0,1 @@
++<!-- TODO: Check RMarkdown comments work -->
+diff --git a/tests/example_file.qmd b/src/tests/example_file.qmd
+new file mode 100644
+index 0000000..525e25d
+--- /dev/null
++++ b/src/tests/example_file.qmd
+@@ -0,0 +0,1 @@
++<!-- TODO: Check RMarkdown comments work -->
 diff --git a/tests/config.jsonc b/tests/config.jsonc
 new file mode 100644
 index 0000000..525e25d

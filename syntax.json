@@ -430,6 +430,18 @@
     ]
   },
   {
+    "language": "RMarkdown",
+    "markers": [
+      {
+        "type": "block",
+        "pattern": {
+          "start": "<!--",
+          "end": "-->"
+        }
+      }
+    ]
+  },
+  {
     "language": "Shell",
     "markers": [
       {

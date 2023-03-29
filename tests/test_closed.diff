@@ -265,6 +265,18 @@ hello_world <- function() {
 -    #  This function should probably do something more interesting
 -    #  labels: help wanted
 }
+diff --git a/tests/example_file.rmd b/src/tests/example_file.rmd
+index 525e25d..ba4e68d 100644
+--- a/src/tests/example_file.rmd
++++ b/src/tests/example_file.rmd
+@@ -0,1 +0,0 @@
+- <!-- TODO: Check RMarkdown comments work -->
+diff --git a/tests/example_file.qmd b/src/tests/example_file.qmd
+index 525e25d..ba4e68d 100644
+--- a/src/tests/example_file.qmd
++++ b/src/tests/example_file.qmd
+@@ -0,1 +0,0 @@
+- <!-- TODO: Check RMarkdown comments work -->
 diff --git a/src/Swarm/Game/example.hs b/src/Swarm/Game/example.hs
 index 525e25d..ba4e68d 100644
 --- a/src/Swarm/Game/example.hs
