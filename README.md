@@ -159,6 +159,7 @@ These will be applied automatically to every issue, but will be overrode by any 
 -   PHP
 -   Python
 -   R
+-   ReScript
 -   Razor
 -   RMarkdown
 -   Ruby
