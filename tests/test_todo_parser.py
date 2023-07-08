@@ -169,7 +169,7 @@ class ClosedIssueTests(unittest.TestCase):
 
     def test_nix_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'nix'), 2)
-        
+
     def test_xaml_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'xml'), 2)
 
@@ -204,3 +204,26 @@ class IgnorePatternTests(unittest.TestCase):
         # Includes 2 tests for Crystal.
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
         os.environ['INPUT_IGNORE'] = ''
+
+class EscapeMarkdownTest(unittest.TestCase):
+    def test_simple_escape(self):
+        os.environ['INPUT_ESCAPE'] = 'true'
+        parser = TodoParser()
+        with open('syntax.json', 'r') as syntax_json:
+            parser.syntax_dict = json.load(syntax_json)
+        diff_file = open('tests/test_escape.diff', 'r')
+
+        # I had no other idea to make these checks dynamic.
+        self.raw_issues = parser.parse(diff_file)
+        self.assertEqual(len(self.raw_issues), 2)
+
+        issue = self.raw_issues[0]
+        self.assertEqual(len(issue.body), 2)
+        self.assertEqual(issue.body[0], '\\# Some title')
+        self.assertEqual(issue.body[1], '\\<SomeTag\\>')
+
+        issue = self.raw_issues[1]
+        self.assertEqual(len(issue.body), 2)
+        self.assertEqual(issue.body[0], '\\# Another title')
+        self.assertEqual(issue.body[1], '\\<AnotherTag\\>')
+
