@@ -295,6 +295,9 @@ class TodoParser(object):
     ORG_PROJECTS_PATTERN = re.compile(r'(?<=org projects:\s).+')
 
     def __init__(self):
+        # Determine if the Issues should be escaped.
+        self.should_escape = os.getenv('INPUT_ESCAPE', 'true') == 'true'
+
         # Load any custom identifiers, otherwise use the default.
         custom_identifiers = os.getenv('INPUT_IDENTIFIERS')
         self.identifiers = ['TODO']
@@ -530,7 +533,10 @@ class TodoParser(object):
                     elif org_projects:
                         issue.org_projects.extend(org_projects)
                     elif len(cleaned_line):
-                        issue.body.append(cleaned_line)
+                        if self.should_escape:
+                            issue.body.append(self._escape_markdown(cleaned_line))
+                        else:
+                            issue.body.append(cleaned_line)
 
         if issue is not None and issue.identifier is not None and self.identifiers_dict is not None:
             for identifier_dict in self.identifiers_dict:
@@ -540,6 +546,23 @@ class TodoParser(object):
                             issue.labels.append(label)
 
         return issue
+
+    @staticmethod
+    def _escape_markdown(comment):
+        # All basic characters according to: https://www.markdownguide.org/basic-syntax
+        must_escaped = ['\\', '<', '>', '#', '`', '*', '_', '[', ']', '(', ')', '!', '+', '-', '.', '|', '{', '}', '~', '=']
+
+        escaped = ''
+
+        # Linear Escape Algorithm, because the algorithm ends in an infinite loop when using the function 'replace',
+        # which tries to replace all backslashes with duplicate backslashes, i.e. also the already other escaped
+        # characters.
+        for c in comment:
+            if c in must_escaped:
+                escaped += '\\' + c
+            else:
+                escaped += c
+        return escaped
 
     def _get_line_status(self, comment):
         """Return a Tuple indicating whether this is an addition/deletion/unchanged, plus the cleaned comment."""
