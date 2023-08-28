@@ -93,6 +93,9 @@ class NewIssueTests(unittest.TestCase):
     def test_xaml_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'xml'), 2)
 
+    def test_vba_issues(self):
+        self.asserEqual(count_issues_for_file_type(self.raw_issues, 'VBA'), 4)
+
 class ClosedIssueTests(unittest.TestCase):
     # Check for removed TODOs across the files specified.
     def setUp(self):
@@ -169,9 +172,12 @@ class ClosedIssueTests(unittest.TestCase):
 
     def test_nix_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'nix'), 2)
-        
+
     def test_xaml_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'xml'), 2)
+
+    def test_vba_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'vba'), 4)
 
 class IgnorePatternTests(unittest.TestCase):
 

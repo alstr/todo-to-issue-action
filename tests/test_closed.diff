@@ -359,3 +359,36 @@ index 0000000..a6c6cb0
 -<Label Text="ok"/>
 <Label Text="There you go"/>
 <Label Text="Thank you"/>
+diff --git a/tests/example.cls b/tests/example.cls
+index 6b0c6cf..b37e70a 100644
+--- a/tests/example.cls
++++ b/tests/example.cls
+@@ -1,2 +1,2 @@
+-' TODO: import library instead
+-Public Sub ReinventTheWheel()
++Dim helper as HelperLibrary
++Set helper = New HelperLibrary
+diff --git a/tests/example.bas b/tests/example.bas
+index 6b0c6cf..b37e70a 100644
+--- a/tests/example.bas
++++ b/tests/example.bas
+@@ -1,2 +1,1 @@
+-' TODO: simplify
+-Public Sub MakeThingsComplicated()
++Public Sub DoItSimpler()
+diff --git a/tests/example.frm b/tests/example.frm
+index 6b0c6cf..b37e70a 100644
+--- a/tests/example.frm
++++ b/tests/example.frm
+@@ -1,2 +1,1 @@
+-' TODO: remove feature to prevent legal issues
+-Public Sub Plagiarize()
++Public Sub MakeOriginalIdea()
+diff --git a/tests/example.sht b/tests/example.sht
+index 6b0c6cf..b37e70a 100644
+--- a/tests/example.sht
++++ b/tests/example.sht
+@@ -1,2 +1,1 @@
+-' TODO: switch to tea
+-Public Sub MakeCoffee()
++Public Sub MakeTea()
