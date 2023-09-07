@@ -430,6 +430,22 @@
     ]
   },
   {
+    "language": "MDX",
+    "markers": [
+      {
+        "type": "block",
+        "pattern": {
+          "start": "{/\\*",
+          "end": "\\*/}"
+        }
+      },
+      {
+        "type": "line",
+        "pattern": "- \\[ \\]"
+      }
+    ]
+  },
+  {
     "language": "RMarkdown",
     "markers": [
       {
