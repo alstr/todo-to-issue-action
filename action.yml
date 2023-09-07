@@ -76,3 +76,7 @@ inputs:
     description: 'Base url of GitHub API'
     required: false
     default: ${{ github.api_url }}
+  ESCAPE:
+    description: 'Escape all special Markdown characters'
+    required: false
+    default: true
