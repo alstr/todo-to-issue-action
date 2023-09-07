@@ -94,7 +94,7 @@ class NewIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'xml'), 2)
 
     def test_vba_issues(self):
-        self.asserEqual(count_issues_for_file_type(self.raw_issues, 'VBA'), 4)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'VBA'), 4)
 
 class ClosedIssueTests(unittest.TestCase):
     # Check for removed TODOs across the files specified.
