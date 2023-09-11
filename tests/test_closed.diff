@@ -153,9 +153,14 @@ index 0000000..7cccc5b
 --- /dev/null
 +++ b/src/tests/example_file.jl
 @@ -0,0 +1,2 @@
-- # TODO: Hopefully this comment turns into an issue
+- #TODO: Hopefully this comment turns into an issue
+- # TODO: Hopefully this comment also turns into an issue
 - print("Hello World")
 - #= TODO: Multiline comments
+-   also need to be turned into task, and hopefully
+-   kept together as one.
+- =#
+- #=TODO: Another copied multiline comment
 -   also need to be turned into task, and hopefully
 -   kept together as one.
 - =#

@@ -129,7 +129,7 @@ class ClosedIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'tex'), 2)
 
     def test_julia_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'julia'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'julia'), 4)
 
     def test_starlark_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 5)
