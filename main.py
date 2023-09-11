@@ -413,7 +413,34 @@ class TodoParser(object):
             for marker in block['markers']:
                 # Check if there are line or block comments.
                 if marker['type'] == 'line':
-                    comment_pattern = r'(^[+\-\s].*' + marker['pattern'] + r'\s.+$)'
+                    # Add a negative lookup include the second character from alternative comment patterns
+                    # This step is essential to handle cases like in Julia, where '#' and '#=' are comment patterns.
+                    # It ensures that when a space after the comment is optional ('\s' => '\s*'),
+                    # the second character would be matched because of the any character expression ('.+').
+                    suff_escape_list = []
+                    pref_escape_list = []
+                    for to_escape in block['markers']:
+                        if to_escape['type'] == 'line':
+                            if to_escape['pattern'] == marker['pattern']:
+                                continue
+                            if marker['pattern'][0] == to_escape['pattern'][0]:
+                                suff_escape_list.append(self._extract_character(to_escape['pattern'], 1))
+                        else:
+                            # Block comments and line comments cannot have the same comment pattern,
+                            # so a check if the string is the same is unnecessary
+                            if to_escape['pattern']['start'][0] == marker['pattern'][0]:
+                                suff_escape_list.append(self._extract_character(to_escape['pattern']['start'], 1))
+                            search = to_escape['pattern']['end'].find(marker['pattern'])
+                            if search != -1:
+                                pref_escape_list.append(self._extract_character(to_escape['pattern']['end'], search - 1))
+
+                    comment_pattern = (r'(^[+\-\s].*' +
+                                       (r'(?<!(' + '|'.join(pref_escape_list) + r'))' if len(pref_escape_list) > 0 else '') +
+                                       marker['pattern'] +
+                                       (r'(?!(' + '|'.join(suff_escape_list) + r'))' if len(suff_escape_list) > 0 else '') +
+                                       r'\s*.+$)')
+                    if block['markdown_language'] == "ruby":
+                        print(comment_pattern)
                     comments = re.finditer(comment_pattern, block['hunk'], re.MULTILINE)
                     extracted_comments = []
                     prev_comment = None
@@ -563,6 +590,26 @@ class TodoParser(object):
             else:
                 escaped += c
         return escaped
+
+    @staticmethod
+    def _extract_character(input_str, pos):
+        # Extracts a character from the input string at the specified position,
+        # considering escape sequences when applicable.
+        # Test cases
+        # print(_extract_character("/\\*", 1))   # Output: "\*"
+        # print(_extract_character("\\*", 0))    # Output: "\*"
+        # print(_extract_character("\\", 0))     # Output: "\\"
+        # print(_extract_character("w", 0))      # Output: "w"
+        # print(_extract_character("wa", 1))     # Output: "a"
+        # print(_extract_character("\\\\w", 1))  # Output: "\\"
+        if input_str[pos] == '\\':
+            if pos >= 1 and not input_str[pos - 1] == '\\' and len(input_str) > pos + 1:
+                return '\\' + input_str[pos + 1]
+            return '\\\\'
+        if pos >= 1:
+            if input_str[pos - 1] == '\\':
+                return '\\' + input_str[pos]
+        return input_str[pos]
 
     def _get_line_status(self, comment):
         """Return a Tuple indicating whether this is an addition/deletion/unchanged, plus the cleaned comment."""
