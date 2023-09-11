@@ -439,8 +439,6 @@ class TodoParser(object):
                                        marker['pattern'] +
                                        (r'(?!(' + '|'.join(suff_escape_list) + r'))' if len(suff_escape_list) > 0 else '') +
                                        r'\s*.+$)')
-                    if block['markdown_language'] == "ruby":
-                        print(comment_pattern)
                     comments = re.finditer(comment_pattern, block['hunk'], re.MULTILINE)
                     extracted_comments = []
                     prev_comment = None
