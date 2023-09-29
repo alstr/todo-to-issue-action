@@ -175,6 +175,7 @@ These will be applied automatically to every issue, but will be overrode by any 
 -   Twig
 -   TypeScript
 -   Vue
+-   WGSL
 -   XML
 -   YAML
 
