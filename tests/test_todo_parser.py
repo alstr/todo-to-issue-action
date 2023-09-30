@@ -258,7 +258,7 @@ class CostumeLanguageTest(unittest.TestCase):
         self.assertEqual(parser.languages_dict['Java']['extensions'][0], ".java2")
 
     def test_url_load(self):
-        os.environ['INPUT_LANGUAGES'] = 'https://raw.githubusercontent.com/Christoph-Koschel/todo-to-issue-action/patch-3/tests/costume_languages.json'
+        os.environ['INPUT_LANGUAGES'] = 'https://raw.githubusercontent.com/alstr/todo-to-issue-action/blob/master/tests/costume_languages.json'
         os.environ['INPUT_NO_STANDARD'] = 'true'
         parser = TodoParser()
 
