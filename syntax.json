@@ -748,5 +748,23 @@
         }
       }
     ]
+  },
+  {
+    "language": "Dockerfile",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "#"
+      }
+    ]
+  },
+  {
+    "language": "Earthly",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "#"
+      }
+    ]
   }
 ]
