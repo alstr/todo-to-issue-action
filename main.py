@@ -116,7 +116,11 @@ class GitHubClient(object):
             # Title is too long.
             title = title[:80] + '...'
         formatted_issue_body = self.line_break.join(issue.body)
-        url_to_line = f'{self.base_url}{self.repo}/blob/{self.sha}/{issue.file_name}#L{issue.start_line}'
+        if self.base_url == 'https://api.github.com/':
+            line_base_url = 'https://github.com/'
+        else:
+            line_base_url = self.base_url
+        url_to_line = f'{line_base_url}{self.repo}/blob/{self.sha}/{issue.file_name}#L{issue.start_line}'
         snippet = '```' + issue.markdown_language + '\n' + issue.hunk + '\n' + '```'
 
         issue_template = os.getenv('INPUT_ISSUE_TEMPLATE', None)
