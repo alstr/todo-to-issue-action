@@ -8,7 +8,7 @@ packaging==21.3
 pluggy==1.0.0
 pyparsing==3.0.9
 pytest==7.2.0
-requests==2.26.0
+requests==2.31.0
 ruamel.yaml==0.17.17
 ruamel.yaml.clib==0.2.6
 tomli==2.0.1
