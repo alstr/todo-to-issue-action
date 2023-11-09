@@ -174,6 +174,7 @@ These will be applied automatically to every issue, but will be overrode by any 
 -   TSX
 -   Twig
 -   TypeScript
+-   Visual Basic for Applications (VBA)
 -   Vue
 -   XML
 -   YAML

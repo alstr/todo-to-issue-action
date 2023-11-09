@@ -67,7 +67,7 @@ class NewIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_org_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 4)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 6)
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
@@ -92,6 +92,7 @@ class NewIssueTests(unittest.TestCase):
 
     def test_xaml_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'xml'), 2)
+
 
 class ClosedIssueTests(unittest.TestCase):
     # Check for removed TODOs across the files specified.
@@ -147,7 +148,7 @@ class ClosedIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_org_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 4)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 6)
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
