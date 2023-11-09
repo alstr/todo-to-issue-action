@@ -60,6 +60,9 @@ class GitHubClient(object):
             'Authorization': f'token {self.token}'
         }
         auto_p = os.getenv('INPUT_AUTO_P', 'true') == 'true'
+        self.default_todo_label = os.getenv('INPUT_DEFAULT_TODO_LABEL')
+        if self.default_todo_label:
+            self.default_todo_label = 'todo'
         self.line_break = '\n\n' if auto_p else '\n'
         # Retrieve the existing repo issues now so we can easily check them later.
         self._get_existing_issues()
@@ -100,7 +103,7 @@ class GitHubClient(object):
             'per_page': 100,
             'page': page,
             'state': 'open',
-            'labels': 'todo'
+            'labels': self.default_todo_label
         }
         list_issues_request = requests.get(self.issues_url, headers=self.issue_headers, params=params)
         if list_issues_request.status_code == 200:
@@ -304,7 +307,7 @@ class TodoParser(object):
 
         # Load any custom identifiers, otherwise use the default.
         custom_identifiers = os.getenv('INPUT_IDENTIFIERS')
-        self.identifiers = ['TODO']
+        self.identifiers = [self.default_todo_label]
         self.identifiers_dict = None
         if custom_identifiers:
             try:
@@ -520,7 +523,7 @@ class TodoParser(object):
                         issue_title = line_title
                     issue = Issue(
                         title=issue_title,
-                        labels=['todo'],
+                        labels=[self.default_todo_label],
                         assignees=[],
                         milestone=None,
                         user_projects=[],
