@@ -61,7 +61,7 @@ class GitHubClient(object):
         }
         auto_p = os.getenv('INPUT_AUTO_P', 'true') == 'true'
         self.default_todo_label = os.getenv('INPUT_DEFAULT_TODO_LABEL')
-        if self.default_todo_label:
+        if not self.default_todo_label:
             self.default_todo_label = 'todo'
         self.line_break = '\n\n' if auto_p else '\n'
         # Retrieve the existing repo issues now so we can easily check them later.
