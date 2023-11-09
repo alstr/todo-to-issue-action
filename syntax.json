@@ -593,6 +593,22 @@
     ]
   },
   {
+    "language": "WGSL",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "//"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "/\\*",
+          "end": "\\*/"
+        }
+      }
+    ]
+  },
+  {
     "language": "ABAP",
     "markers": [
       {
