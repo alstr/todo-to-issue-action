@@ -20,6 +20,8 @@ runs:
         REPO: ${{ inputs.REPO }}
         TARGET_REPO: ${{ inputs.TARGET_REPO }}
         TOKEN: ${{ steps.generate-token.outputs.token }}
+        GITHUB_URL: ${{ github.api_url }}
+
 branding:
   icon: "check-square"
   color: "orange"
