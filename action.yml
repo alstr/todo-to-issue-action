@@ -50,7 +50,7 @@ inputs:
   COMMITS:
     description: "An array of commit objects describing the pushed commits"
     required: false
-    default: "${{ github.event.commits }}"
+    default: "${{ toJSON(github.event.commits) }}"
   DIFF_URL:
     description: "The URL to use to get the diff (automatically set)"
     required: false
