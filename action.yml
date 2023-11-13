@@ -13,10 +13,6 @@ runs:
         owner: ${{ inputs.owner }}
         repositories: ${{ inputs.TARGET_REPO }}
 
-    - name: print commits
-      run: echo ${{ toJSON(github.event.commits) }}
-      shell: bash
-
     - name: Change todo to issue
       id: todo-to-issue
       uses: docker://reg.dev.krd/todo-to-issue-action/todo-to-issue:dev
