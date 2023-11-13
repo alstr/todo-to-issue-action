@@ -21,6 +21,7 @@ runs:
         TARGET_REPO: ${{ inputs.TARGET_REPO }}
         TOKEN: ${{ steps.generate-token.outputs.token }}
         GITHUB_URL: ${{ github.api_url }}
+        AUTO_ASSIGN: true
 
 branding:
   icon: "check-square"
