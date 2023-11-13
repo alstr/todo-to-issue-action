@@ -14,7 +14,7 @@ runs:
         repositories: ${{ inputs.TARGET_REPO }}
 
     - name: print commits
-      run: echo ${{ github.event.commits[0] }}
+      run: echo ${{ toJSON(github.event.commits) }}
       shell: bash
 
     - name: Change todo to issue
