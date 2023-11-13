@@ -1,82 +1,85 @@
-name: 'TODO to Issue'
-description: 'Converts IDE TODO comments to GitHub issues'
-author: 'Alastair Mooney'
+name: "TODO to Issue"
+description: "Converts IDE TODO comments to GitHub issues"
+author: "Alastair Mooney"
 runs:
-  using: 'docker'
-  image: 'docker://ghcr.io/alstr/todo-to-issue-action:v4.11.1'
+  using: "docker"
+  image: "docker://ghcr.io/alstr/todo-to-issue-action:v4.11.1"
 branding:
-  icon: 'check-square'
-  color: 'orange'
+  icon: "check-square"
+  color: "orange"
 inputs:
   REPO:
     description: "The path to the repository where the action will be used, e.g. 'alstr/my-repo' (automatically set)"
     required: false
-    default: '${{ github.repository }}'
+    default: "${{ github.repository }}"
+  TARGET_REPO:
+    description: "The path to the GitOps repostiory, e.g 'ditkrg/pilgrimage-gitops"
+    required: true
   BEFORE:
-    description: 'The SHA of the last pushed commit (automatically set)'
+    description: "The SHA of the last pushed commit (automatically set)"
     required: false
-    default: '${{ github.event.before || github.base_ref }}'
+    default: "${{ github.event.before || github.base_ref }}"
   COMMITS:
-    description: 'An array of commit objects describing the pushed commits'
+    description: "An array of commit objects describing the pushed commits"
     required: false
-    default: '${{ toJSON(github.event.commits) }}'
+    default: "${{ toJSON(github.event.commits) }}"
   DIFF_URL:
-    description: 'The URL to use to get the diff (automatically set)'
+    description: "The URL to use to get the diff (automatically set)"
     required: false
-    default: '${{ github.event.pull_request.diff_url }}'
+    default: "${{ github.event.pull_request.diff_url }}"
   SHA:
-    description: 'The SHA of the latest commit (automatically set)'
+    description: "The SHA of the latest commit (automatically set)"
     required: false
-    default: '${{ github.sha }}'
+    default: "${{ github.sha }}"
   TOKEN:
-    description: 'The GitHub access token to allow us to retrieve, create and update issues (automatically set)'
+    description: "The GitHub access token to allow us to retrieve, create and update issues (automatically set)"
     required: false
     default: ${{ github.token }}
   LABEL:
-    description: 'The label that will be used to identify TODO comments (deprecated)'
+    description: "The label that will be used to identify TODO comments (deprecated)"
     required: false
   COMMENT_MARKER:
-    description: 'The marker used to signify a line comment in your code (deprecated)'
+    description: "The marker used to signify a line comment in your code (deprecated)"
     required: false
   CLOSE_ISSUES:
-    description: 'Optional input that specifies whether to attempt to close an issue when a TODO is removed'
+    description: "Optional input that specifies whether to attempt to close an issue when a TODO is removed"
     required: false
     default: true
   AUTO_P:
-    description: 'For multiline TODOs, format each line as a new paragraph when creating the issue'
+    description: "For multiline TODOs, format each line as a new paragraph when creating the issue"
     required: false
     default: true
   PROJECTS_SECRET:
-    description: 'Encrypted secret corresponding to your personal access token (do not enter the actual secret)'
+    description: "Encrypted secret corresponding to your personal access token (do not enter the actual secret)"
     required: false
   USER_PROJECTS:
-    description: 'Default user projects'
+    description: "Default user projects"
     required: false
   ORG_PROJECTS:
-    description: 'Default organisation projects'
+    description: "Default organisation projects"
     required: false
   IGNORE:
-    description: 'A collection of comma-delimited regular expression that matches files that should be ignored when searching for TODOs'
+    description: "A collection of comma-delimited regular expression that matches files that should be ignored when searching for TODOs"
     required: false
   AUTO_ASSIGN:
-    description: 'Automatically assign new issues to the user who triggered the action'
+    description: "Automatically assign new issues to the user who triggered the action"
     required: false
     default: false
   ACTOR:
-    description: 'The username of the person who triggered the action'
+    description: "The username of the person who triggered the action"
     required: false
-    default: '${{ github.actor }}'
+    default: "${{ github.actor }}"
   ISSUE_TEMPLATE:
-    description: 'The template used to format new issues'
+    description: "The template used to format new issues"
     required: false
   IDENTIFIERS:
-    description: 'Dictionary of custom identifiers'
+    description: "Dictionary of custom identifiers"
     required: false
   GITHUB_URL:
-    description: 'Base url of GitHub API'
+    description: "Base url of GitHub API"
     required: false
     default: ${{ github.api_url }}
   ESCAPE:
-    description: 'Escape all special Markdown characters'
+    description: "Escape all special Markdown characters"
     required: false
     default: true

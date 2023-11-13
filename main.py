@@ -49,12 +49,13 @@ class GitHubClient(object):
         self.base_url = f'{self.github_url}/'
         self.repos_url = f'{self.base_url}repos/'
         self.repo = os.getenv('INPUT_REPO')
+        self.target_repo = os.getenv('INPUT_TARGET_REPO')
         self.before = os.getenv('INPUT_BEFORE')
         self.sha = os.getenv('INPUT_SHA')
         self.commits = json.loads(os.getenv('INPUT_COMMITS')) or []
         self.diff_url = os.getenv('INPUT_DIFF_URL')
         self.token = os.getenv('INPUT_TOKEN')
-        self.issues_url = f'{self.repos_url}{self.repo}/issues'
+        self.issues_url = f'{self.repos_url}{self.target_repo}/issues'
         self.issue_headers = {
             'Content-Type': 'application/json',
             'Authorization': f'token {self.token}'
@@ -120,7 +121,7 @@ class GitHubClient(object):
             line_base_url = 'https://github.com/'
         else:
             line_base_url = self.base_url
-        url_to_line = f'{line_base_url}{self.repo}/blob/{self.sha}/{issue.file_name}#L{issue.start_line}'
+        url_to_line = f'{line_base_url}{self.target_repo}/blob/{self.sha}/{issue.file_name}#L{issue.start_line}'
         snippet = '```' + issue.markdown_language + '\n' + issue.hunk + '\n' + '```'
 
         issue_template = os.getenv('INPUT_ISSUE_TEMPLATE', None)
@@ -194,11 +195,11 @@ class GitHubClient(object):
                 issue_number = existing_issue['number']
         else:
             # The titles match, so we will try and close the issue.
-            update_issue_url = f'{self.repos_url}{self.repo}/issues/{issue_number}'
+            update_issue_url = f'{self.repos_url}{self.target_repo}/issues/{issue_number}'
             body = {'state': 'closed'}
             requests.patch(update_issue_url, headers=self.issue_headers, data=json.dumps(body))
 
-            issue_comment_url = f'{self.repos_url}{self.repo}/issues/{issue_number}/comments'
+            issue_comment_url = f'{self.repos_url}{self.target_repo}/issues/{issue_number}/comments'
             body = {'body': f'Closed in {self.sha}'}
             update_issue_request = requests.post(issue_comment_url, headers=self.issue_headers,
                                                  data=json.dumps(body))
