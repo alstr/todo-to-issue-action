@@ -45,6 +45,10 @@ class GitHubClient(object):
     existing_issues = []
 
     def __init__(self):
+        print("GITHUB_URL")
+        print(os.getenv('GITHUB_URL'))
+        print("INPUT_GITHUB_URL")
+        print(os.getenv('INPUT_GITHUB_URL'))
         self.github_url = os.getenv('INPUT_GITHUB_URL')
         self.base_url = f'{self.github_url}/'
         self.repos_url = f'{self.base_url}repos/'
