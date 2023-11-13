@@ -24,6 +24,7 @@ runs:
         REPO: ${{ inputs.REPO }}
         TARGET_REPO: ${{ inputs.TARGET_REPO }}
         BEFORE: ${{ inputs.BEFORE }}
+        COMMITS: ${{ toJSON(github.event.commits) }}
         DIFF_URL: ${{ inputs.DIFF_URL }}
         SHA: ${{ inputs.SHA }}
         TOKEN: ${{ inputs.TOKEN }}
