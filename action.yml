@@ -2,12 +2,56 @@ name: "TODO to Issue"
 description: "Converts IDE TODO comments to GitHub issues"
 author: "Alastair Mooney"
 runs:
-  using: "docker"
-  image: "docker://ghcr.io/alstr/todo-to-issue-action:v4.11.1"
+  using: "composite"
+  steps:
+    - name: Generate token
+      id: generate-token
+      uses: actions/create-github-app-token@v1
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.private-key }}
+        owner: ${{ inputs.owner }}
+        repositories: ${{ inputs.TARGET_REPO }}
+
+    - name: Change todo to issue
+      id: todo-to-issue
+      uses: docker://reg.dev.krd/todo-to-issue-action/todo-to-issue:dev
+      env:
+        REPO: ${{ inputs.REPO }}
+        TARGET_REPO: ${{ inputs.TARGET_REPO }}
+        BEFORE: ${{ inputs.BEFORE }}
+        COMMITS: ${{ toJSON(github.event.commits) }}
+        DIFF_URL: ${{ inputs.DIFF_URL }}
+        SHA: ${{ inputs.SHA }}
+        TOKEN: ${{ inputs.TOKEN }}
+        LABEL: ${{ inputs.LABEL }}
+        COMMENT_MARKER: ${{ inputs.COMMENT_MARKER }}
+        CLOSE_ISSUES: ${{ inputs.CLOSE_ISSUES }}
+        AUTO_P: ${{ inputs.AUTO_P }}
+        PROJECTS_SECRET: ${{ inputs.PROJECTS_SECRET }}
+        USER_PROJECTS: ${{ inputs.USER_PROJECTS }}
+        ORG_PROJECTS: ${{ inputs.ORG_PROJECTS }}
+        IGNORE: ${{ inputs.IGNORE }}
+        AUTO_ASSIGN: ${{ inputs.AUTO_ASSIGN }}
+        ACTOR: ${{ inputs.ACTOR }}
+        ISSUE_TEMPLATE: ${{ inputs.ISSUE_TEMPLATE }}
+        IDENTIFIERS: ${{ inputs.IDENTIFIERS }}
+        GITHUB_URL: ${{ inputs.GITHUB_URL }}
+        ESCAPE: ${{ inputs.ESCAPE }}
 branding:
   icon: "check-square"
   color: "orange"
 inputs:
+  owner:
+    description: "Owner of the repository if it is not the current one"
+    default: ${{ github.repository_owner }}
+    required: false
+  app-id:
+    description: "The id of the GitHub App"
+    required: true
+  private-key:
+    description: "The private key of the GitHub App"
+    required: true
   REPO:
     description: "The path to the repository where the action will be used, e.g. 'alstr/my-repo' (automatically set)"
     required: false
