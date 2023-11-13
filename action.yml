@@ -19,25 +19,7 @@ runs:
       env:
         REPO: ${{ inputs.REPO }}
         TARGET_REPO: ${{ inputs.TARGET_REPO }}
-        BEFORE: ${{ inputs.BEFORE }}
-        COMMITS: ${{ toJSON(github.event.commits) }}
-        DIFF_URL: ${{ inputs.DIFF_URL }}
-        SHA: ${{ inputs.SHA }}
-        TOKEN: ${{ inputs.TOKEN }}
-        LABEL: ${{ inputs.LABEL }}
-        COMMENT_MARKER: ${{ inputs.COMMENT_MARKER }}
-        CLOSE_ISSUES: ${{ inputs.CLOSE_ISSUES }}
-        AUTO_P: ${{ inputs.AUTO_P }}
-        PROJECTS_SECRET: ${{ inputs.PROJECTS_SECRET }}
-        USER_PROJECTS: ${{ inputs.USER_PROJECTS }}
-        ORG_PROJECTS: ${{ inputs.ORG_PROJECTS }}
-        IGNORE: ${{ inputs.IGNORE }}
-        AUTO_ASSIGN: ${{ inputs.AUTO_ASSIGN }}
-        ACTOR: ${{ inputs.ACTOR }}
-        ISSUE_TEMPLATE: ${{ inputs.ISSUE_TEMPLATE }}
-        IDENTIFIERS: ${{ inputs.IDENTIFIERS }}
-        GITHUB_URL: ${{ inputs.GITHUB_URL }}
-        ESCAPE: ${{ inputs.ESCAPE }}
+        TOKEN: ${{ steps.generate-token.outputs.token }}
 branding:
   icon: "check-square"
   color: "orange"
