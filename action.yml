@@ -16,7 +16,7 @@ runs:
     - name: Commits
       run: |
         echo "COMMITS:: "
-        echo ${{ github.event.commits }}
+        echo ${{ github.event.commits[*] }}
       shell: bash
 
     - name: Change todo to issue
