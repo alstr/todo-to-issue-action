@@ -16,10 +16,8 @@ runs:
     - name: Commits
       run: |
         echo "COMMITS:: "
-        echo $COMMITS
+        echo ${{ github.event.commits }}
       shell: bash
-      env:
-        COMMITS: ${{ github.event.commits }}
 
     - name: Change todo to issue
       id: todo-to-issue

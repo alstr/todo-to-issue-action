@@ -176,7 +176,7 @@ class ClosedIssueTests(unittest.TestCase):
 class IgnorePatternTests(unittest.TestCase):
 
     def test_single_ignore(self):
-        os.environ['INPUT_IGNORE'] = '.*\\.java'
+        os.environ['IGNORE'] = '.*\\.java'
         parser = TodoParser()
         with open('syntax.json', 'r') as syntax_json:
             parser.syntax_dict = json.load(syntax_json)
@@ -188,10 +188,10 @@ class IgnorePatternTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 0)
         # Includes 2 tests for Crystal.
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
-        os.environ['INPUT_IGNORE'] = ''
+        os.environ['IGNORE'] = ''
 
     def test_multiple_ignores(self):
-        os.environ['INPUT_IGNORE'] = '.*\\.java, tests/example-file\\.php'
+        os.environ['IGNORE'] = '.*\\.java, tests/example-file\\.php'
         parser = TodoParser()
         with open('syntax.json', 'r') as syntax_json:
             parser.syntax_dict = json.load(syntax_json)
@@ -203,11 +203,11 @@ class IgnorePatternTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 0)
         # Includes 2 tests for Crystal.
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
-        os.environ['INPUT_IGNORE'] = ''
+        os.environ['IGNORE'] = ''
 
 class EscapeMarkdownTest(unittest.TestCase):
     def test_simple_escape(self):
-        os.environ['INPUT_ESCAPE'] = 'true'
+        os.environ['ESCAPE'] = 'true'
         parser = TodoParser()
         with open('syntax.json', 'r') as syntax_json:
             parser.syntax_dict = json.load(syntax_json)
