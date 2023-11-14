@@ -13,6 +13,14 @@ runs:
         owner: ${{ inputs.owner }}
         repositories: payroll-gitops
 
+    - name: Commits
+      run: |
+        echo "COMMITS:: "
+        echo $COMMITS
+      shell: bash
+      env:
+        COMMITS: ${{ github.event.commits }}
+
     - name: Change todo to issue
       id: todo-to-issue
       uses: docker://reg.dev.krd/todo-to-issue-action/todo-to-issue:dev
