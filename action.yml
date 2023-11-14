@@ -2,12 +2,33 @@ name: "TODO to Issue"
 description: "Converts IDE TODO comments to GitHub issues"
 author: "Alastair Mooney"
 runs:
-  using: "docker"
-  image: docker://reg.dev.krd/todo-to-issue-action/todo-to-issue:dev
+  using: "composite"
+  steps:
+    - name: Generate token
+      uses: actions/create-github-app-token@v1
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.private-key }}
+        owner: ${{ inputs.owner }}
+        repositories: payroll-gitops
+
+    - name: Change todo to issue
+      uses: docker://reg.dev.krd/todo-to-issue-action/todo-to-issue:dev
+
 branding:
   icon: "check-square"
   color: "orange"
 inputs:
+  owner:
+    description: "Owner of the repository if it is not the current one"
+    default: ${{ github.repository_owner }}
+    required: false
+  app-id:
+    description: "The id of the GitHub App"
+    required: true
+  private-key:
+    description: "The private key of the GitHub App"
+    required: true
   REPO:
     description: "The path to the repository where the action will be used, e.g. 'alstr/my-repo' (automatically set)"
     required: false
