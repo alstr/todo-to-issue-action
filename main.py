@@ -45,35 +45,26 @@ class GitHubClient(object):
     existing_issues = []
 
     def __init__(self):
-        print("GITHUB_URL")
-        print(os.getenv('GITHUB_URL'))
-        print("COMMITS")
-        print(os.getenv('INPUT_COMMITS'))
-        print("INPUT_COMMITS")
-        print(os.getenv('INPUT_COMMITS'))
-        print("DIFF_URL")
-        print(os.getenv('DIFF_URL'))
-        self.github_url = os.getenv('GITHUB_URL')
+        self.github_url = os.getenv('INPUT_GITHUB_URL')
         self.base_url = f'{self.github_url}/'
         self.repos_url = f'{self.base_url}repos/'
-        self.repo = os.getenv('REPO')
-        self.target_repo = os.getenv('TARGET_REPO')
-        self.before = os.getenv('BEFORE')
-        self.sha = os.getenv('SHA')
-        self.commits = []
-        self.diff_url = os.getenv('DIFF_URL')
-        self.token = os.getenv('TOKEN')
-        self.issues_url = f'{self.repos_url}{self.target_repo}/issues'
+        self.repo = os.getenv('INPUT_REPO')
+        self.before = os.getenv('INPUT_BEFORE')
+        self.sha = os.getenv('INPUT_SHA')
+        self.commits = json.loads(os.getenv('INPUT_COMMITS')) or []
+        self.diff_url = os.getenv('INPUT_DIFF_URL')
+        self.token = os.getenv('INPUT_TOKEN')
+        self.issues_url = f'{self.repos_url}{self.repo}/issues'
         self.issue_headers = {
             'Content-Type': 'application/json',
             'Authorization': f'token {self.token}'
         }
-        auto_p = os.getenv('AUTO_P', 'true') == 'true'
+        auto_p = os.getenv('INPUT_AUTO_P', 'true') == 'true'
         self.line_break = '\n\n' if auto_p else '\n'
         # Retrieve the existing repo issues now so we can easily check them later.
         self._get_existing_issues()
-        self.auto_assign = os.getenv('AUTO_ASSIGN', 'false') == 'true'
-        self.actor = os.getenv('ACTOR')
+        self.auto_assign = os.getenv('INPUT_AUTO_ASSIGN', 'false') == 'true'
+        self.actor = os.getenv('INPUT_ACTOR')
 
     def get_timestamp(self, commit):
         return commit.get('timestamp')
@@ -111,16 +102,7 @@ class GitHubClient(object):
             'state': 'open',
             'labels': 'todo'
         }
-        print("issues_url:")
-        print(self.issues_url)
-        print("issue_headers:")
-        print(self.issue_headers)
-        print("params:")
-        print(params)
         list_issues_request = requests.get(self.issues_url, headers=self.issue_headers, params=params)
-        print("list_issues_request:")
-        print(list_issues_request.status_code)
-        print(list_issues_request.json())
         if list_issues_request.status_code == 200:
             self.existing_issues.extend(list_issues_request.json())
             links = list_issues_request.links
@@ -129,7 +111,6 @@ class GitHubClient(object):
 
     def create_issue(self, issue):
         """Create a dict containing the issue details and send it to GitHub."""
-        print("Creating issue")
         title = issue.title
         if len(title) > 80:
             # Title is too long.
@@ -139,10 +120,10 @@ class GitHubClient(object):
             line_base_url = 'https://github.com/'
         else:
             line_base_url = self.base_url
-        url_to_line = f'{line_base_url}{self.target_repo}/blob/{self.sha}/{issue.file_name}#L{issue.start_line}'
+        url_to_line = f'{line_base_url}{self.repo}/blob/{self.sha}/{issue.file_name}#L{issue.start_line}'
         snippet = '```' + issue.markdown_language + '\n' + issue.hunk + '\n' + '```'
 
-        issue_template = os.getenv('ISSUE_TEMPLATE', None)
+        issue_template = os.getenv('INPUT_ISSUE_TEMPLATE', None)
         if issue_template:
             issue_contents = (issue_template.replace('{{ title }}', issue.title)
                               .replace('{{ body }}', formatted_issue_body)
@@ -186,7 +167,6 @@ class GitHubClient(object):
         new_issue_request = requests.post(url=self.issues_url, headers=self.issue_headers,
                                           data=json.dumps(new_issue_body))
 
-
         # Check if we should assign this issue to any projects.
         if new_issue_request.status_code == 201 and (len(issue.user_projects) > 0 or len(issue.org_projects) > 0):
             issue_json = new_issue_request.json()
@@ -214,11 +194,11 @@ class GitHubClient(object):
                 issue_number = existing_issue['number']
         else:
             # The titles match, so we will try and close the issue.
-            update_issue_url = f'{self.repos_url}{self.target_repo}/issues/{issue_number}'
+            update_issue_url = f'{self.repos_url}{self.repo}/issues/{issue_number}'
             body = {'state': 'closed'}
             requests.patch(update_issue_url, headers=self.issue_headers, data=json.dumps(body))
 
-            issue_comment_url = f'{self.repos_url}{self.target_repo}/issues/{issue_number}/comments'
+            issue_comment_url = f'{self.repos_url}{self.repo}/issues/{issue_number}/comments'
             body = {'body': f'Closed in {self.sha}'}
             update_issue_request = requests.post(issue_comment_url, headers=self.issue_headers,
                                                  data=json.dumps(body))
@@ -227,7 +207,7 @@ class GitHubClient(object):
 
     def add_issue_to_projects(self, issue_id, projects, projects_type):
         """Attempt to add this issue to the specified user or organisation projects."""
-        projects_secret = os.getenv('PROJECTS_SECRET', None)
+        projects_secret = os.getenv('INPUT_PROJECTS_SECRET', None)
         if not projects_secret:
             print('You need to create and set PROJECTS_SECRET to use projects')
             return
@@ -320,10 +300,10 @@ class TodoParser(object):
 
     def __init__(self):
         # Determine if the Issues should be escaped.
-        self.should_escape = os.getenv('ESCAPE', 'true') == 'true'
+        self.should_escape = os.getenv('INPUT_ESCAPE', 'true') == 'true'
 
         # Load any custom identifiers, otherwise use the default.
-        custom_identifiers = os.getenv('IDENTIFIERS')
+        custom_identifiers = os.getenv('INPUT_IDENTIFIERS')
         self.identifiers = ['TODO']
         self.identifiers_dict = None
         if custom_identifiers:
@@ -491,8 +471,8 @@ class TodoParser(object):
                         if issue:
                             issues.append(issue)
 
-        default_user_projects = os.getenv('USER_PROJECTS', None)
-        default_org_projects = os.getenv('ORG_PROJECTS', None)
+        default_user_projects = os.getenv('INPUT_USER_PROJECTS', None)
+        default_org_projects = os.getenv('INPUT_ORG_PROJECTS', None)
         for i, issue in enumerate(issues):
             # Strip some of the diff symbols so it can be included as a code snippet in the issue body.
             # Strip removed lines.
@@ -728,7 +708,7 @@ class TodoParser(object):
         return projects
 
     def _should_ignore(self, file):
-        ignore_patterns = os.getenv('IGNORE', None)
+        ignore_patterns = os.getenv('INPUT_IGNORE', None)
         if ignore_patterns:
             for pattern in filter(None, [pattern.strip() for pattern in ignore_patterns.split(',')]):
                 if re.match(pattern, file):
@@ -739,10 +719,6 @@ class TodoParser(object):
 if __name__ == "__main__":
     # Create a basic client for communicating with GitHub, automatically initialised with environment variables.
     client = GitHubClient()
-    print("client.diff_url")
-    print(client.diff_url)
-    print("client.commits")
-    print(client.commits)
     # Check to see if the workflow has been run manually.
     # If so, adjust the client SHA and diff URL to use the manually supplied inputs.
     manual_commit_ref = os.getenv('MANUAL_COMMIT_REF')
@@ -756,7 +732,6 @@ if __name__ == "__main__":
         print(f'Manual checking {manual_commit_ref}')
         client.diff_url = f'{client.repos_url}{client.repo}/commits/{manual_commit_ref}'
     if client.diff_url or len(client.commits) != 0:
-        print("client.diff_url or len(client.commits) != 0")
         # Get the diff from the last pushed commit.
         last_diff = StringIO(client.get_last_diff())
         # Parse the diff for TODOs and create an Issue object for each.
@@ -785,7 +760,7 @@ if __name__ == "__main__":
                     print('Issue created')
                 else:
                     print('Issue could not be created')
-            elif raw_issue.status == LineStatus.DELETED and os.getenv('CLOSE_ISSUES', 'true') == 'true':
+            elif raw_issue.status == LineStatus.DELETED and os.getenv('INPUT_CLOSE_ISSUES', 'true') == 'true':
                 status_code = client.close_issue(raw_issue)
                 if status_code == 201:
                     print('Issue closed')
