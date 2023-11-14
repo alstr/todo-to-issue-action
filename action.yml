@@ -17,7 +17,7 @@ runs:
       with:
         INPUT_REPO: ${{ inputs.REPO }}
         INPUT_BEFORE: ${{ inputs.BEFORE }}
-        INPUT_COMMITS: ${{ inputs.COMMITS }}
+        INPUT_COMMITS: ${{ toJSON(inputs.COMMITS) }}
         INPUT_DIFF_URL: ${{ inputs.DIFF_URL }}
         INPUT_SHA: ${{ inputs.SHA }}
         INPUT_TOKEN: ${{ inputs.TOKEN }}
@@ -59,7 +59,7 @@ inputs:
   COMMITS:
     description: "An array of commit objects describing the pushed commits"
     required: false
-    default: "${{ toJSON(github.event.commits) }}"
+    default: "${{ github.event.commits }}"
   DIFF_URL:
     description: "The URL to use to get the diff (automatically set)"
     required: false
