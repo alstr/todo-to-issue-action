@@ -19,13 +19,12 @@ runs:
       env:
         REPO: ${{ inputs.REPO }}
         TARGET_REPO: ${{ inputs.TARGET_REPO }}
-        TOKEN: ${{ steps.generate-token.outputs.token }}
+        INPUT_TOKEN: ${{ steps.generate-token.outputs.token }}
         INPUT_REPO: ${{ inputs.REPO }}
         INPUT_BEFORE: ${{ inputs.BEFORE }}
         INPUT_COMMITS: ${{ toJSON(github.event.commits) }}
         INPUT_DIFF_URL: ${{ inputs.DIFF_URL }}
         INPUT_SHA: ${{ inputs.SHA }}
-        INPUT_TOKEN: ${{ inputs.TOKEN }}
         INPUT_CLOSE_ISSUES: ${{ inputs.CLOSE_ISSUES }}
         INPUT_AUTO_P: ${{ inputs.AUTO_P }}
         INPUT_PROJECTS_SECRET: ${{ inputs.PROJECTS_SECRET }}
