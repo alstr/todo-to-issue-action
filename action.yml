@@ -5,6 +5,7 @@ runs:
   using: "composite"
   steps:
     - name: Generate token
+      id: generate-token
       uses: actions/create-github-app-token@v1
       with:
         app-id: ${{ inputs.app-id }}
@@ -13,8 +14,12 @@ runs:
         repositories: payroll-gitops
 
     - name: Change todo to issue
+      id: todo-to-issue
       uses: docker://reg.dev.krd/todo-to-issue-action/todo-to-issue:dev
       env:
+        REPO: ${{ inputs.REPO }}
+        TARGET_REPO: ${{ inputs.TARGET_REPO }}
+        TOKEN: ${{ steps.generate-token.outputs.token }}
         INPUT_REPO: ${{ inputs.REPO }}
         INPUT_BEFORE: ${{ inputs.BEFORE }}
         INPUT_COMMITS: ${{ toJSON(github.event.commits) }}
@@ -33,7 +38,6 @@ runs:
         INPUT_IDENTIFIERS: ${{ inputs.IDENTIFIERS }}
         INPUT_GITHUB_URL: ${{ inputs.GITHUB_URL }}
         INPUT_ESCAPE: ${{ inputs.ESCAPE }}
-
 branding:
   icon: "check-square"
   color: "orange"
@@ -52,6 +56,9 @@ inputs:
     description: "The path to the repository where the action will be used, e.g. 'alstr/my-repo' (automatically set)"
     required: false
     default: "${{ github.repository }}"
+  TARGET_REPO:
+    description: "The path to the GitOps repostiory, e.g 'ditkrg/pilgrimage-gitops"
+    required: true
   BEFORE:
     description: "The SHA of the last pushed commit (automatically set)"
     required: false
