@@ -47,10 +47,10 @@ class GitHubClient(object):
     def __init__(self):
         print("GITHUB_URL")
         print(os.getenv('GITHUB_URL'))
-        print("GITHUB_URL")
-        print(os.getenv('GITHUB_URL'))
         print("COMMITS")
-        print(os.getenv('COMMITS'))
+        print(os.getenv('INPUT_COMMITS'))
+        print("INPUT_COMMITS")
+        print(os.getenv('INPUT_COMMITS'))
         print("DIFF_URL")
         print(os.getenv('DIFF_URL'))
         self.github_url = os.getenv('GITHUB_URL')
@@ -60,7 +60,7 @@ class GitHubClient(object):
         self.target_repo = os.getenv('TARGET_REPO')
         self.before = os.getenv('BEFORE')
         self.sha = os.getenv('SHA')
-        self.commits = os.getenv('COMMITS') or []
+        self.commits = []
         self.diff_url = os.getenv('DIFF_URL')
         self.token = os.getenv('TOKEN')
         self.issues_url = f'{self.repos_url}{self.target_repo}/issues'
