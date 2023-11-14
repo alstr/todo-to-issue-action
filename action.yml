@@ -14,6 +14,25 @@ runs:
 
     - name: Change todo to issue
       uses: docker://reg.dev.krd/todo-to-issue-action/todo-to-issue:dev
+      with:
+        INPUT_REPO: ${{ inputs.REPO }}
+        INPUT_BEFORE: ${{ inputs.BEFORE }}
+        INPUT_COMMITS: ${{ inputs.COMMITS }}
+        INPUT_DIFF_URL: ${{ inputs.DIFF_URL }}
+        INPUT_SHA: ${{ inputs.SHA }}
+        INPUT_TOKEN: ${{ inputs.TOKEN }}
+        INPUT_CLOSE_ISSUES: ${{ inputs.CLOSE_ISSUES }}
+        INPUT_AUTO_P: ${{ inputs.AUTO_P }}
+        INPUT_PROJECTS_SECRET: ${{ inputs.PROJECTS_SECRET }}
+        INPUT_USER_PROJECTS: ${{ inputs.USER_PROJECTS }}
+        INPUT_ORG_PROJECTS: ${{ inputs.ORG_PROJECTS }}
+        INPUT_IGNORE: ${{ inputs.IGNORE }}
+        INPUT_AUTO_ASSIGN: ${{ inputs.AUTO_ASSIGN }}
+        INPUT_ACTOR: ${{ inputs.ACTOR }}
+        INPUT_ISSUE_TEMPLATE: ${{ inputs.ISSUE_TEMPLATE }}
+        INPUT_IDENTIFIERS: ${{ inputs.IDENTIFIERS }}
+        INPUT_GITHUB_URL: ${{ inputs.GITHUB_URL }}
+        INPUT_ESCAPE: ${{ inputs.ESCAPE }}
 
 branding:
   icon: "check-square"
