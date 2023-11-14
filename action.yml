@@ -16,11 +16,7 @@ runs:
     - name: Commits
       run: |
         echo "COMMITS:: "
-        for element in "${github.event.commits[@]}"
-        do
-          echo "$element"
-        done
-
+        echo ${{ github.event.commits[0] }}
       shell: bash
 
     - name: Change todo to issue
