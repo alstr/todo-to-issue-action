@@ -17,8 +17,8 @@ runs:
       id: todo-to-issue
       uses: docker://reg.dev.krd/todo-to-issue-action/todo-to-issue:dev
       env:
-        REPO: ${{ inputs.REPO }}
-        TARGET_REPO: ${{ inputs.TARGET_REPO }}
+        INPUT_OWNER: ${{ inputs.OWNER }}
+        INPUT_TARGET_REPO: ${{ inputs.TARGET_REPO }}
         INPUT_TOKEN: ${{ inputs.token }}
         INPUT_BOT_TOKEN: ${{ steps.generate-token.outputs.token }}
         INPUT_REPO: ${{ inputs.REPO }}
