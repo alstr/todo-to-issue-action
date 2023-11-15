@@ -11,7 +11,7 @@ runs:
         app-id: ${{ inputs.app-id }}
         private-key: ${{ inputs.private-key }}
         owner: ${{ inputs.owner }}
-        repositories: payroll-gitops
+        repositories: test-gitops
 
     - name: Change todo to issue
       id: todo-to-issue
