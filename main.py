@@ -44,43 +44,6 @@ class GitHubClient(object):
     """Basic client for getting the last diff and creating/closing issues."""
     existing_issues = []
 
-    print("INPUT_REPO: ")
-    print(os.getenv("INPUT_REPO"))
-    print("INPUT_BEFORE: ")
-    print(os.getenv("INPUT_BEFORE"))
-    print("INPUT_COMMITS: ")
-    print(os.getenv("INPUT_COMMITS"))
-    print("INPUT_DIFF_URL: ")
-    print(os.getenv("INPUT_DIFF_URL"))
-    print("INPUT_SHA: ")
-    print(os.getenv("INPUT_SHA"))
-    print("INPUT_TOKEN: ")
-    print(os.getenv("INPUT_TOKEN"))
-    print("INPUT_CLOSE_ISSUES: ")
-    print(os.getenv("INPUT_CLOSE_ISSUES"))
-    print("INPUT_AUTO_P: ")
-    print(os.getenv("INPUT_AUTO_P"))
-    print("INPUT_PROJECTS_SECRET: ")
-    print(os.getenv("INPUT_PROJECTS_SECRET"))
-    print("INPUT_USER_PROJECTS: ")
-    print(os.getenv("INPUT_USER_PROJECTS"))
-    print("INPUT_ORG_PROJECTS: ")
-    print(os.getenv("INPUT_ORG_PROJECTS"))
-    print("INPUT_IGNORE: ")
-    print(os.getenv("INPUT_IGNORE"))
-    print("INPUT_AUTO_ASSIGN: ")
-    print(os.getenv("INPUT_AUTO_ASSIGN"))
-    print("INPUT_ACTOR: ")
-    print(os.getenv("INPUT_ACTOR"))
-    print("INPUT_ISSUE_TEMPLATE: ")
-    print(os.getenv("INPUT_ISSUE_TEMPLATE"))
-    print("INPUT_IDENTIFIERS: ")
-    print(os.getenv("INPUT_IDENTIFIERS"))
-    print("INPUT_GITHUB_URL: ")
-    print(os.getenv("INPUT_GITHUB_URL"))
-    print("INPUT_ESCAPE: ")
-    print(os.getenv("INPUT_ESCAPE"))
-
     def __init__(self):
         self.github_url = os.getenv('INPUT_GITHUB_URL')
         self.base_url = f'{self.github_url}/'
@@ -92,10 +55,11 @@ class GitHubClient(object):
         self.commits = json.loads(os.getenv('INPUT_COMMITS')) or []
         self.diff_url = os.getenv('INPUT_DIFF_URL')
         self.token = os.getenv('INPUT_TOKEN')
+        self.bot_token = os.getenv('INPUT_BOT_TOKEN')
         self.issues_url = f'{self.repos_url}{self.target_repo}/issues'
         self.issue_headers = {
             'Content-Type': 'application/json',
-            'Authorization': f'token {self.token}'
+            'Authorization': f'token {self.bot_token}'
         }
         auto_p = os.getenv('INPUT_AUTO_P', 'true') == 'true'
         self.line_break = '\n\n' if auto_p else '\n'
