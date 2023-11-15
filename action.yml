@@ -19,8 +19,8 @@ runs:
       env:
         REPO: ${{ inputs.REPO }}
         TARGET_REPO: ${{ inputs.TARGET_REPO }}
-        INPUT_TOKEN: ${{ steps.generate-token.outputs.token }}
-        INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        INPUT_TOKEN: ${{ inputs.token }}
+        INPUT_BOT_TOKEN: ${{ steps.generate-token.outputs.token }}
         INPUT_REPO: ${{ inputs.REPO }}
         INPUT_BEFORE: ${{ inputs.BEFORE }}
         INPUT_COMMITS: ${{ toJSON(github.event.commits) }}
