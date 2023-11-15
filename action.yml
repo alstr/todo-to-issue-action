@@ -13,12 +13,6 @@ runs:
         owner: ${{ inputs.owner }}
         repositories: test-gitops
 
-    - name: Print token
-      run: echo $TOKEN
-      shell: bash
-      env:
-        TOKEN: ${{ steps.generate-token.outputs.token }}
-
     - name: Change todo to issue
       id: todo-to-issue
       uses: docker://reg.dev.krd/todo-to-issue-action/todo-to-issue:dev
