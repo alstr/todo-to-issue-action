@@ -50,7 +50,7 @@ class GitHubClient(object):
         self.repos_url = f'{self.base_url}repos/'
         self.repo = os.getenv('INPUT_REPO')
         self.owner = os.getenv('INPUT_OWNER')
-        self.target_repo = os.getenv('INPUT_TARGET_REPO')
+        self.target_repo = os.getenv('INPUT_TARGET_REPO') if os.getenv('INPUT_TARGET_REPO') else os.getenv('INPUT_REPO')
         self.before = os.getenv('INPUT_BEFORE')
         self.sha = os.getenv('INPUT_SHA')
         self.commits = json.loads(os.getenv('INPUT_COMMITS')) or []

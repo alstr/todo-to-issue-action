@@ -5,6 +5,7 @@ runs:
   using: "composite"
   steps:
     - name: Generate token
+      if: ${{ inputs.TARGET_REPO }}
       id: generate-token
       uses: actions/create-github-app-token@v1
       with:
