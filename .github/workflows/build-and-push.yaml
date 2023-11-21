@@ -1,0 +1,30 @@
+name: Deploy To Development
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+
+    paths-ignore:
+      - "**.md"
+      - ".vscode/**"
+
+      - ".github/**"
+      - "!.github/workflows/deploy-dev.yaml"
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    uses: ditkrg/build-image-workflow/.github/workflows/workflow.yaml@v1
+    with:
+      image: todo-to-issue-action/todo-to-issue
+      timeout: 15
+    secrets:
+      username: ${{ secrets.HARBOR_USER }}
+      password: ${{ secrets.HARBOR_TOKEN }}
