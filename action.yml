@@ -22,7 +22,7 @@ runs:
 
     - name: Change todo to issue
       id: todo-to-issue
-      uses: docker://reg.dev.krd/todo-to-issue-action/todo-to-issue:dev
+      uses: docker://reg.dev.krd/todo-to-issue-action/todo-to-issue:wip
       env:
         INPUT_OWNER: ${{ inputs.OWNER }}
         INPUT_TARGET_REPO: ${{ inputs.TARGET_REPO }}
