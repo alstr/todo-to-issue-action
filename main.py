@@ -50,17 +50,28 @@ class GitHubClient(object):
         self.repos_url = f'{self.base_url}repos/'
         self.repo = os.getenv('INPUT_REPO')
         self.owner = os.getenv('INPUT_OWNER')
-        self.target_repo = os.getenv('INPUT_TARGET_REPO') if os.getenv('INPUT_TARGET_REPO') else os.getenv('INPUT_REPO')
+        print('target repo ',os.getenv('INPUT_TARGET_REPO'))
+        if os.getenv('INPUT_TARGET_REPO') is not None and os.getenv('INPUT_TARGET_REPO') != '':
+            print('Using target repo ',os.getenv('INPUT_TARGET_REPO'))
+            self.target_repo = os.getenv('INPUT_TARGET_REPO')
+        else:
+            self.target_repo = os.getenv('INPUT_REPO')
+
         self.before = os.getenv('INPUT_BEFORE')
         self.sha = os.getenv('INPUT_SHA')
         self.commits = json.loads(os.getenv('INPUT_COMMITS')) or []
         self.diff_url = os.getenv('INPUT_DIFF_URL')
-        self.token = os.getenv('INPUT_TOKEN')
-        self.bot_token = os.getenv('INPUT_BOT_TOKEN')
+
+        if os.getenv('INPUT_BOT_TOKEN') is not None and os.getenv('INPUT_BOT_TOKEN') != '':
+            print('Using bot token',os.getenv('INPUT_BOT_TOKEN'))
+            self.token = os.getenv('INPUT_BOT_TOKEN')
+        else:
+            self.token = os.getenv('INPUT_TOKEN')
+
         self.issues_url = f'{self.repos_url}{self.owner}/{self.target_repo}/issues'
         self.issue_headers = {
             'Content-Type': 'application/json',
-            'Authorization': f'token {self.bot_token}'
+            'Authorization': f'token {self.token}'
         }
         auto_p = os.getenv('INPUT_AUTO_P', 'true') == 'true'
         self.line_break = '\n\n' if auto_p else '\n'
