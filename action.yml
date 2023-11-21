@@ -4,6 +4,12 @@ author: "Alastair Mooney"
 runs:
   using: "composite"
   steps:
+    - name: Print
+      run: |
+        echo ${{ inputs.TARGET_REPO }}
+        echo ${{ inputs.TARGET_REPO  == ''}}
+      shell: bash
+
     - name: Generate token
       if: ${{ inputs.TARGET_REPO != '' }}
       id: generate-token
