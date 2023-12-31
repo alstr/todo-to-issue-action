@@ -231,19 +231,19 @@ class EscapeMarkdownTest(unittest.TestCase):
         self.assertEqual(issue.body[1], '\\<AnotherTag\\>')
 
 
-class CostumeLanguageTest(unittest.TestCase):
-    def test_costume_lang_load(self):
-        os.environ['INPUT_LANGUAGES'] = 'tests/costume_languages.json'
+class customLanguageTest(unittest.TestCase):
+    def test_custom_lang_load(self):
+        os.environ['INPUT_LANGUAGES'] = 'tests/custom_languages.json'
         parser = TodoParser()
-        # Test if the costume language ILS is actually loaded into the system
+        # Test if the custom language ILS is actually loaded into the system
         self.assertIsNotNone(parser.languages_dict['ILS'])
         self.assertEqual(self.count_syntax(parser, 'ILS'), 1)
 
-    def test_costume_lang_not_dupplicate(self):
-        os.environ['INPUT_LANGUAGES'] = 'tests/costume_languages.json'
+    def test_custom_lang_not_dupplicate(self):
+        os.environ['INPUT_LANGUAGES'] = 'tests/custom_languages.json'
         parser = TodoParser()
 
-        # Test if a costume language can overwrite the rules of an existing one
+        # Test if a custom language can overwrite the rules of an existing one
         self.assertEqual(self.count_syntax(parser, 'Java'), 1)
         for syntax in parser.syntax_dict:
             if syntax['language'] == 'Java':
@@ -258,7 +258,7 @@ class CostumeLanguageTest(unittest.TestCase):
         self.assertEqual(parser.languages_dict['Java']['extensions'][0], ".java2")
 
     def test_url_load(self):
-        os.environ['INPUT_LANGUAGES'] = 'https://raw.githubusercontent.com/alstr/todo-to-issue-action/blob/master/tests/costume_languages.json'
+        os.environ['INPUT_LANGUAGES'] = 'https://raw.githubusercontent.com/alstr/todo-to-issue-action/blob/master/tests/custom_languages.json'
         os.environ['INPUT_NO_STANDARD'] = 'true'
         parser = TodoParser()
 

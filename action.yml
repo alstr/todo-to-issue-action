@@ -81,7 +81,7 @@ inputs:
     required: false
     default: true
   LANGUAGES:
-    description: 'A collection of comma-delimited URLs or local paths starting from the current working directory of the action for costume languages'
+    description: 'A collection of comma-delimited URLs or local paths starting from the current working directory of the action for custom languages'
     required: false
     default: ''
   NO_STANDARD:

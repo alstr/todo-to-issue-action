@@ -337,22 +337,22 @@ class TodoParser(object):
             self.syntax_dict = []
             self.languages_dict = {}
 
-        costume_languages = os.getenv('INPUT_LANGUAGES', '')
-        if costume_languages != '':
-            # Load all costume languages
-            for path in costume_languages.split(','):
+        custom_languages = os.getenv('INPUT_LANGUAGES', '')
+        if custom_languages != '':
+            # Load all custom languages
+            for path in custom_languages.split(','):
                 try:
                     # Decide if the path is a url or local file
                     if path.startswith('http'):
                         languages_request = requests.get(path)
                         if languages_request.status_code != 200:
-                            print('Cannot retrieve costume language file. (\''+path+'\')')
+                            print('Cannot retrieve custom language file. (\''+path+'\')')
                             continue
                         data = languages_request.json()
                     else:
                         path = os.path.join(os.getcwd(), path)
                         if not os.path.exists(path) or not os.path.isfile(path):
-                            print('Cannot retrieve costume language file. (\''+path+'\')')
+                            print('Cannot retrieve custom language file. (\''+path+'\')')
                             continue
                         f = open(path)
                         data = json.load(f)
