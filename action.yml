@@ -80,3 +80,11 @@ inputs:
     description: 'Escape all special Markdown characters'
     required: false
     default: true
+  LANGUAGES:
+    description: 'A collection of comma-delimited URLs or local paths starting from the current working directory of the action for custom languages'
+    required: false
+    default: ''
+  NO_STANDARD:
+    description: 'Exclude loading the default ''syntax.json'' and ''language.yml'' files from the repository'
+    required: false
+    default: false

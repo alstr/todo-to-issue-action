@@ -301,7 +301,6 @@ class TodoParser(object):
     def __init__(self):
         # Determine if the Issues should be escaped.
         self.should_escape = os.getenv('INPUT_ESCAPE', 'true') == 'true'
-
         # Load any custom identifiers, otherwise use the default.
         custom_identifiers = os.getenv('INPUT_IDENTIFIERS')
         self.identifiers = ['TODO']
@@ -319,23 +318,82 @@ class TodoParser(object):
 
         self.languages_dict = None
 
-        # Load the languages data for ascertaining file types.
-        languages_url = 'https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml'
-        languages_request = requests.get(url=languages_url)
-        if languages_request.status_code == 200:
-            languages_data = languages_request.text
-            yaml = YAML(typ='safe')
-            self.languages_dict = yaml.load(languages_data)
-        else:
-            raise Exception('Cannot retrieve languages data. Operation will abort.')
+        # Check if the standard collections should be loaded
+        if os.getenv('INPUT_NO_STANDARD', 'false') != 'true':
+            # Load the languages data for ascertaining file types.
+            languages_url = 'https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml'
+            languages_request = requests.get(url=languages_url)
+            if languages_request.status_code == 200:
+                languages_data = languages_request.text
+                yaml = YAML(typ='safe')
+                self.languages_dict = yaml.load(languages_data)
+            else:
+                raise Exception('Cannot retrieve languages data. Operation will abort.')
 
-        # Load the comment syntax data for identifying comments.
-        syntax_url = 'https://raw.githubusercontent.com/alstr/todo-to-issue-action/master/syntax.json'
-        syntax_request = requests.get(url=syntax_url)
-        if syntax_request.status_code == 200:
-            self.syntax_dict = syntax_request.json()
+            # Load the comment syntax data for identifying comments.
+            syntax_url = 'https://raw.githubusercontent.com/alstr/todo-to-issue-action/master/syntax.json'
+            syntax_request = requests.get(url=syntax_url)
+            if syntax_request.status_code == 200:
+                self.syntax_dict = syntax_request.json()
+            else:
+                raise Exception('Cannot retrieve syntax data. Operation will abort.')
         else:
-            raise Exception('Cannot retrieve syntax data. Operation will abort.')
+            self.syntax_dict = []
+            self.languages_dict = {}
+
+        custom_languages = os.getenv('INPUT_LANGUAGES', '')
+        if custom_languages != '':
+            # Load all custom languages
+            for path in custom_languages.split(','):
+                try:
+                    # Decide if the path is a url or local file
+                    if path.startswith('http'):
+                        languages_request = requests.get(path)
+                        if languages_request.status_code != 200:
+                            print('Cannot retrieve custom language file. (\''+path+'\')')
+                            continue
+                        data = languages_request.json()
+                    else:
+                        path = os.path.join(os.getcwd(), path)
+                        if not os.path.exists(path) or not os.path.isfile(path):
+                            print('Cannot retrieve custom language file. (\''+path+'\')')
+                            continue
+                        f = open(path)
+                        data = json.load(f)
+
+                    # Iterate through the definitions
+                    for lang in data:
+                        # Add/Replace the language definition
+                        self.languages_dict[lang['language']] = {}
+                        self.languages_dict[lang['language']]['type'] = ''
+                        self.languages_dict[lang['language']]['color'] = ''
+                        self.languages_dict[lang['language']]['extensions'] = lang['extensions']
+                        self.languages_dict[lang['language']]['source'] = ''
+                        self.languages_dict[lang['language']]['ace_mode'] = ''
+                        self.languages_dict[lang['language']]['language_id'] = 0
+
+                        # Check if a syntax with the language name already exists
+                        counter = 0
+                        exists = False
+                        for syntax in self.syntax_dict:
+                            if syntax['language'] == lang['language']:
+                                exists = True
+                                break
+
+                            counter = counter + 1
+
+                        if exists:
+                            # When the syntax exists it will be popped out of the list
+                            self.syntax_dict.pop(counter)
+
+                        # And be replaced with the new syntax definition
+                        self.syntax_dict.append({
+                            'language': lang['language'],
+                            'markers': lang['markers']
+                        })
+                except:
+                    print('An error occurred in the custom language file (\''+path+'\')')
+                    print('Please check the file, or if it represents undefined behavior, create an issue at \'https://github.com/alstr/todo-to-issue-action/issues\'')
 
     # noinspection PyTypeChecker
     def parse(self, diff_file):

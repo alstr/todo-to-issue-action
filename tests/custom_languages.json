@@ -1,0 +1,40 @@
+[
+  {
+    "language": "ILS",
+    "extensions": [
+      ".ils"
+    ],
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "//"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "/\\*",
+          "end": "\\*/"
+        }
+      }
+    ]
+  },
+  {
+    "language": "Java",
+    "extensions": [
+      ".java2"
+    ],
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "////"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "+=",
+          "end": "=+"
+        }
+      }
+    ]
+  }
+]
