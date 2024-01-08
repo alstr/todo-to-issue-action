@@ -292,11 +292,11 @@ class TodoParser(object):
     ADDITION_PATTERN = re.compile(r'(?<=^\+).*')
     DELETION_PATTERN = re.compile(r'(?<=^-).*')
     REF_PATTERN = re.compile(r'.+?(?=\))')
-    LABELS_PATTERN = re.compile(r'(?<=labels:\s).+')
-    ASSIGNEES_PATTERN = re.compile(r'(?<=assignees:\s).+')
-    MILESTONE_PATTERN = re.compile(r'(?<=milestone:\s).+')
-    USER_PROJECTS_PATTERN = re.compile(r'(?<=user projects:\s).+')
-    ORG_PROJECTS_PATTERN = re.compile(r'(?<=org projects:\s).+')
+    LABELS_PATTERN = re.compile(r'(?<=labels:\s).+', re.IGNORECASE)
+    ASSIGNEES_PATTERN = re.compile(r'(?<=assignees:\s).+', re.IGNORECASE)
+    MILESTONE_PATTERN = re.compile(r'(?<=milestone:\s).+', re.IGNORECASE)
+    USER_PROJECTS_PATTERN = re.compile(r'(?<=user projects:\s).+', re.IGNORECASE)
+    ORG_PROJECTS_PATTERN = re.compile(r'(?<=org projects:\s).+', re.IGNORECASE)
 
     def __init__(self):
         # Determine if the Issues should be escaped.
@@ -706,13 +706,13 @@ class TodoParser(object):
         title_identifier = None
         for identifier in self.identifiers:
             title_identifier = identifier
-            title_pattern = re.compile(r'(?<=' + identifier + r'[\s:]).+')
+            title_pattern = re.compile(r'(?<=' + identifier + r'[\s:]).+', re.IGNORECASE)
             title_search = title_pattern.search(comment, re.IGNORECASE)
             if title_search:
                 title = title_search.group(0).strip()
                 break
             else:
-                title_ref_pattern = re.compile(r'(?<=' + identifier + r'\().+')
+                title_ref_pattern = re.compile(r'(?<=' + identifier + r'\().+', re.IGNORECASE)
                 title_ref_search = title_ref_pattern.search(comment, re.IGNORECASE)
                 if title_ref_search:
                     title = title_ref_search.group(0).strip()
