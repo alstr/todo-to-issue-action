@@ -232,7 +232,7 @@ The workflow file takes the following optional inputs:
 | AUTO_ASSIGN     | False    | Automatically assign new issues to the user who triggered the action                                                               |
 | ACTOR           | False    | The username of the person who triggered the action                                                                                |
 | ISSUE_TEMPLATE  | False    | The template used to format new issues                                                                                             |
-| IDENTIFIERS     | False    | Dictionary of custom identifiers                                                                                                   |
+| IDENTIFIERS     | False    | List of custom identifier dictionaries of the form `[{"name": "TODO", "labels": [todo]}]`                                          |
 | GITHUB_URL      | False    | Base URL of GitHub API                                                                                                             |
 | ESCAPE          | False    | Escape all special Markdown characters                                                                                             |
 | LANGUAGES       | False    | A collection of comma-delimited URLs or local paths starting from the current working directory of the action for custom languages |
