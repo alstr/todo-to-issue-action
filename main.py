@@ -369,7 +369,7 @@ class TodoParser(object):
                         self.languages_dict[lang['language']]['color'] = ''
                         self.languages_dict[lang['language']]['extensions'] = lang['extensions']
                         self.languages_dict[lang['language']]['source'] = ''
-                        self.languages_dict[lang['language']]['ace_mode'] = ''
+                        self.languages_dict[lang['language']]['ace_mode'] = 'text'
                         self.languages_dict[lang['language']]['language_id'] = 0
 
                         # Check if a syntax with the language name already exists
