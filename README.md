@@ -143,6 +143,7 @@ These will be applied automatically to every issue, but will be overrode by any 
 - CSS
 - Crystal
 - Clojure
+- Cuda
 - Dart
 - Elixir
 - GDScript
