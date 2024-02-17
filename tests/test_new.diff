@@ -403,3 +403,17 @@ index 0000000..a6c6cb0
 +<Label Text="why"/>
 +<!-- TODO: please -->
 +<Label Text="ok"/>
+diff --git a/tests/example.cu b/tests/example.cu
+new file mode 100644
+index 0000000..a6c6cb0
+--- /dev/null
++++ b/tests/example.cu
+@@ -1,3 +1,11 @@
++
++// TODO rename this function
++__global__ void test() {
++    /*
++    TODO fill this with something useful
++    */
++}
++

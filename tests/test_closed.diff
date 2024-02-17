@@ -364,3 +364,14 @@ index 0000000..a6c6cb0
 -<Label Text="ok"/>
 <Label Text="There you go"/>
 <Label Text="Thank you"/>
+diff --git a/tests/example.cu b/tests/example.cu
+index 0000000..a6c6cb0
+--- /dev/null
++++ b/tests/example.cu
+@@ -1,9 +1,5 @@
+-// TODO rename this function
+ __global__ void test() {
+-    /*
+-    TODO fill this with something useful
+-    */
+ }
