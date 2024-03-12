@@ -550,16 +550,28 @@ class TodoParser(object):
                 issue.org_projects = separated_org_projects
         return issues
 
+    def _get_language_details(self, language_name, attribute, value):
+        """Try and get the Markdown language and comment syntax
+        data based on a specified attribute of the language."""
+        extensions = [ex.lower() for ex in self.languages_dict[language_name][attribute]]
+        if value.lower() in extensions:
+            for syntax_details in self.syntax_dict:
+                if syntax_details['language'] == language_name:
+                    return syntax_details['markers'], self.languages_dict[language_name]['ace_mode']
+        return None, None
+
     def _get_file_details(self, file):
         """Try and get the Markdown language and comment syntax data for the given file."""
         file_name, extension = os.path.splitext(os.path.basename(file))
         for language_name in self.languages_dict:
-            if 'extensions' in self.languages_dict[language_name]:
-                language_extensions = [ex.lower() for ex in self.languages_dict[language_name]['extensions']]
-                if extension.lower() in language_extensions:
-                    for syntax_details in self.syntax_dict:
-                        if syntax_details['language'] == language_name:
-                            return syntax_details['markers'], self.languages_dict[language_name]['ace_mode']
+            if extension != "" and 'extensions' in self.languages_dict[language_name]:
+                syntax_details, ace_mode = self._get_language_details(language_name, 'extensions', extension)
+                if syntax_details is not None and ace_mode is not None:
+                    return syntax_details, ace_mode
+            elif 'filenames' in self.languages_dict[language_name]:
+                syntax_details, ace_mode = self._get_language_details(language_name, 'filenames', file_name)
+                if syntax_details is not None and ace_mode is not None:
+                    return syntax_details, ace_mode
         return None, None
 
     def _extract_issue_if_exists(self, comment, marker, code_block):
