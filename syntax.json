@@ -764,5 +764,14 @@
         }
       }
     ]
+  },
+  {
+    "language": "Makefile",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "#"
+      }
+    ]
   }
 ]
