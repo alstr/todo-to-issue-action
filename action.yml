@@ -3,7 +3,7 @@ description: 'Converts IDE TODO comments to GitHub issues'
 author: 'Alastair Mooney'
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/alstr/todo-to-issue-action:v4.12.2'
+  image: 'docker://ghcr.io/alstr/todo-to-issue-action:v4.13'
 branding:
   icon: 'check-square'
   color: 'orange'
