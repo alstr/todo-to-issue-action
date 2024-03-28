@@ -375,3 +375,20 @@ index 0000000..a6c6cb0
 -    TODO fill this with something useful
 -    */
  }
+diff --git a/tests/Makefile b/tests/Makefile
+index 2996176..7545ccf 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -1,12 +1,9 @@
+-# TODO change name.
+ NAME = asm
+ 
+-# TODO source files must be explicitly named.
+ SRC = $(shell find mandatory/src -name "*.asm")
+ OBJ = $(patsubst src/%.asm, obj/%.o, $(SRC))
+ .PHONY: all
+ all: $(NAME)
+ $(NAME): $(OBJ)
+-	# TODO create the directory.
+ 	$(AR) rc $@ $(OBJ)
+ 

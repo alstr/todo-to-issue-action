@@ -417,3 +417,21 @@ index 0000000..a6c6cb0
 +    */
 +}
 +
+diff --git a/tests/Makefile b/tests/Makefile
+new file mode 100644
+index 0000000..2996176
+--- /dev/null
++++ b/tests/Makefile
+@@ -0,0 +1,12 @@
++# TODO change name.
++NAME = asm
++
++# TODO source files must be explicitly named.
++SRC = $(shell find mandatory/src -name "*.asm")
++OBJ = $(patsubst src/%.asm, obj/%.o, $(SRC))
++.PHONY: all
++all: $(NAME)
++$(NAME): $(OBJ)
++	# TODO create the directory.
++	$(AR) rc $@ $(OBJ)
++
