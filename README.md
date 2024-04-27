@@ -196,6 +196,8 @@ PR to be accepted. See [Contributing](#contributing--issues).
 
 ## Setup
 
+On your repo go to `Settings -> Actions (General) -> Workflow permissions` and enable "Read and write permissions".
+
 Create a `workflow.yml` file in your `.github/workflows` directory like:
 
 ```yml
