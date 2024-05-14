@@ -773,5 +773,14 @@
         "pattern": "#"
       }
     ]
+  },
+  {
+    "language": "Zig",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "//"
+      }
+    ]
   }
 ]
