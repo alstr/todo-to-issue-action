@@ -392,3 +392,19 @@ index 2996176..7545ccf 100644
 -	# TODO create the directory.
  	$(AR) rc $@ $(OBJ)
  
+diff --git a/tests/example_file.liquid b/tests/example_file.liquid
+index 0000000..7cccc5b 100644
+--- a/tests/example_file.liquid
++++ b/tests/example_file.liquid
+@@ -1,6 +0,0 @@
+-{% comment %} TODO: remove loop logic {% endcomment %}
+ {% for i in (1..3) -%}
+- # TODO: Do math here!
+- # labels: help wanted
+   {{ i }}
+ {% endfor %}
+-{% comment %}
+-TODO: Render Liquid file
+ {% assign featured_product = all_products["product_handle"] %}
+ {% render "product", product: featured_product %}
+-{% endcomment %}

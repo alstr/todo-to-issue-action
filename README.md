@@ -159,6 +159,7 @@ These will be applied automatically to every issue, but will be overrode by any 
 - Julia
 - Kotlin
 - Less
+- Liquid
 - Makefile
 - Markdown
 - Nix

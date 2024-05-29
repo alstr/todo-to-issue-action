@@ -773,5 +773,21 @@
         "pattern": "#"
       }
     ]
+  },
+  {
+    "language": "Liquid",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "#"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "{% comment %}",
+          "end": "{% endcomment %}"
+        }
+      }
+    ]
   }
 ]
