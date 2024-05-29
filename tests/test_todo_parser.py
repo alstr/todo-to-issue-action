@@ -190,7 +190,7 @@ class ClosedIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'c_cpp'), 2)
 
     def test_liquid_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'liquid'), 3);
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'liquid'), 3)
 
 
 class IgnorePatternTests(unittest.TestCase):
