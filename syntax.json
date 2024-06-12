@@ -1,5 +1,17 @@
 [
   {
+    "language": "Astro",
+    "markers": [
+      {
+        "type": "block",
+        "pattern": {
+          "start": "<!--",
+          "end": "-->"
+        }
+      }
+    ]
+  },
+  {
     "language": "Python",
     "markers": [
       {
