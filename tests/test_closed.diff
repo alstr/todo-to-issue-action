@@ -408,3 +408,21 @@ index 0000000..7cccc5b 100644
  {% assign featured_product = all_products["product_handle"] %}
  {% render "product", product: featured_product %}
 -{% endcomment %}
+diff --git a/tests/example.zig b/tests/example.zig
+index 22ab4b9..78b9b23 100644
+--- a/tests/example.zig
++++ b/tests/example.zig
+@@ -1,5 +1,4 @@
+ const std = @import("std");
+-// TODO catch all errors
+ pub fn main() !void {
+     const stdout_file = std.io.getStdOut().writer();
+     var bw = std.io.bufferedWriter(stdout_file);
+@@ -8,7 +7,6 @@ pub fn main() !void {
+     try stdout.print("Run `zig build test` to run the tests.\n", .{});
+     try bw.flush();
+ }
+-// TODO add one more test
+ test "simple test" {
+     var list = std.ArrayList(i32).init(std.testing.allocator);
+     defer list.deinit();
