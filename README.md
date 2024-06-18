@@ -186,6 +186,7 @@ These will be applied automatically to every issue, but will be overrode by any 
 - Vue
 - XML
 - YAML
+- Zig
 
 New languages can easily be added to the `syntax.json` file, used by the action to identify TODO comments.
 
@@ -213,13 +214,13 @@ jobs:
         uses: "alstr/todo-to-issue-action@v4"
 ```
 
-See [Github's workflow syntax](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions) for
+See [Github&#39;s workflow syntax](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions) for
 further details on this file.
 
 The workflow file takes the following optional inputs:
 
 | Parameter       | Required | Description                                                                                                                        |
-|-----------------|----------|------------------------------------------------------------------------------------------------------------------------------------|
+| --------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | REPO            | False    | The path to the repository where the action will be used, e.g., 'alstr/my-repo' (automatically set)                                |
 | BEFORE          | False    | The SHA of the last pushed commit (automatically set)                                                                              |
 | COMMITS         | False    | An array of commit objects describing the pushed commits                                                                           |
@@ -237,7 +238,7 @@ The workflow file takes the following optional inputs:
 | AUTO_ASSIGN     | False    | Automatically assign new issues to the user who triggered the action                                                               |
 | ACTOR           | False    | The username of the person who triggered the action                                                                                |
 | ISSUE_TEMPLATE  | False    | The template used to format new issues                                                                                             |
-| IDENTIFIERS     | False    | List of custom identifier dictionaries of the form `[{"name": "TODO", "labels": [todo]}]`                                          |
+| IDENTIFIERS     | False    | List of custom identifier dictionaries of the form `[{"name": "TODO", "labels": [todo]}]`                                        |
 | GITHUB_URL      | False    | Base URL of GitHub API                                                                                                             |
 | ESCAPE          | False    | Escape all special Markdown characters                                                                                             |
 | LANGUAGES       | False    | A collection of comma-delimited URLs or local paths starting from the current working directory of the action for custom languages |
@@ -275,7 +276,7 @@ If you want to add or overwrite language detections that are not currently suppo
 Just create a file that contains an array with languages, each having the following properties:
 
 | Property   | Type     | Description                                                                                                                                        |
-|------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | language   | string   | The unique name of the language                                                                                                                    |
 | extensions | string[] | A list of file extensions for the custom language                                                                                                  |
 | markers    | object[] | A list of objects (see example below) to declare the comment markers. Make sure to escape all special Markdown characters with a double backslash. |
@@ -305,6 +306,7 @@ For example, here is a language declaration file for Java:
   }
 ]
 ```
+
 Next, add the file to the `LANGUAGES` property in your workflow YAML file. Please note that if multiple paths are provided, the last path specified will take precedence over any previous ones:
 
 **Using a Local File:**
