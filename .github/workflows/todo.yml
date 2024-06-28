@@ -21,5 +21,3 @@ jobs:
             ${{ inputs.MANUAL_COMMIT_REF }}
           MANUAL_BASE_REF:
             ${{ inputs.MANUAL_BASE_REF }}
-        with:
-          PROJECTS_SECRET: ${{ secrets.PROJECTS_SECRET }}

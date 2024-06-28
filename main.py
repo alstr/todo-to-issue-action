@@ -23,14 +23,12 @@ class LineStatus(Enum):
 class Issue(object):
     """Basic Issue model for collecting the necessary info to send to GitHub."""
 
-    def __init__(self, title, labels, assignees, milestone, user_projects, org_projects, body, hunk, file_name,
+    def __init__(self, title, labels, assignees, milestone, body, hunk, file_name,
                  start_line, markdown_language, status, identifier):
         self.title = title
         self.labels = labels
         self.assignees = assignees
         self.milestone = milestone
-        self.user_projects = user_projects
-        self.org_projects = org_projects
         self.body = body
         self.hunk = hunk
         self.file_name = file_name
@@ -167,16 +165,6 @@ class GitHubClient(object):
         new_issue_request = requests.post(url=self.issues_url, headers=self.issue_headers,
                                           data=json.dumps(new_issue_body))
 
-        # Check if we should assign this issue to any projects.
-        if new_issue_request.status_code == 201 and (len(issue.user_projects) > 0 or len(issue.org_projects) > 0):
-            issue_json = new_issue_request.json()
-            issue_id = issue_json['id']
-
-            if len(issue.user_projects) > 0:
-                self.add_issue_to_projects(issue_id, issue.user_projects, 'user')
-            if len(issue.org_projects) > 0:
-                self.add_issue_to_projects(issue_id, issue.org_projects, 'org')
-
         return new_issue_request.status_code
 
     def close_issue(self, issue):
@@ -205,81 +193,6 @@ class GitHubClient(object):
             return update_issue_request.status_code
         return None
 
-    def add_issue_to_projects(self, issue_id, projects, projects_type):
-        """Attempt to add this issue to the specified user or organisation projects."""
-        projects_secret = os.getenv('INPUT_PROJECTS_SECRET', None)
-        if not projects_secret:
-            print('You need to create and set PROJECTS_SECRET to use projects')
-            return
-        projects_headers = {
-            'Accept': 'application/vnd.github.inertia-preview+json',
-            'Authorization': f'token {projects_secret}'
-        }
-
-        # Loop through all the projects that we should assign this issue to.
-        for i, project in enumerate(projects):
-            print(f'Adding issue to {projects_type} project {i + 1} of {len(projects)}')
-            project = project.replace(' / ', '/')
-            try:
-                entity_name, project_name, column_name = project.split('/')
-            except ValueError:
-                print('Invalid project syntax')
-                continue
-            entity_name = entity_name.strip()
-            project_name = project_name.strip()
-            column_name = column_name.strip()
-
-            if projects_type == 'user':
-                projects_url = f'{self.base_url}users/{entity_name}/projects'
-            elif projects_type == 'org':
-                projects_url = f'{self.base_url}orgs/{entity_name}/projects'
-            else:
-                return
-
-            # We need to use the project name to get its ID.
-            projects_request = requests.get(url=projects_url, headers=projects_headers)
-            if projects_request.status_code == 200:
-                projects_json = projects_request.json()
-                for project_dict in projects_json:
-                    if project_dict['name'].lower() == project_name.lower():
-                        project_id = project_dict['id']
-                        break
-                else:
-                    print('Project does not exist, skipping')
-                    continue
-            else:
-                print('An error occurred, skipping')
-                continue
-
-            # Use the project ID and column name to get the column ID.
-            columns_url = f'{self.base_url}projects/{project_id}/columns'
-            columns_request = requests.get(url=columns_url, headers=projects_headers)
-            if columns_request.status_code == 200:
-                columns_json = columns_request.json()
-                for column_dict in columns_json:
-                    if column_dict['name'].lower() == column_name.lower():
-                        column_id = column_dict['id']
-                        break
-                else:
-                    print('Column does not exist, skipping')
-                    continue
-            else:
-                print('An error occurred, skipping')
-                continue
-
-            # Use the column ID to assign the issue to the project.
-            new_card_url = f'{self.base_url}projects/columns/{column_id}/cards'
-            new_card_body = {
-                'content_id': int(issue_id),
-                'content_type': 'Issue'
-            }
-            new_card_request = requests.post(url=new_card_url, headers=projects_headers,
-                                             data=json.dumps(new_card_body))
-            if new_card_request.status_code == 201:
-                print('Issue card added to project')
-            else:
-                print('Issue card could not be added to project')
-
 
 class TodoParser(object):
     """Parser for extracting information from a given diff file."""
@@ -295,8 +208,6 @@ class TodoParser(object):
     LABELS_PATTERN = re.compile(r'(?<=labels:\s).+', re.IGNORECASE)
     ASSIGNEES_PATTERN = re.compile(r'(?<=assignees:\s).+', re.IGNORECASE)
     MILESTONE_PATTERN = re.compile(r'(?<=milestone:\s).+', re.IGNORECASE)
-    USER_PROJECTS_PATTERN = re.compile(r'(?<=user projects:\s).+', re.IGNORECASE)
-    ORG_PROJECTS_PATTERN = re.compile(r'(?<=org projects:\s).+', re.IGNORECASE)
 
     def __init__(self):
         # Determine if the Issues should be escaped.
@@ -529,8 +440,6 @@ class TodoParser(object):
                         if issue:
                             issues.append(issue)
 
-        default_user_projects = os.getenv('INPUT_USER_PROJECTS', None)
-        default_org_projects = os.getenv('INPUT_ORG_PROJECTS', None)
         for i, issue in enumerate(issues):
             # Strip some of the diff symbols so it can be included as a code snippet in the issue body.
             # Strip removed lines.
@@ -541,13 +450,6 @@ class TodoParser(object):
             cleaned_hunk = re.sub(r'\n\sNo newline at end of file', '', cleaned_hunk, 0, re.MULTILINE)
             issue.hunk = cleaned_hunk
 
-            # If no projects have been specified for this issue, assign any default projects that exist.
-            if len(issue.user_projects) == 0 and default_user_projects is not None:
-                separated_user_projects = self._get_projects(f'user projects: {default_user_projects}', 'user')
-                issue.user_projects = separated_user_projects
-            if len(issue.org_projects) == 0 and default_org_projects is not None:
-                separated_org_projects = self._get_projects(f'org projects: {default_org_projects}', 'org')
-                issue.org_projects = separated_org_projects
         return issues
 
     def _get_language_details(self, language_name, attribute, value):
@@ -593,8 +495,6 @@ class TodoParser(object):
                         labels=['todo'],
                         assignees=[],
                         milestone=None,
-                        user_projects=[],
-                        org_projects=[],
                         body=[],
                         hunk=code_block['hunk'],
                         file_name=code_block['file'],
@@ -619,18 +519,12 @@ class TodoParser(object):
                     line_labels = self._get_labels(cleaned_line)
                     line_assignees = self._get_assignees(cleaned_line)
                     line_milestone = self._get_milestone(cleaned_line)
-                    user_projects = self._get_projects(cleaned_line, 'user')
-                    org_projects = self._get_projects(cleaned_line, 'org')
                     if line_labels:
                         issue.labels.extend(line_labels)
                     elif line_assignees:
                         issue.assignees.extend(line_assignees)
                     elif line_milestone and not issue.milestone:
                         issue.milestone = line_milestone
-                    elif user_projects:
-                        issue.user_projects.extend(user_projects)
-                    elif org_projects:
-                        issue.org_projects.extend(org_projects)
                     elif len(cleaned_line):
                         if self.should_escape:
                             issue.body.append(self._escape_markdown(cleaned_line))
@@ -762,20 +656,6 @@ class TodoParser(object):
             if milestone.isdigit():
                 milestone = int(milestone)
         return milestone
-
-    def _get_projects(self, comment, projects_type):
-        """Check the passed comment for projects to link the issue to."""
-        projects = []
-        if projects_type == 'user':
-            projects_search = self.USER_PROJECTS_PATTERN.search(comment, re.IGNORECASE)
-        elif projects_type == 'org':
-            projects_search = self.ORG_PROJECTS_PATTERN.search(comment, re.IGNORECASE)
-        else:
-            return projects
-        if projects_search:
-            projects = projects_search.group(0).replace(', ', ',')
-            projects = list(filter(None, projects.split(',')))
-        return projects
 
     def _should_ignore(self, file):
         ignore_patterns = os.getenv('INPUT_IGNORE', None)

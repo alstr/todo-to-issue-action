@@ -9,8 +9,7 @@ Action supports:
 * Multiple, customizable comments identifiers (FIXME, etc.),
 * Configurable auto-labeling,
 * Assignees,
-* Milestones,
-* Projects (classic).
+* Milestones.
 
 `todo-to-issue` works with almost any programming language.
 
@@ -95,42 +94,6 @@ Milestone `ID` to assign to the issue:
 ```
 
 Only a single milestone can be specified and it must already exist.
-
-### Projects
-
-_Please note, the action currently only supports classic user and organisation projects, and not 'new' projects._
-
-With some additional setup, you can assign the created issues a status (column) within user or organisation projects.
-
-By default, the action cannot access your projects. To enable it, you must:
-
-* [Create a Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token),
-* [Create an encrypted secret in your repo settings](https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository),
-  with the value set to the Personal Access Token,
-* Assign the secret in the workflow file like `PROJECTS_SECRET: ${{ secrets.PROJECTS_SECRET }}`. _Do not enter the raw
-  secret_.
-
-Projects are identified by their `full project name and issue status` (column) reference with
-the `<user or org name>/project name/status name` syntax.
-
-* To assign to a _user project_, use the `user projects:` option.
-* To assign to an _organisation project_, use `org projects:` option.
-
-```python
-    def hello_world():
-    # TODO Come up with a more imaginative greeting
-    #  Everyone uses hello world and it's boring.
-    #  user projects: alstr/Test User Project/To Do
-    #  org projects: alstrorg/Test Org Project/To Do
-    print('Hello world!')
-```
-
-You can assign issues to multiple projects separating them with commas,
-i.e. `user projects: alstr/Test User Project 1/To Do, alstr/Test User Project 2/Tasks`.
-
-You can also specify `default projects` in the same way by defining `USER_PROJECTS` or `ORG_PROJECTS` in your workflow
-file.
-These will be applied automatically to every issue, but will be overrode by any specified within the TODO.
 
 ## Supported Languages
 
@@ -229,10 +192,7 @@ The workflow file takes the following optional inputs:
 | LABEL           | False    | The label that will be used to identify TODO comments (deprecated)                                                                 |
 | COMMENT_MARKER  | False    | The marker used to signify a line comment in your code (deprecated)                                                                |
 | CLOSE_ISSUES    | False    | Optional input that specifies whether to attempt to close an issue when a TODO is removed                                          |
-| AUTO_P          | False    | For multiline TODOs, format each line as a new paragraph when creating the issue                                                   |
-| PROJECTS_SECRET | False    | Encrypted secret corresponding to your personal access token (do not enter the actual secret)                                      |
-| USER_PROJECTS   | False    | Default user projects                                                                                                              |
-| ORG_PROJECTS    | False    | Default organization projects                                                                                                      |
+| AUTO_P          | False    | For multiline TODOs, format each line as a new paragraph when creating the issue                                                   | |
 | IGNORE          | False    | A collection of comma-delimited regular expressions that match files that should be ignored when searching for TODOs               |
 | AUTO_ASSIGN     | False    | Automatically assign new issues to the user who triggered the action                                                               |
 | ACTOR           | False    | The username of the person who triggered the action                                                                                |

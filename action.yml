@@ -46,15 +46,6 @@ inputs:
     description: 'For multiline TODOs, format each line as a new paragraph when creating the issue'
     required: false
     default: true
-  PROJECTS_SECRET:
-    description: 'Encrypted secret corresponding to your personal access token (do not enter the actual secret)'
-    required: false
-  USER_PROJECTS:
-    description: 'Default user projects'
-    required: false
-  ORG_PROJECTS:
-    description: 'Default organisation projects'
-    required: false
   IGNORE:
     description: 'A collection of comma-delimited regular expression that matches files that should be ignored when searching for TODOs'
     required: false
