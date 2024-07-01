@@ -452,3 +452,22 @@ index 0000000..7cccc5b
 +{% assign featured_product = all_products["product_handle"] %}
 +{% render "product", product: featured_product %}
 +{% endcomment %}
+diff --git a/tests/example_file.tsx b/tests/example_file.tsx
+new file mode 100644
+index 0000000..7cccc5b
+--- /dev/null
++++ b/tests/example_file.tsx
+@@ -0,0 +1,13 @@
++// TODO: rename component
++export default async function Component() {
++  /* TODO: Use state here
++  labels: client  */
++
++  return (
++    <div>
++      {/* 
++       TODO: use styled component library 
++      */}
++    </div>
++  );
++}
