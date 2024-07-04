@@ -408,3 +408,24 @@ index 0000000..7cccc5b 100644
  {% assign featured_product = all_products["product_handle"] %}
  {% render "product", product: featured_product %}
 -{% endcomment %}
+diff --git a/tests/example_file.tsx b/tests/example_file.tsx
+index 0000000..7cccc5b 100644
+--- a/tests/example_file.tsx
++++ b/tests/example_file.tsx
+@@ -1,7 +1,3 @@
+-// TODO: rename component
+-export default async function Component() {
++export default async function MyComponent() {
+-  /* TODO: Use state here
+-  labels: client  */
++  const [data, setData] = useState<string>("");
+ 
+   return (
+     <div>
+-      {/* 
+-       TODO: use styled component library 
+-      */}
++      <StyledComponent>{data}</StyledComponent>
+     </div>
+   );
+ }
