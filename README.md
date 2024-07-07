@@ -399,6 +399,8 @@ up in a diff multiple times. This is an acknowledged issue, but you may have som
 
 If you do encounter any problems, please file an issue or submit a PR. Everyone is welcome and encouraged to contribute.
 
+[![GitHub repo Good Issues for newbies](https://img.shields.io/github/issues/alstr/todo-to-issue-action/good%20first%20issue?style=flat&logo=github&logoColor=green&label=Good%20First%20issues)](https://github.com/alstr/todo-to-issue-action/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) [![GitHub Help Wanted issues](https://img.shields.io/github/issues/alstr/todo-to-issue-action/help%20wanted?style=flat&logo=github&logoColor=b545d1&label=%22Help%20Wanted%22%20issues)](https://github.com/alstr/todo-to-issue-action/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22) [![GitHub Help Wanted PRs](https://img.shields.io/github/issues-pr/alstr/todo-to-issue-action/help%20wanted?style=flat&logo=github&logoColor=b545d1&label=%22Help%20Wanted%22%20PRs)](https://github.com/alstr/todo-to-issue-action/pulls?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22) [![GitHub repo Issues](https://img.shields.io/github/issues/alstr/todo-to-issue-action?style=flat&logo=github&logoColor=red&label=Issues)](https://github.com/alstr/todo-to-issue-action/issues?q=is%3Aopen)
+
 **If submitting a request to add a new language, please ensure you add the appropriate tests covering your language. In
 the interests of stability, PRs without tests cannot be considered.**
 
