@@ -448,3 +448,22 @@ index 525e25d..ba4e68d 100644
 -TODO: Create an issue for TODO
 --}
 -sum a b = a + b
+diff --git a/src/Swarm/Game/example.agda b/src/Swarm/Game/example.agda
+index 525e25d..ba4e68d 100644
+--- a/src/Swarm/Game/example.agda
++++ b/src/Swarm/Game/example.agda
+@@ -1,14 +0,0 @@
+--- | Standard devices that are always installed.
+---
+--- TODO: Remove standard devices
+---  In the future, make a way to build these and just start the base
+---  out with a large supply of each?
+---  labels: redesign
+-stdDeviceList =
+-  ["treads", "grabber", "solar panel", "scanner", "plasma cutter"]
+-
+-{- | Very complicated function.
+-
+-TODO: Create an issue for TODO
+--}
+-sum a b = a + b
