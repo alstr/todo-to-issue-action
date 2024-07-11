@@ -167,6 +167,7 @@ These will be applied automatically to every issue, but will be overrode by any 
 - Org Mode
 - PHP
 - Python
+- PureScript
 - R
 - Razor
 - RMarkdown

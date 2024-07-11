@@ -365,6 +365,22 @@
     ]
   },
   {
+    "language": "PureScript",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "--"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "{-",
+          "end": "-}"
+        }
+      }
+    ]
+  },
+  {
     "language": "Haskell",
     "markers": [
       {
