@@ -64,6 +64,7 @@ class GitHubClient(object):
         self.auto_assign = os.getenv('INPUT_AUTO_ASSIGN', 'false') == 'true'
         self.actor = os.getenv('INPUT_ACTOR')
 
+    # noinspection PyMethodMayBeStatic
     def get_timestamp(self, commit):
         return commit.get('timestamp')
 
@@ -220,7 +221,7 @@ class TodoParser(object):
             try:
                 custom_identifiers_dict = json.loads(custom_identifiers)
                 for identifier_dict in custom_identifiers_dict:
-                    if type(identifier_dict['name']) != str or type(identifier_dict['labels']) != list:
+                    if type(identifier_dict['name']) is not str or type(identifier_dict['labels']) is not list:
                         raise TypeError
                 self.identifiers = [identifier['name'] for identifier in custom_identifiers_dict]
                 self.identifiers_dict = custom_identifiers_dict
@@ -256,6 +257,7 @@ class TodoParser(object):
         if custom_languages != '':
             # Load all custom languages
             for path in custom_languages.split(','):
+                # noinspection PyBroadException
                 try:
                     # Decide if the path is a url or local file
                     if path.startswith('http'):
@@ -302,9 +304,10 @@ class TodoParser(object):
                             'language': lang['language'],
                             'markers': lang['markers']
                         })
-                except:
+                except Exception:
                     print('An error occurred in the custom language file (\''+path+'\')')
-                    print('Please check the file, or if it represents undefined behavior, create an issue at \'https://github.com/alstr/todo-to-issue-action/issues\'')
+                    print('Please check the file, or if it represents undefined behavior, '
+                          'create an issue at \'https://github.com/alstr/todo-to-issue-action/issues\'')
 
     # noinspection PyTypeChecker
     def parse(self, diff_file):
@@ -346,8 +349,8 @@ class TodoParser(object):
                 continue
 
             # Break this section down into individual changed code blocks.
-            line_numbers = re.finditer(self.LINE_NUMBERS_PATTERN, hunk)
-            for i, line_numbers in enumerate(line_numbers):
+            line_numbers_iterator = re.finditer(self.LINE_NUMBERS_PATTERN, hunk)
+            for i, line_numbers in enumerate(line_numbers_iterator):
                 line_numbers_inner_search = re.search(self.LINE_NUMBERS_INNER_PATTERN, line_numbers.group(0))
                 line_numbers_str = line_numbers_inner_search.group(0).strip('@@ -')
                 start_line = line_numbers_str.split(' ')[1].strip('+')
@@ -367,6 +370,7 @@ class TodoParser(object):
                 prev_index = len(code_blocks) - 1
                 # Set the end of the last code block based on the start of this one.
                 if prev_block and prev_block['file'] == block['file']:
+                    # noinspection PyTypedDict
                     code_blocks[prev_index]['hunk_end'] = line_numbers.start()
                     code_blocks[prev_index]['hunk'] = (prev_block['hunk']
                                                        [prev_block['hunk_start']:line_numbers.start()])
@@ -405,13 +409,16 @@ class TodoParser(object):
                                 suff_escape_list.append(self._extract_character(to_escape['pattern']['start'], 1))
                             search = to_escape['pattern']['end'].find(marker['pattern'])
                             if search != -1:
-                                pref_escape_list.append(self._extract_character(to_escape['pattern']['end'], search - 1))
+                                pref_escape_list.append(self._extract_character(to_escape['pattern']['end'],
+                                                                                search - 1))
 
-                    comment_pattern = (r'(^[+\-\s].*' +
-                                       (r'(?<!(' + '|'.join(pref_escape_list) + r'))' if len(pref_escape_list) > 0 else '') +
-                                       marker['pattern'] +
-                                       (r'(?!(' + '|'.join(suff_escape_list) + r'))' if len(suff_escape_list) > 0 else '') +
-                                       r'\s*.+$)')
+                    comment_pattern = (r'(^[+\-\s].*'
+                                       + (r'(?<!(' + '|'.join(pref_escape_list) + r'))' if len(pref_escape_list) > 0
+                                          else '')
+                                       + marker['pattern']
+                                       + (r'(?!(' + '|'.join(suff_escape_list) + r'))' if len(suff_escape_list) > 0
+                                          else '')
+                                       + r'\s*.+$)')
                     comments = re.finditer(comment_pattern, block['hunk'], re.MULTILINE)
                     extracted_comments = []
                     prev_comment = None
@@ -543,7 +550,8 @@ class TodoParser(object):
     @staticmethod
     def _escape_markdown(comment):
         # All basic characters according to: https://www.markdownguide.org/basic-syntax
-        must_escaped = ['\\', '<', '>', '#', '`', '*', '_', '[', ']', '(', ')', '!', '+', '-', '.', '|', '{', '}', '~', '=']
+        must_escape = ['\\', '<', '>', '#', '`', '*', '_', '[', ']', '(', ')', '!', '+', '-', '.', '|', '{', '}', '~',
+                       '=']
 
         escaped = ''
 
@@ -551,7 +559,7 @@ class TodoParser(object):
         # which tries to replace all backslashes with duplicate backslashes, i.e. also the already other escaped
         # characters.
         for c in comment:
-            if c in must_escaped:
+            if c in must_escape:
                 escaped += '\\' + c
             else:
                 escaped += c
@@ -657,6 +665,7 @@ class TodoParser(object):
                 milestone = int(milestone)
         return milestone
 
+    # noinspection PyMethodMayBeStatic
     def _should_ignore(self, file):
         ignore_patterns = os.getenv('INPUT_IGNORE', None)
         if ignore_patterns:
