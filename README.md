@@ -136,6 +136,7 @@ These will be applied automatically to every issue, but will be overrode by any 
 
 - ABAP
 - ABAP CDS
+- Agda
 - AutoHotkey
 - C
 - C++
@@ -167,6 +168,7 @@ These will be applied automatically to every issue, but will be overrode by any 
 - Org Mode
 - PHP
 - Python
+- PureScript
 - R
 - Razor
 - RMarkdown

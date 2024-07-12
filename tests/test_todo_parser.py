@@ -65,7 +65,7 @@ class NewIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_org_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 4)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 6)
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
@@ -83,7 +83,7 @@ class NewIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'r'), 2)
 
     def test_haskell_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'haskell'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'haskell'), 4)
 
     def test_clojure_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'clojure'), 2)
@@ -153,7 +153,7 @@ class ClosedIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_org_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 4)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 6)
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
@@ -171,7 +171,7 @@ class ClosedIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'r'), 2)
 
     def test_haskell_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'haskell'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'haskell'), 4)
 
     def test_clojure_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'clojure'), 2)

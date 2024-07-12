@@ -365,6 +365,22 @@
     ]
   },
   {
+    "language": "PureScript",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "--"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "{-",
+          "end": "-}"
+        }
+      }
+    ]
+  },
+  {
     "language": "Haskell",
     "markers": [
       {
@@ -793,6 +809,22 @@
         "pattern": {
           "start": "{% comment %}",
           "end": "{% endcomment %}"
+        }
+      }
+    ]
+  },
+  {
+    "language": "Agda",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "--"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "{-",
+          "end": "-}"
         }
       }
     ]
