@@ -564,11 +564,13 @@ class TodoParser(object):
         """Try and get the Markdown language and comment syntax data for the given file."""
         file_name, extension = os.path.splitext(os.path.basename(file))
         for language_name in self.languages_dict:
+            # Check if the file extension matches the language's extensions.
             if extension != "" and 'extensions' in self.languages_dict[language_name]:
                 syntax_details, ace_mode = self._get_language_details(language_name, 'extensions', extension)
                 if syntax_details is not None and ace_mode is not None:
                     return syntax_details, ace_mode
-            elif 'filenames' in self.languages_dict[language_name]:
+            # Check if the file name matches the language's filenames.
+            if 'filenames' in self.languages_dict[language_name]:
                 syntax_details, ace_mode = self._get_language_details(language_name, 'filenames', file_name)
                 if syntax_details is not None and ace_mode is not None:
                     return syntax_details, ace_mode
