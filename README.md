@@ -238,7 +238,7 @@ The workflow file takes the following optional inputs:
 | IGNORE          | False    | A collection of comma-delimited regular expressions that match files that should be ignored when searching for TODOs               |
 | AUTO_ASSIGN     | False    | Automatically assign new issues to the user who triggered the action                                                               |
 | ACTOR           | False    | The username of the person who triggered the action                                                                                |
-| ISSUE_TEMPLATE  | False    | The template used to format new issues                                                                                             |
+| ISSUE_TEMPLATE  | False    | The template used to format new issues, e.g. `TODO title: {{ title }}\nBody: {{ body }}\nLink: {{ url }}\nCode:\n{{ snippet }}`    |
 | IDENTIFIERS     | False    | List of custom identifier dictionaries of the form `[{"name": "TODO", "labels": [todo]}]`                                          |
 | GITHUB_URL      | False    | Base URL of GitHub API                                                                                                             |
 | ESCAPE          | False    | Escape all special Markdown characters                                                                                             |
