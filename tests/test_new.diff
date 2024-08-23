@@ -525,3 +525,24 @@ index 0000000..0ce9b1a
 +TODO: Create an issue for TODO
 +-}
 +sum a b = a + b
+diff --git a/tests/example.svelte b/tests/example.svelte
+new file mode 100644
+index 0000000..3844e12
+--- /dev/null
++++ b/tests/example.svelte
++<script>
++    // TODO: export counter as prop
++    let counter = 0;
++
++    /* TODO: multiply counter by 10
++       increaseCounter should return the current counter value multiplied by 10
++     */
++    function increaseCounter(counter) {
++        return counter + 1;
++    }
++
++    counter = increaseCounter(counter);
++</script>
++
++<!-- TODO: style counter -->
++<p>{counter}</p>
