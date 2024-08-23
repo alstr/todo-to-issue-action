@@ -828,5 +828,28 @@
         }
       }
     ]
+  },
+  {
+    "language": "Svelte",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "//"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "/\\*",
+          "end": "\\*/"
+        }
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "<!--",
+          "end": "-->"
+        }
+      }
+    ]
   }
 ]
