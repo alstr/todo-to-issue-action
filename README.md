@@ -139,24 +139,24 @@ These will be applied automatically to every issue, but will be overrode by any 
 - Agda
 - AutoHotkey
 - C
-- C++
 - C#
-- CSS
-- Crystal
+- C++
 - Clojure
+- Crystal
+- CSS
 - Cuda
 - Dart
 - Elixir
 - GDScript
 - Go
 - Handlebars
-- HCL
 - Haskell
+- HCL
 - HTML
 - Java
 - JavaScript
-- JSON5
 - JSON with Comments
+- JSON5
 - Julia
 - Kotlin
 - Less
@@ -167,8 +167,8 @@ These will be applied automatically to every issue, but will be overrode by any 
 - Objective-C
 - Org Mode
 - PHP
-- Python
 - PureScript
+- Python
 - R
 - Razor
 - RMarkdown
@@ -180,6 +180,7 @@ These will be applied automatically to every issue, but will be overrode by any 
 - Shell
 - SQL
 - Starlark
+- Svelte
 - Swift
 - TeX
 - TSX
