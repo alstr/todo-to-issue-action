@@ -11,6 +11,7 @@ from ruamel.yaml import YAML
 from enum import Enum
 import itertools
 import operator
+from collections import defaultdict
 
 
 class LineStatus(Enum):
@@ -24,7 +25,7 @@ class Issue(object):
     """Basic Issue model for collecting the necessary info to send to GitHub."""
 
     def __init__(self, title, labels, assignees, milestone, body, hunk, file_name,
-                 start_line, markdown_language, status, identifier):
+                 start_line, markdown_language, status, identifier, ref):
         self.title = title
         self.labels = labels
         self.assignees = assignees
@@ -36,6 +37,7 @@ class Issue(object):
         self.markdown_language = markdown_language
         self.status = status
         self.identifier = identifier
+        self.ref = ref
 
 
 class GitHubClient(object):
@@ -133,14 +135,21 @@ class GitHubClient(object):
             issue_contents = formatted_issue_body + '\n\n' + url_to_line + '\n\n' + snippet
         else:
             issue_contents = url_to_line + '\n\n' + snippet
-        # Check if the current issue already exists - if so, skip it.
-        # The below is a simple and imperfect check based on the issue title.
-        for existing_issue in self.existing_issues:
-            if issue.title == existing_issue['title']:
-                print(f'Skipping issue (already exists).')
-                return
 
         new_issue_body = {'title': title, 'body': issue_contents, 'labels': issue.labels}
+
+        issues_url = self.issues_url
+        if issue.ref:
+            if issue.ref.startswith('@'):
+                issue.assignees.append(issue.ref.lstrip('@'))
+            elif issue.ref.startswith('#'):
+                issue_num = issue.ref.lstrip('#')
+                if issue_num.isdigit():
+                    issues_url += f'/{issue_num}'
+            elif issue.ref.startswith('!'):
+                issue.labels.append(issue.ref.lstrip('!'))
+            else:
+                issue.title = f'[{issue.ref}] {issue.title}'
 
         # We need to check if any assignees/milestone specified exist, otherwise issue creation will fail.
         valid_assignees = []
@@ -163,7 +172,7 @@ class GitHubClient(object):
             else:
                 print(f'Milestone {issue.milestone} does not exist! Dropping this parameter!')
 
-        new_issue_request = requests.post(url=self.issues_url, headers=self.issue_headers,
+        new_issue_request = requests.post(url=issues_url, headers=self.issue_headers,
                                           data=json.dumps(new_issue_body))
 
         return new_issue_request.status_code
@@ -423,7 +432,7 @@ class TodoParser(object):
                     extracted_comments = []
                     prev_comment = None
                     for i, comment in enumerate(comments):
-                        if i == 0 or re.search('|'.join(self.identifiers), comment.group(0)):
+                        if i == 0 or re.search('|'.join(self.identifiers), comment.group(0), re.IGNORECASE):
                             extracted_comments.append([comment])
                         else:
                             if comment.start() == prev_comment.end() + 1:
@@ -493,12 +502,8 @@ class TodoParser(object):
                 cleaned_line = self._clean_line(committed_line, marker)
                 line_title, ref, identifier = self._get_title(cleaned_line)
                 if line_title:
-                    if ref:
-                        issue_title = f'[{ref}] {line_title}'
-                    else:
-                        issue_title = line_title
                     issue = Issue(
-                        title=issue_title,
+                        title=line_title,
                         labels=['todo'],
                         assignees=[],
                         milestone=None,
@@ -508,7 +513,8 @@ class TodoParser(object):
                         start_line=code_block['start_line'],
                         markdown_language=code_block['markdown_language'],
                         status=line_status,
-                        identifier=identifier
+                        identifier=identifier,
+                        ref=ref
                     )
 
                     # Calculate the file line number that this issue references.
@@ -623,7 +629,7 @@ class TodoParser(object):
             title_pattern = re.compile(r'(?<=' + identifier + r'[\s:]).+', re.IGNORECASE)
             title_search = title_pattern.search(comment, re.IGNORECASE)
             if title_search:
-                title = title_search.group(0).strip()
+                title = title_search.group(0).strip(': ')
                 break
             else:
                 title_ref_pattern = re.compile(r'(?<=' + identifier + r'\().+', re.IGNORECASE)
@@ -710,6 +716,31 @@ if __name__ == "__main__":
                       f'Assuming this issue has been moved so skipping.')
                 continue
             issues_to_process.extend(similar_issues)
+
+        # If a TODO with an issue number reference is updated, it will appear as an addition and deletion.
+        # We need to ignore the deletion so it doesn't update then immediately close the issue.
+        # First store TODOs based on their status.
+        todos_status = defaultdict(lambda: {'added': False, 'deleted': False})
+
+        # Populate the status dictionary.
+        for raw_issue in issues_to_process:
+            if raw_issue.ref and raw_issue.ref.startswith('#'):
+                if raw_issue.status == LineStatus.ADDED:
+                    todos_status[raw_issue.ref]['added'] = True
+                elif raw_issue.status == LineStatus.DELETED:
+                    todos_status[raw_issue.ref]['deleted'] = True
+
+        # Determine which issues are both added and deleted.
+        update_and_close_issues = set()
+
+        for reference, status in todos_status.items():
+            if status['added'] and status['deleted']:
+                update_and_close_issues.add(reference)
+
+        # Remove issues from issues_to_process if they are both to be updated and closed.
+        issues_to_process = [issue for issue in issues_to_process if
+                             not (issue.ref in update_and_close_issues and issue.status == LineStatus.DELETED)]
+
         # Cycle through the Issue objects and create or close a corresponding GitHub issue for each.
         for j, raw_issue in enumerate(issues_to_process):
             print(f'Processing issue {j + 1} of {len(issues_to_process)}')
@@ -717,6 +748,8 @@ if __name__ == "__main__":
                 status_code = client.create_issue(raw_issue)
                 if status_code == 201:
                     print('Issue created')
+                elif status_code == 200:
+                    print('Issue updated')
                 else:
                     print('Issue could not be created')
             elif raw_issue.status == LineStatus.DELETED and os.getenv('INPUT_CLOSE_ISSUES', 'true') == 'true':
