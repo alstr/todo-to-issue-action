@@ -1,15 +1,2 @@
-attrs==22.1.0
-certifi==2022.12.07
-charset-normalizer==2.0.7
-exceptiongroup==1.0.0
-idna==3.3
-iniconfig==1.1.1
-packaging==21.3
-pluggy==1.0.0
-pyparsing==3.0.9
-pytest==7.2.0
-requests==2.31.0
-ruamel.yaml==0.17.17
-ruamel.yaml.clib==0.2.6
-tomli==2.0.1
-urllib3==1.26.7
+requests==2.32.3
+ruamel.yaml==0.18.6
