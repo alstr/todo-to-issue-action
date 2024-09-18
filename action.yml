@@ -79,3 +79,7 @@ inputs:
     description: 'Exclude loading the default ''syntax.json'' and ''language.yml'' files from the repository'
     required: false
     default: false
+  INSERT_ISSUE_URLS:
+    description: 'Whether the action should insert the URL for a newly-created issue into the associated TODO comment'
+    required: false
+    default: false

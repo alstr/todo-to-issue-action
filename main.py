@@ -12,6 +12,7 @@ from enum import Enum
 import itertools
 import operator
 from collections import defaultdict
+from urllib.parse import urlparse
 
 
 class LineStatus(Enum):
@@ -25,7 +26,7 @@ class Issue(object):
     """Basic Issue model for collecting the necessary info to send to GitHub."""
 
     def __init__(self, title, labels, assignees, milestone, body, hunk, file_name,
-                 start_line, markdown_language, status, identifier, ref):
+                 start_line, markdown_language, status, identifier, ref, issue_url, issue_number):
         self.title = title
         self.labels = labels
         self.assignees = assignees
@@ -38,6 +39,8 @@ class Issue(object):
         self.status = status
         self.identifier = identifier
         self.ref = ref
+        self.issue_url = issue_url
+        self.issue_number = issue_number
 
 
 class GitHubClient(object):
@@ -65,6 +68,11 @@ class GitHubClient(object):
         self._get_existing_issues()
         self.auto_assign = os.getenv('INPUT_AUTO_ASSIGN', 'false') == 'true'
         self.actor = os.getenv('INPUT_ACTOR')
+        self.insert_issue_urls = os.getenv('INPUT_INSERT_ISSUE_URLS', 'false') == 'true'
+        if self.base_url == 'https://api.github.com/':
+            self.line_base_url = 'https://github.com/'
+        else:
+            self.line_base_url = self.base_url
 
     # noinspection PyMethodMayBeStatic
     def get_timestamp(self, commit):
@@ -117,11 +125,7 @@ class GitHubClient(object):
             # Title is too long.
             title = title[:80] + '...'
         formatted_issue_body = self.line_break.join(issue.body)
-        if self.base_url == 'https://api.github.com/':
-            line_base_url = 'https://github.com/'
-        else:
-            line_base_url = self.base_url
-        url_to_line = f'{line_base_url}{self.repo}/blob/{self.sha}/{issue.file_name}#L{issue.start_line}'
+        url_to_line = f'{self.line_base_url}{self.repo}/blob/{self.sha}/{issue.file_name}#L{issue.start_line}'
         snippet = '```' + issue.markdown_language + '\n' + issue.hunk + '\n' + '```'
 
         issue_template = os.getenv('INPUT_ISSUE_TEMPLATE', None)
@@ -138,14 +142,14 @@ class GitHubClient(object):
 
         new_issue_body = {'title': title, 'body': issue_contents, 'labels': issue.labels}
 
-        issues_url = self.issues_url
+        endpoint = self.issues_url
+        if issue.issue_url:
+            # Issue already exists, update existing rather than create new.
+            endpoint += f'/{issue.issue_number}'
+
         if issue.ref:
             if issue.ref.startswith('@'):
                 issue.assignees.append(issue.ref.lstrip('@'))
-            elif issue.ref.startswith('#'):
-                issue_num = issue.ref.lstrip('#')
-                if issue_num.isdigit():
-                    issues_url += f'/{issue_num}'
             elif issue.ref.startswith('!'):
                 issue.labels.append(issue.ref.lstrip('!'))
             else:
@@ -172,10 +176,17 @@ class GitHubClient(object):
             else:
                 print(f'Milestone {issue.milestone} does not exist! Dropping this parameter!')
 
-        new_issue_request = requests.post(url=issues_url, headers=self.issue_headers,
+        if issue.issue_url:
+            # Update existing issue.
+            issue_request = requests.patch(url=endpoint, headers=self.issue_headers,
+                                           data=json.dumps(new_issue_body))
+        else:
+            # Create new issue.
+            issue_request = requests.post(url=endpoint, headers=self.issue_headers,
                                           data=json.dumps(new_issue_body))
 
-        return new_issue_request.status_code
+        request_status = issue_request.status_code
+        return request_status, issue_request.json()['number'] if request_status in [200, 201] else None
 
     def close_issue(self, issue):
         """Check to see if this issue can be found on GitHub and if so close it."""
@@ -218,6 +229,8 @@ class TodoParser(object):
     LABELS_PATTERN = re.compile(r'(?<=labels:\s).+', re.IGNORECASE)
     ASSIGNEES_PATTERN = re.compile(r'(?<=assignees:\s).+', re.IGNORECASE)
     MILESTONE_PATTERN = re.compile(r'(?<=milestone:\s).+', re.IGNORECASE)
+    ISSUE_URL_PATTERN = re.compile(r'(?<=Issue URL:\s).+', re.IGNORECASE)
+    ISSUE_NUMBER_PATTERN = re.compile(r'/issues/(\d+)', re.IGNORECASE)
 
     def __init__(self):
         # Determine if the Issues should be escaped.
@@ -421,7 +434,7 @@ class TodoParser(object):
                                 pref_escape_list.append(self._extract_character(to_escape['pattern']['end'],
                                                                                 search - 1))
 
-                    comment_pattern = (r'(^[+\-\s].*'
+                    comment_pattern = (r'(^.*'
                                        + (r'(?<!(' + '|'.join(pref_escape_list) + r'))' if len(pref_escape_list) > 0
                                           else '')
                                        + marker['pattern']
@@ -432,7 +445,8 @@ class TodoParser(object):
                     extracted_comments = []
                     prev_comment = None
                     for i, comment in enumerate(comments):
-                        if i == 0 or re.search('|'.join(self.identifiers), comment.group(0), re.IGNORECASE):
+                        if i == 0 or re.search(f'{marker["pattern"]}\s?' + '|'.join(self.identifiers), comment.group(0),
+                                               re.IGNORECASE):
                             extracted_comments.append([comment])
                         else:
                             if comment.start() == prev_comment.end() + 1:
@@ -466,6 +480,20 @@ class TodoParser(object):
             cleaned_hunk = re.sub(r'\n\sNo newline at end of file', '', cleaned_hunk, 0, re.MULTILINE)
             issue.hunk = cleaned_hunk
 
+            # The parser creates a new issue object every time it detects the relevant keyword.
+            # If a TODO is amended, there will be a deletion and an addition issue object created.
+            # The deletion won't have the issue URL because the parser immediately notices the addition.
+            # Therefore, check if the issue prior to this one should have a URL set.
+            if i == 0:
+                continue
+            previous_issue = issues[i - 1]
+            if (issue.start_line == previous_issue.start_line and
+                    issue.file_name == previous_issue.file_name and
+                    issue.status != previous_issue.status and
+                    issue.issue_url and not previous_issue.issue_url):
+                # Update the previous issue with the current issue's URL.
+                previous_issue.issue_url = issue.issue_url
+
         return issues
 
     def _get_language_details(self, language_name, attribute, value):
@@ -495,10 +523,12 @@ class TodoParser(object):
     def _extract_issue_if_exists(self, comment, marker, code_block):
         """Check this comment for TODOs, and if found, build an Issue object."""
         issue = None
+        line_statuses = []
         for match in comment:
-            lines = match.group().split('\n')
-            for line in lines:
+            comment_lines = match.group().split('\n')
+            for line in comment_lines:
                 line_status, committed_line = self._get_line_status(line)
+                line_statuses.append(line_status)
                 cleaned_line = self._clean_line(committed_line, marker)
                 line_title, ref, identifier = self._get_title(cleaned_line)
                 if line_title:
@@ -512,9 +542,11 @@ class TodoParser(object):
                         file_name=code_block['file'],
                         start_line=code_block['start_line'],
                         markdown_language=code_block['markdown_language'],
-                        status=line_status,
+                        status=None,
                         identifier=identifier,
-                        ref=ref
+                        ref=ref,
+                        issue_url=None,
+                        issue_number=None
                     )
 
                     # Calculate the file line number that this issue references.
@@ -532,12 +564,18 @@ class TodoParser(object):
                     line_labels = self._get_labels(cleaned_line)
                     line_assignees = self._get_assignees(cleaned_line)
                     line_milestone = self._get_milestone(cleaned_line)
+                    line_url = self._get_issue_url(cleaned_line)
                     if line_labels:
                         issue.labels.extend(line_labels)
                     elif line_assignees:
                         issue.assignees.extend(line_assignees)
                     elif line_milestone and not issue.milestone:
                         issue.milestone = line_milestone
+                    elif line_url and not issue.issue_url:
+                        issue.issue_url = line_url
+                        issue_number_search = self.ISSUE_NUMBER_PATTERN.search(line_url)
+                        if issue_number_search:
+                            issue.issue_number = issue_number_search.group(1)
                     elif len(cleaned_line):
                         if self.should_escape:
                             issue.body.append(self._escape_markdown(cleaned_line))
@@ -550,6 +588,14 @@ class TodoParser(object):
                     for label in identifier_dict['labels']:
                         if label not in issue.labels:
                             issue.labels.append(label)
+
+        if issue is not None:
+            # If all the lines are unchanged, don't do anything.
+            if all(s == LineStatus.UNCHANGED for s in line_statuses):
+                return None
+            # LineStatus.ADDED also covers modifications.
+            issue.status = LineStatus.DELETED if all(s == LineStatus.DELETED for s in line_statuses) \
+                else LineStatus.ADDED
 
         return issue
 
@@ -643,6 +689,16 @@ class TodoParser(object):
                     break
         return title, ref, title_identifier
 
+    def _get_issue_url(self, comment):
+        """Check the passed comment for a GitHub issue URL."""
+        url_search = self.ISSUE_URL_PATTERN.search(comment, re.IGNORECASE)
+        url = None
+        if url_search:
+            url = url_search.group(0)
+            parsed_url = urlparse(url)
+            return url if all([parsed_url.scheme, parsed_url.netloc]) else None
+        return url
+
     def _get_labels(self, comment):
         """Check the passed comment for issue labels."""
         labels_search = self.LABELS_PATTERN.search(comment, re.IGNORECASE)
@@ -704,50 +760,68 @@ if __name__ == "__main__":
         # This is a simple, non-perfect check to filter out any TODOs that have just been moved.
         # It looks for items that appear in the diff as both an addition and deletion.
         # It is based on the assumption that TODOs will not have identical titles in identical files.
+        # That is about as good as we can do for TODOs without issue URLs.
         issues_to_process = []
         for values, similar_issues in itertools.groupby(raw_issues, key=operator.attrgetter('title', 'file_name',
                                                                                             'markdown_language')):
             similar_issues = list(similar_issues)
-            if (len(similar_issues) == 2 and ((similar_issues[0].status == LineStatus.ADDED and
-                                               similar_issues[1].status == LineStatus.DELETED) or
-                                              (similar_issues[1].status == LineStatus.ADDED and
-                                               similar_issues[0].status == LineStatus.DELETED))):
+            if (len(similar_issues) == 2 and all(issue.issue_url is None for issue in similar_issues)
+                    and ((similar_issues[0].status == LineStatus.ADDED
+                          and similar_issues[1].status == LineStatus.DELETED)
+                     or (similar_issues[1].status == LineStatus.ADDED
+                         and similar_issues[0].status == LineStatus.DELETED))):
                 print(f'Issue "{values[0]}" appears as both addition and deletion. '
                       f'Assuming this issue has been moved so skipping.')
                 continue
             issues_to_process.extend(similar_issues)
 
-        # If a TODO with an issue number reference is updated, it will appear as an addition and deletion.
+        # If a TODO with an issue URL is updated, it may appear as both an addition and a deletion.
         # We need to ignore the deletion so it doesn't update then immediately close the issue.
         # First store TODOs based on their status.
         todos_status = defaultdict(lambda: {'added': False, 'deleted': False})
 
-        # Populate the status dictionary.
+        # Populate the status dictionary based on the issue URL.
         for raw_issue in issues_to_process:
-            if raw_issue.ref and raw_issue.ref.startswith('#'):
+            if raw_issue.issue_url:  # Ensuring we're dealing with TODOs that have an issue URL.
                 if raw_issue.status == LineStatus.ADDED:
-                    todos_status[raw_issue.ref]['added'] = True
+                    todos_status[raw_issue.issue_url]['added'] = True
                 elif raw_issue.status == LineStatus.DELETED:
-                    todos_status[raw_issue.ref]['deleted'] = True
+                    todos_status[raw_issue.issue_url]['deleted'] = True
 
         # Determine which issues are both added and deleted.
         update_and_close_issues = set()
 
-        for reference, status in todos_status.items():
-            if status['added'] and status['deleted']:
-                update_and_close_issues.add(reference)
+        for _issue_url, _status in todos_status.items():
+            if _status['added'] and _status['deleted']:
+                update_and_close_issues.add(_issue_url)
 
-        # Remove issues from issues_to_process if they are both to be updated and closed.
+        # Remove issues from issues_to_process if they are both to be updated and closed (i.e., ignore deletions).
         issues_to_process = [issue for issue in issues_to_process if
-                             not (issue.ref in update_and_close_issues and issue.status == LineStatus.DELETED)]
+                             not (issue.issue_url in update_and_close_issues and issue.status == LineStatus.DELETED)]
 
         # Cycle through the Issue objects and create or close a corresponding GitHub issue for each.
         for j, raw_issue in enumerate(issues_to_process):
             print(f'Processing issue {j + 1} of {len(issues_to_process)}')
             if raw_issue.status == LineStatus.ADDED:
-                status_code = client.create_issue(raw_issue)
+                status_code, issue_id = client.create_issue(raw_issue)
                 if status_code == 201:
                     print('Issue created')
+                    # Check to see if we should insert the issue URL back into the linked TODO.
+                    if client.insert_issue_urls:
+                        line_number = raw_issue.start_line - 1
+                        with open(raw_issue.file_name, 'r') as issue_file:
+                            file_lines = issue_file.readlines()
+                        if line_number < len(file_lines):
+                            # Duplicate the line to retain the comment syntax.
+                            new_line = file_lines[line_number]
+                            url_to_insert = f'{client.line_base_url}{client.repo}/issues/{issue_id}'
+                            new_line = (new_line.replace(raw_issue.identifier, 'Issue URL')
+                                        .replace(raw_issue.title, url_to_insert))
+                            # Check if the URL line already exists, if so abort.
+                            if line_number == len(file_lines) - 1 or file_lines[line_number + 1] != new_line:
+                                file_lines.insert(line_number + 1, new_line)
+                                with open(raw_issue.file_name, 'w') as issue_file:
+                                    issue_file.writelines(file_lines)
                 elif status_code == 200:
                     print('Issue updated')
                 else:
