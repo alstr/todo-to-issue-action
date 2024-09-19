@@ -46,6 +46,7 @@ class Issue(object):
 class GitHubClient(object):
     """Basic client for getting the last diff and creating/closing issues."""
     existing_issues = []
+    milestones = []
 
     def __init__(self):
         self.github_url = os.getenv('INPUT_GITHUB_URL')
@@ -58,14 +59,17 @@ class GitHubClient(object):
         self.diff_url = os.getenv('INPUT_DIFF_URL')
         self.token = os.getenv('INPUT_TOKEN')
         self.issues_url = f'{self.repos_url}{self.repo}/issues'
+        self.milestones_url = f'{self.repos_url}{self.repo}/milestones'
         self.issue_headers = {
             'Content-Type': 'application/json',
-            'Authorization': f'token {self.token}'
+            'Authorization': f'token {self.token}',
+            'X-GitHub-Api-Version': '2022-11-28'
         }
         auto_p = os.getenv('INPUT_AUTO_P', 'true') == 'true'
         self.line_break = '\n\n' if auto_p else '\n'
         # Retrieve the existing repo issues now so we can easily check them later.
         self._get_existing_issues()
+        self._get_milestones()
         self.auto_assign = os.getenv('INPUT_AUTO_ASSIGN', 'false') == 'true'
         self.actor = os.getenv('INPUT_ACTOR')
         self.insert_issue_urls = os.getenv('INPUT_INSERT_ISSUE_URLS', 'false') == 'true'
@@ -96,12 +100,44 @@ class GitHubClient(object):
 
         diff_headers = {
             'Accept': 'application/vnd.github.v3.diff',
-            'Authorization': f'token {self.token}'
+            'Authorization': f'token {self.token}',
+            'X-GitHub-Api-Version': '2022-11-28'
         }
         diff_request = requests.get(url=diff_url, headers=diff_headers)
         if diff_request.status_code == 200:
             return diff_request.text
         raise Exception('Could not retrieve diff. Operation will abort.')
+
+    def _get_milestones(self, page=1):
+        """Get all the milestones."""
+        params = {
+            'per_page': 100,
+            'page': page,
+            'state': 'open'
+        }
+        milestones_request = requests.get(self.milestones_url, headers=self.issue_headers, params=params)
+        if milestones_request.status_code == 200:
+            self.milestones.extend(milestones_request.json())
+            links = milestones_request.links
+            if 'next' in links:
+                self._get_milestones(page + 1)
+
+    def _get_milestone(self, title):
+        """Get the milestone number for this title (creating one if it doesn't exist)."""
+        for m in self.milestones:
+            if m['title'] == title:
+                return m['number']
+        else:
+            return self._create_milestone(title)
+
+    def _create_milestone(self, title):
+        """Create a new milestone with this title."""
+        milestone_data = {
+            'title': title
+        }
+        milestone_request = requests.post(self.milestones_url, headers=self.issue_headers,
+                                          data=json.dumps(milestone_data))
+        return milestone_request.json()['number'] if milestone_request.status_code == 201 else None
 
     def _get_existing_issues(self, page=1):
         """Populate the existing issues list."""
@@ -169,12 +205,11 @@ class GitHubClient(object):
         new_issue_body['assignees'] = valid_assignees
 
         if issue.milestone:
-            milestone_url = f'{self.repos_url}{self.repo}/milestones/{issue.milestone}'
-            milestone_request = requests.get(url=milestone_url, headers=self.issue_headers)
-            if milestone_request.status_code == 200:
-                new_issue_body['milestone'] = issue.milestone
+            milestone_number = self._get_milestone(issue.milestone)
+            if milestone_number:
+                new_issue_body['milestone'] = milestone_number
             else:
-                print(f'Milestone {issue.milestone} does not exist! Dropping this parameter!')
+                print(f'Milestone {issue.milestone} could not be set. Dropping this milestone!')
 
         if issue.issue_url:
             # Update existing issue.
@@ -445,7 +480,7 @@ class TodoParser(object):
                     extracted_comments = []
                     prev_comment = None
                     for i, comment in enumerate(comments):
-                        if i == 0 or re.search(f'{marker["pattern"]}\s?' + '|'.join(self.identifiers), comment.group(0),
+                        if i == 0 or re.search(fr'{marker["pattern"]}\s?' + '|'.join(self.identifiers), comment.group(0),
                                                re.IGNORECASE):
                             extracted_comments.append([comment])
                         else:
@@ -569,9 +604,9 @@ class TodoParser(object):
                         issue.labels.extend(line_labels)
                     elif line_assignees:
                         issue.assignees.extend(line_assignees)
-                    elif line_milestone and not issue.milestone:
+                    elif line_milestone:
                         issue.milestone = line_milestone
-                    elif line_url and not issue.issue_url:
+                    elif line_url:
                         issue.issue_url = line_url
                         issue_number_search = self.ISSUE_NUMBER_PATTERN.search(line_url)
                         if issue_number_search:
