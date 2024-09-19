@@ -26,7 +26,7 @@ class Issue(object):
     """Basic Issue model for collecting the necessary info to send to GitHub."""
 
     def __init__(self, title, labels, assignees, milestone, body, hunk, file_name,
-                 start_line, markdown_language, status, identifier, ref, issue_url, issue_number):
+                 start_line, num_lines, markdown_language, status, identifier, ref, issue_url, issue_number):
         self.title = title
         self.labels = labels
         self.assignees = assignees
@@ -35,6 +35,7 @@ class Issue(object):
         self.hunk = hunk
         self.file_name = file_name
         self.start_line = start_line
+        self.num_lines = num_lines
         self.markdown_language = markdown_language
         self.status = status
         self.identifier = identifier
@@ -161,7 +162,10 @@ class GitHubClient(object):
             # Title is too long.
             title = title[:80] + '...'
         formatted_issue_body = self.line_break.join(issue.body)
-        url_to_line = f'{self.line_base_url}{self.repo}/blob/{self.sha}/{issue.file_name}#L{issue.start_line}'
+        line_num_anchor = f'#L{issue.start_line}'
+        if issue.num_lines > 1:
+            line_num_anchor += f'-L{issue.start_line + issue.num_lines - 1}'
+        url_to_line = f'{self.line_base_url}{self.repo}/blob/{self.sha}/{issue.file_name}{line_num_anchor}'
         snippet = '```' + issue.markdown_language + '\n' + issue.hunk + '\n' + '```'
 
         issue_template = os.getenv('INPUT_ISSUE_TEMPLATE', None)
@@ -225,24 +229,27 @@ class GitHubClient(object):
 
     def close_issue(self, issue):
         """Check to see if this issue can be found on GitHub and if so close it."""
-        matched = 0
         issue_number = None
-        for existing_issue in self.existing_issues:
-            # This is admittedly a simple check that may not work in complex scenarios, but we can't deal with them yet.
-            if existing_issue['title'] == issue.title:
-                matched += 1
-                # If there are multiple issues with similar titles, don't try and close any.
-                if matched > 1:
-                    print(f'Skipping issue (multiple matches)')
-                    break
-                issue_number = existing_issue['number']
+        if issue.issue_number:
+            # If URL insertion is enabled.
+            issue_number = issue.issue_number
         else:
-            # The titles match, so we will try and close the issue.
-            update_issue_url = f'{self.repos_url}{self.repo}/issues/{issue_number}'
+            # Try simple matching.
+            matched = 0
+            for existing_issue in self.existing_issues:
+                if existing_issue['title'] == issue.title:
+                    matched += 1
+                    # If there are multiple issues with similar titles, don't try and close any.
+                    if matched > 1:
+                        print(f'Skipping issue (multiple matches)')
+                        break
+                    issue_number = existing_issue['number']
+        if issue_number:
+            update_issue_url = f'{self.issues_url}/{issue_number}'
             body = {'state': 'closed'}
             requests.patch(update_issue_url, headers=self.issue_headers, data=json.dumps(body))
 
-            issue_comment_url = f'{self.repos_url}{self.repo}/issues/{issue_number}/comments'
+            issue_comment_url = f'{self.issues_url}/{issue_number}/comments'
             body = {'body': f'Closed in {self.sha}'}
             update_issue_request = requests.post(issue_comment_url, headers=self.issue_headers,
                                                  data=json.dumps(body))
@@ -480,17 +487,15 @@ class TodoParser(object):
                     extracted_comments = []
                     prev_comment = None
                     for i, comment in enumerate(comments):
-                        if i == 0 or re.search(fr'{marker["pattern"]}\s?' + '|'.join(self.identifiers), comment.group(0),
-                                               re.IGNORECASE):
-                            extracted_comments.append([comment])
+                        if prev_comment and comment.start() == prev_comment.end() + 1:
+                            extracted_comments[len(extracted_comments) - 1].append(comment)
                         else:
-                            if comment.start() == prev_comment.end() + 1:
-                                extracted_comments[len(extracted_comments) - 1].append(comment)
+                            extracted_comments.append([comment])
                         prev_comment = comment
                     for comment in extracted_comments:
-                        issue = self._extract_issue_if_exists(comment, marker, block)
-                        if issue:
-                            issues.append(issue)
+                        extracted_issues = self._extract_issue_if_exists(comment, marker, block)
+                        if extracted_issues:
+                            issues.extend(extracted_issues)
                 else:
                     comment_pattern = (r'(?:[+\-\s]\s*' + marker['pattern']['start'] + r'.*?'
                                        + marker['pattern']['end'] + ')')
@@ -501,9 +506,9 @@ class TodoParser(object):
                             extracted_comments.append([comment])
 
                     for comment in extracted_comments:
-                        issue = self._extract_issue_if_exists(comment, marker, block)
-                        if issue:
-                            issues.append(issue)
+                        extracted_issues = self._extract_issue_if_exists(comment, marker, block)
+                        if extracted_issues:
+                            issues.extend(extracted_issues)
 
         for i, issue in enumerate(issues):
             # Strip some of the diff symbols so it can be included as a code snippet in the issue body.
@@ -514,20 +519,6 @@ class TodoParser(object):
             # Strip newline message.
             cleaned_hunk = re.sub(r'\n\sNo newline at end of file', '', cleaned_hunk, 0, re.MULTILINE)
             issue.hunk = cleaned_hunk
-
-            # The parser creates a new issue object every time it detects the relevant keyword.
-            # If a TODO is amended, there will be a deletion and an addition issue object created.
-            # The deletion won't have the issue URL because the parser immediately notices the addition.
-            # Therefore, check if the issue prior to this one should have a URL set.
-            if i == 0:
-                continue
-            previous_issue = issues[i - 1]
-            if (issue.start_line == previous_issue.start_line and
-                    issue.file_name == previous_issue.file_name and
-                    issue.status != previous_issue.status and
-                    issue.issue_url and not previous_issue.issue_url):
-                # Update the previous issue with the current issue's URL.
-                previous_issue.issue_url = issue.issue_url
 
         return issues
 
@@ -557,8 +548,10 @@ class TodoParser(object):
 
     def _extract_issue_if_exists(self, comment, marker, code_block):
         """Check this comment for TODOs, and if found, build an Issue object."""
-        issue = None
+        curr_issue = None
+        found_issues = []
         line_statuses = []
+        prev_line_title = False
         for match in comment:
             comment_lines = match.group().split('\n')
             for line in comment_lines:
@@ -567,7 +560,11 @@ class TodoParser(object):
                 cleaned_line = self._clean_line(committed_line, marker)
                 line_title, ref, identifier = self._get_title(cleaned_line)
                 if line_title:
-                    issue = Issue(
+                    if line_status == line_statuses[-1] and prev_line_title:
+                        # This means that there is a separate one-line TODO directly above this one.
+                        # We need to store the previous one.
+                        found_issues.append(curr_issue)
+                    curr_issue = Issue(
                         title=line_title,
                         labels=['todo'],
                         assignees=[],
@@ -576,6 +573,7 @@ class TodoParser(object):
                         hunk=code_block['hunk'],
                         file_name=code_block['file'],
                         start_line=code_block['start_line'],
+                        num_lines=1,
                         markdown_language=code_block['markdown_language'],
                         status=None,
                         identifier=identifier,
@@ -583,56 +581,62 @@ class TodoParser(object):
                         issue_url=None,
                         issue_number=None
                     )
+                    prev_line_title = True
 
                     # Calculate the file line number that this issue references.
                     hunk_lines = re.finditer(self.LINE_PATTERN, code_block['hunk'], re.MULTILINE)
                     start_line = code_block['start_line']
                     for i, hunk_line in enumerate(hunk_lines):
                         if hunk_line.group(0) == line:
-                            issue.start_line = start_line
+                            curr_issue.start_line = start_line
                             break
                         if i != 0 and (hunk_line.group(0).startswith('+') or not hunk_line.group(0).startswith('-')):
                             start_line += 1
 
-                elif issue:
+                elif curr_issue:
                     # Extract other issue information that may exist.
                     line_labels = self._get_labels(cleaned_line)
                     line_assignees = self._get_assignees(cleaned_line)
                     line_milestone = self._get_milestone(cleaned_line)
                     line_url = self._get_issue_url(cleaned_line)
                     if line_labels:
-                        issue.labels.extend(line_labels)
+                        curr_issue.labels.extend(line_labels)
                     elif line_assignees:
-                        issue.assignees.extend(line_assignees)
+                        curr_issue.assignees.extend(line_assignees)
                     elif line_milestone:
-                        issue.milestone = line_milestone
+                        curr_issue.milestone = line_milestone
                     elif line_url:
-                        issue.issue_url = line_url
+                        curr_issue.issue_url = line_url
                         issue_number_search = self.ISSUE_NUMBER_PATTERN.search(line_url)
                         if issue_number_search:
-                            issue.issue_number = issue_number_search.group(1)
+                            curr_issue.issue_number = issue_number_search.group(1)
                     elif len(cleaned_line):
                         if self.should_escape:
-                            issue.body.append(self._escape_markdown(cleaned_line))
+                            curr_issue.body.append(self._escape_markdown(cleaned_line))
                         else:
-                            issue.body.append(cleaned_line)
-
-        if issue is not None and issue.identifier is not None and self.identifiers_dict is not None:
+                            curr_issue.body.append(cleaned_line)
+                    if not line.startswith('-'):
+                        curr_issue.num_lines += 1
+                if not line_title:
+                    prev_line_title = False
+        if curr_issue is not None and curr_issue.identifier is not None and self.identifiers_dict is not None:
             for identifier_dict in self.identifiers_dict:
-                if identifier_dict['name'] == issue.identifier:
+                if identifier_dict['name'] == curr_issue.identifier:
                     for label in identifier_dict['labels']:
-                        if label not in issue.labels:
-                            issue.labels.append(label)
+                        if label not in curr_issue.labels:
+                            curr_issue.labels.append(label)
 
-        if issue is not None:
+        if curr_issue is not None:
             # If all the lines are unchanged, don't do anything.
             if all(s == LineStatus.UNCHANGED for s in line_statuses):
                 return None
             # LineStatus.ADDED also covers modifications.
-            issue.status = LineStatus.DELETED if all(s == LineStatus.DELETED for s in line_statuses) \
+            curr_issue.status = LineStatus.DELETED if all(s == LineStatus.DELETED for s in line_statuses) \
                 else LineStatus.ADDED
 
-        return issue
+            found_issues.append(curr_issue)
+
+        return found_issues
 
     @staticmethod
     def _escape_markdown(comment):
