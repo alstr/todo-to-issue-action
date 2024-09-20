@@ -136,8 +136,7 @@ class GitHubClient(object):
         milestone_data = {
             'title': title
         }
-        milestone_request = requests.post(self.milestones_url, headers=self.issue_headers,
-                                          data=json.dumps(milestone_data))
+        milestone_request = requests.post(self.milestones_url, headers=self.issue_headers, json=milestone_data)
         return milestone_request.json()['number'] if milestone_request.status_code == 201 else None
 
     def _get_existing_issues(self, page=1):
@@ -159,8 +158,7 @@ class GitHubClient(object):
         """Post a comment on an issue."""
         issue_comment_url = f'{self.repos_url}{self.repo}/issues/{issue_number}/comments'
         body = {'body': comment}
-        update_issue_request = requests.post(issue_comment_url, headers=self.issue_headers,
-                                             data=json.dumps(body))
+        update_issue_request = requests.post(issue_comment_url, headers=self.issue_headers, json=body)
         return update_issue_request.status_code
 
     def create_issue(self, issue):
@@ -235,12 +233,10 @@ class GitHubClient(object):
 
         if issue.issue_url:
             # Update existing issue.
-            issue_request = requests.patch(url=endpoint, headers=self.issue_headers,
-                                           data=json.dumps(new_issue_body))
+            issue_request = requests.patch(url=endpoint, headers=self.issue_headers, json=new_issue_body)
         else:
             # Create new issue.
-            issue_request = requests.post(url=endpoint, headers=self.issue_headers,
-                                          data=json.dumps(new_issue_body))
+            issue_request = requests.post(url=endpoint, headers=self.issue_headers, json=new_issue_body)
 
         request_status = issue_request.status_code
         return request_status, issue_request.json()['number'] if request_status in [200, 201] else None
@@ -265,9 +261,30 @@ class GitHubClient(object):
         if issue_number:
             update_issue_url = f'{self.issues_url}/{issue_number}'
             body = {'state': 'closed'}
-            requests.patch(update_issue_url, headers=self.issue_headers, data=json.dumps(body))
-            return self.comment_issue(issue_number, f'Closed in {self.sha}')
+            requests.patch(update_issue_url, headers=self.issue_headers, json=body)
+            req = self.comment_issue(issue_number, f'Closed in {self.sha}')
+
+            # Update the description if this is a PR.
+            if os.getenv('GITHUB_EVENT_NAME') == 'pull_request':
+                pr_number = os.getenv('PR_NUMBER')
+                if pr_number:
+                    req = self.update_pr_body(pr_number, body)
+            return req
         return None
+
+    def update_pr_body(self, pr_number, issue_number):
+        """Add a close message for an issue to a PR."""
+        pr_url = f'{self.repos_url}{self.repo}/pulls/{pr_number}'
+        pr_request = requests.get(pr_url, headers=self.issue_headers)
+        if pr_request.status_code == 200:
+            pr_body = pr_request.json()['body']
+            close_message = f'Closes #{issue_number}'
+            if close_message not in pr_body:
+                updated_pr_body = f'{pr_body}\n\n{close_message}' if pr_body.strip() else close_message
+                body = {'body': updated_pr_body}
+                pr_update_request = requests.patch(pr_url, headers=self.issue_headers, json=body)
+                return pr_update_request.status_code
+        return pr_request.status_code
 
 
 class TodoParser(object):
@@ -885,7 +902,7 @@ if __name__ == "__main__":
                     print('Issue looks like a comment, will not attempt to close.')
                     continue
                 status_code = client.close_issue(raw_issue)
-                if status_code == 201:
+                if status_code in [200, 201]:
                     print('Issue closed')
                 else:
                     print('Issue could not be closed')
