@@ -155,6 +155,14 @@ class GitHubClient(object):
             if 'next' in links:
                 self._get_existing_issues(page + 1)
 
+    def comment_issue(self, issue_number, comment):
+        """Post a comment on an issue."""
+        issue_comment_url = f'{self.repos_url}{self.repo}/issues/{issue_number}/comments'
+        body = {'body': comment}
+        update_issue_request = requests.post(issue_comment_url, headers=self.issue_headers,
+                                             data=json.dumps(body))
+        return update_issue_request.status_code
+
     def create_issue(self, issue):
         """Create a dict containing the issue details and send it to GitHub."""
         title = issue.title
@@ -189,10 +197,20 @@ class GitHubClient(object):
 
         if issue.ref:
             if issue.ref.startswith('@'):
+                # Ref = assignee.
                 issue.assignees.append(issue.ref.lstrip('@'))
             elif issue.ref.startswith('!'):
+                # Ref = label.
                 issue.labels.append(issue.ref.lstrip('!'))
+            elif issue.ref.startswith('#'):
+                # Ref = issue number (indicating this is a comment on that issue).
+                issue_number = issue.ref.lstrip('#')
+                if issue_number.isdigit():
+                    # Create the comment now and skip the rest.
+                    # Not a new issue so doesn't return a number.
+                    return self.comment_issue(issue_number, f'{issue.title}\n\n{issue_contents}'), None
             else:
+                # Just prepend the ref to the title.
                 issue.title = f'[{issue.ref}] {issue.title}'
 
         # We need to check if any assignees/milestone specified exist, otherwise issue creation will fail.
@@ -248,12 +266,7 @@ class GitHubClient(object):
             update_issue_url = f'{self.issues_url}/{issue_number}'
             body = {'state': 'closed'}
             requests.patch(update_issue_url, headers=self.issue_headers, data=json.dumps(body))
-
-            issue_comment_url = f'{self.issues_url}/{issue_number}/comments'
-            body = {'body': f'Closed in {self.sha}'}
-            update_issue_request = requests.post(issue_comment_url, headers=self.issue_headers,
-                                                 data=json.dumps(body))
-            return update_issue_request.status_code
+            return self.comment_issue(issue_number, f'Closed in {self.sha}')
         return None
 
 
@@ -560,9 +573,10 @@ class TodoParser(object):
                 cleaned_line = self._clean_line(committed_line, marker)
                 line_title, ref, identifier = self._get_title(cleaned_line)
                 if line_title:
-                    if line_status == line_statuses[-1] and prev_line_title:
+                    if prev_line_title and line_status == line_statuses[-2]:
                         # This means that there is a separate one-line TODO directly above this one.
                         # We need to store the previous one.
+                        curr_issue.status = line_status
                         found_issues.append(curr_issue)
                     curr_issue = Issue(
                         title=line_title,
@@ -842,18 +856,19 @@ if __name__ == "__main__":
         for j, raw_issue in enumerate(issues_to_process):
             print(f'Processing issue {j + 1} of {len(issues_to_process)}')
             if raw_issue.status == LineStatus.ADDED:
-                status_code, issue_id = client.create_issue(raw_issue)
+                status_code, new_issue_number = client.create_issue(raw_issue)
                 if status_code == 201:
                     print('Issue created')
                     # Check to see if we should insert the issue URL back into the linked TODO.
-                    if client.insert_issue_urls:
+                    # Don't insert URLs for comments. Comments do not get updated.
+                    if client.insert_issue_urls and not (raw_issue.ref and raw_issue.ref.startswith('#')):
                         line_number = raw_issue.start_line - 1
                         with open(raw_issue.file_name, 'r') as issue_file:
                             file_lines = issue_file.readlines()
                         if line_number < len(file_lines):
                             # Duplicate the line to retain the comment syntax.
                             new_line = file_lines[line_number]
-                            url_to_insert = f'{client.line_base_url}{client.repo}/issues/{issue_id}'
+                            url_to_insert = f'{client.line_base_url}{client.repo}/issues/{new_issue_number}'
                             new_line = (new_line.replace(raw_issue.identifier, 'Issue URL')
                                         .replace(raw_issue.title, url_to_insert))
                             # Check if the URL line already exists, if so abort.
@@ -866,6 +881,9 @@ if __name__ == "__main__":
                 else:
                     print('Issue could not be created')
             elif raw_issue.status == LineStatus.DELETED and os.getenv('INPUT_CLOSE_ISSUES', 'true') == 'true':
+                if raw_issue.ref and raw_issue.ref.startswith('#'):
+                    print('Issue looks like a comment, will not attempt to close.')
+                    continue
                 status_code = client.close_issue(raw_issue)
                 if status_code == 201:
                     print('Issue closed')
