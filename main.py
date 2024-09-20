@@ -66,6 +66,10 @@ class GitHubClient(object):
             'Authorization': f'token {self.token}',
             'X-GitHub-Api-Version': '2022-11-28'
         }
+        self.graphql_headers = {
+            'Authorization': f'Bearer {os.getenv("INPUT_PROJECTS_SECRET", "")}',
+            'Accept': 'application/vnd.github.v4+json'
+        }
         auto_p = os.getenv('INPUT_AUTO_P', 'true') == 'true'
         self.line_break = '\n\n' if auto_p else '\n'
         # Retrieve the existing repo issues now so we can easily check them later.
@@ -78,6 +82,7 @@ class GitHubClient(object):
             self.line_base_url = 'https://github.com/'
         else:
             self.line_base_url = self.base_url
+        self.project = os.getenv('INPUT_PROJECT', None)
 
     # noinspection PyMethodMayBeStatic
     def get_timestamp(self, commit):
@@ -154,7 +159,94 @@ class GitHubClient(object):
             if 'next' in links:
                 self._get_existing_issues(page + 1)
 
-    def comment_issue(self, issue_number, comment):
+    def _get_project_id(self, project):
+        """Get the project ID."""
+        project_type, owner, project_name = project.split('/')
+        if project_type == 'user':
+            query = """
+            query($owner: String!) {
+                user(login: $owner) {
+                    projectsV2(first: 10) {
+                        nodes {
+                            id
+                            title
+                        }
+                    }
+                }
+            }
+            """
+        elif project_type == 'organization':
+            query = """
+            query($owner: String!) {
+                organization(login: $owner) {
+                    projectsV2(first: 10) {
+                        nodes {
+                            id
+                            title
+                        }
+                    }
+                }
+            }
+            """
+        else:
+            print("Invalid project type")
+            return None
+
+        variables = {
+            'owner': owner,
+        }
+        response = requests.post('https://api.github.com/graphql', json={'query': query, 'variables': variables},
+                                 headers=self.graphql_headers)
+        if response.status_code == 200:
+            projects = response.json().get('data', {}).get(project_type, {}).get('projectsV2', {}).get('nodes', [])
+            for project in projects:
+                if project['title'] == project_name:
+                    return project['id']
+        return None
+
+    def _get_issue_global_id(self, owner, repo, issue_number):
+        """Get the global ID for a given issue."""
+        query = """
+        query($owner: String!, $repo: String!, $issue_number: Int!) {
+            repository(owner: $owner, name: $repo) {
+                issue(number: $issue_number) {
+                    id
+                }
+            }
+        }
+        """
+        variables = {
+            'owner': owner,
+            'repo': repo,
+            'issue_number': issue_number
+        }
+        response = requests.post('https://api.github.com/graphql', json={'query': query, 'variables': variables},
+                                 headers=self.graphql_headers)
+
+        if response.status_code == 200:
+            return response.json()['data']['repository']['issue']['id']
+        return None
+
+    def _add_issue_to_project(self, issue_id, project_id):
+        """Attempt to add this issue to a project."""
+        mutation = """
+        mutation($projectId: ID!, $contentId: ID!) {
+            addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
+                item {
+                    id
+                }
+            }
+        }
+        """
+        variables = {
+            "projectId": project_id,
+            "contentId": issue_id
+        }
+        response = requests.post('https://api.github.com/graphql',json={'query': mutation, 'variables': variables},
+                                 headers=self.graphql_headers)
+        return response.status_code
+
+    def _comment_issue(self, issue_number, comment):
         """Post a comment on an issue."""
         issue_comment_url = f'{self.repos_url}{self.repo}/issues/{issue_number}/comments'
         body = {'body': comment}
@@ -206,7 +298,7 @@ class GitHubClient(object):
                 if issue_number.isdigit():
                     # Create the comment now and skip the rest.
                     # Not a new issue so doesn't return a number.
-                    return self.comment_issue(issue_number, f'{issue.title}\n\n{issue_contents}'), None
+                    return self._comment_issue(issue_number, f'{issue.title}\n\n{issue_contents}'), None
             else:
                 # Just prepend the ref to the title.
                 issue.title = f'[{issue.ref}] {issue.title}'
@@ -239,7 +331,18 @@ class GitHubClient(object):
             issue_request = requests.post(url=endpoint, headers=self.issue_headers, json=new_issue_body)
 
         request_status = issue_request.status_code
-        return request_status, issue_request.json()['number'] if request_status in [200, 201] else None
+        issue_number = issue_request.json()['number'] if request_status in [200, 201] else None
+
+        # Check if issue should be added to project now it exists.
+        if issue_number and self.project:
+            project_id = self._get_project_id(self.project)
+            if project_id:
+                owner, repo = self.repo.split('/')
+                issue_id = self._get_issue_global_id(owner, repo, issue_number)
+                if issue_id:
+                    self._add_issue_to_project(issue_id, project_id)
+
+        return request_status, issue_number
 
     def close_issue(self, issue):
         """Check to see if this issue can be found on GitHub and if so close it."""
@@ -262,17 +365,17 @@ class GitHubClient(object):
             update_issue_url = f'{self.issues_url}/{issue_number}'
             body = {'state': 'closed'}
             requests.patch(update_issue_url, headers=self.issue_headers, json=body)
-            req = self.comment_issue(issue_number, f'Closed in {self.sha}')
+            req = self._comment_issue(issue_number, f'Closed in {self.sha}')
 
             # Update the description if this is a PR.
             if os.getenv('GITHUB_EVENT_NAME') == 'pull_request':
                 pr_number = os.getenv('PR_NUMBER')
                 if pr_number:
-                    req = self.update_pr_body(pr_number, body)
+                    req = self._update_pr_body(pr_number, body)
             return req
         return None
 
-    def update_pr_body(self, pr_number, issue_number):
+    def _update_pr_body(self, pr_number, issue_number):
         """Add a close message for an issue to a PR."""
         pr_url = f'{self.repos_url}{self.repo}/pulls/{pr_number}'
         pr_request = requests.get(pr_url, headers=self.issue_headers)
