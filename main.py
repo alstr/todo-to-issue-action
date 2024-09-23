@@ -45,7 +45,7 @@ class Issue(object):
 
 
 class GitHubClient(object):
-    """Basic client for getting the last diff and creating/closing issues."""
+    """Basic client for getting the last diff and managing issues."""
     existing_issues = []
     milestones = []
 
@@ -72,9 +72,6 @@ class GitHubClient(object):
         }
         auto_p = os.getenv('INPUT_AUTO_P', 'true') == 'true'
         self.line_break = '\n\n' if auto_p else '\n'
-        # Retrieve the existing repo issues now so we can easily check them later.
-        self._get_existing_issues()
-        self._get_milestones()
         self.auto_assign = os.getenv('INPUT_AUTO_ASSIGN', 'false') == 'true'
         self.actor = os.getenv('INPUT_ACTOR')
         self.insert_issue_urls = os.getenv('INPUT_INSERT_ISSUE_URLS', 'false') == 'true'
@@ -83,25 +80,25 @@ class GitHubClient(object):
         else:
             self.line_base_url = self.base_url
         self.project = os.getenv('INPUT_PROJECT', None)
-
-    # noinspection PyMethodMayBeStatic
-    def get_timestamp(self, commit):
-        return commit.get('timestamp')
+        # Retrieve the existing repo issues now so we can easily check them later.
+        self._get_existing_issues()
+        # Populate milestones so we can perform a lookup if one is specified.
+        self._get_milestones()
 
     def get_last_diff(self):
         """Get the last diff."""
         if self.diff_url:
-            # Diff url was directly passed in config, likely due to this being a PR
+            # Diff url was directly passed in config, likely due to this being a PR.
             diff_url = self.diff_url
         elif self.before != '0000000000000000000000000000000000000000':
-            # There is a valid before SHA to compare with, or this is a release being created
+            # There is a valid before SHA to compare with, or this is a release being created.
             diff_url = f'{self.repos_url}{self.repo}/compare/{self.before}...{self.sha}'
         elif len(self.commits) == 1:
-            # There is only one commit
+            # There is only one commit.
             diff_url = f'{self.repos_url}{self.repo}/commits/{self.sha}'
         else:
-            # There are several commits: compare with the oldest one
-            oldest = sorted(self.commits, key=self.get_timestamp)[0]['id']
+            # There are several commits: compare with the oldest one.
+            oldest = sorted(self.commits, key=self._get_timestamp)[0]['id']
             diff_url = f'{self.repos_url}{self.repo}/compare/{oldest}...{self.sha}'
 
         diff_headers = {
@@ -113,6 +110,11 @@ class GitHubClient(object):
         if diff_request.status_code == 200:
             return diff_request.text
         raise Exception('Could not retrieve diff. Operation will abort.')
+
+    # noinspection PyMethodMayBeStatic
+    def _get_timestamp(self, commit):
+        """Get a commit timestamp."""
+        return commit.get('timestamp')
 
     def _get_milestones(self, page=1):
         """Get all the milestones."""
@@ -129,7 +131,7 @@ class GitHubClient(object):
                 self._get_milestones(page + 1)
 
     def _get_milestone(self, title):
-        """Get the milestone number for this title (creating one if it doesn't exist)."""
+        """Get the milestone number for the one with this title (creating one if it doesn't exist)."""
         for m in self.milestones:
             if m['title'] == title:
                 return m['number']
@@ -149,8 +151,7 @@ class GitHubClient(object):
         params = {
             'per_page': 100,
             'page': page,
-            'state': 'open',
-            'labels': 'todo'
+            'state': 'open'
         }
         list_issues_request = requests.get(self.issues_url, headers=self.issue_headers, params=params)
         if list_issues_request.status_code == 200:
@@ -195,10 +196,12 @@ class GitHubClient(object):
         variables = {
             'owner': owner,
         }
-        response = requests.post('https://api.github.com/graphql', json={'query': query, 'variables': variables},
-                                 headers=self.graphql_headers)
-        if response.status_code == 200:
-            projects = response.json().get('data', {}).get(project_type, {}).get('projectsV2', {}).get('nodes', [])
+        project_request = requests.post('https://api.github.com/graphql',
+                                        json={'query': query, 'variables': variables},
+                                        headers=self.graphql_headers)
+        if project_request.status_code == 200:
+            projects = (project_request.json().get('data', {}).get(project_type, {}).get('projectsV2', {})
+                        .get('nodes', []))
             for project in projects:
                 if project['title'] == project_name:
                     return project['id']
@@ -220,11 +223,11 @@ class GitHubClient(object):
             'repo': repo,
             'issue_number': issue_number
         }
-        response = requests.post('https://api.github.com/graphql', json={'query': query, 'variables': variables},
-                                 headers=self.graphql_headers)
-
-        if response.status_code == 200:
-            return response.json()['data']['repository']['issue']['id']
+        project_request = requests.post('https://api.github.com/graphql',
+                                        json={'query': query, 'variables': variables},
+                                        headers=self.graphql_headers)
+        if project_request.status_code == 200:
+            return project_request.json()['data']['repository']['issue']['id']
         return None
 
     def _add_issue_to_project(self, issue_id, project_id):
@@ -242,9 +245,10 @@ class GitHubClient(object):
             "projectId": project_id,
             "contentId": issue_id
         }
-        response = requests.post('https://api.github.com/graphql',json={'query': mutation, 'variables': variables},
-                                 headers=self.graphql_headers)
-        return response.status_code
+        project_request = requests.post('https://api.github.com/graphql',
+                                        json={'query': mutation, 'variables': variables},
+                                        headers=self.graphql_headers)
+        return project_request.status_code
 
     def _comment_issue(self, issue_number, comment):
         """Post a comment on an issue."""
@@ -296,8 +300,7 @@ class GitHubClient(object):
                 # Ref = issue number (indicating this is a comment on that issue).
                 issue_number = issue.ref.lstrip('#')
                 if issue_number.isdigit():
-                    # Create the comment now and skip the rest.
-                    # Not a new issue so doesn't return a number.
+                    # Create the comment now.
                     return self._comment_issue(issue_number, f'{issue.title}\n\n{issue_contents}'), None
             else:
                 # Just prepend the ref to the title.
@@ -333,7 +336,7 @@ class GitHubClient(object):
         request_status = issue_request.status_code
         issue_number = issue_request.json()['number'] if request_status in [200, 201] else None
 
-        # Check if issue should be added to project now it exists.
+        # Check if issue should be added to a project now it exists.
         if issue_number and self.project:
             project_id = self._get_project_id(self.project)
             if project_id:
@@ -365,14 +368,14 @@ class GitHubClient(object):
             update_issue_url = f'{self.issues_url}/{issue_number}'
             body = {'state': 'closed'}
             requests.patch(update_issue_url, headers=self.issue_headers, json=body)
-            req = self._comment_issue(issue_number, f'Closed in {self.sha}')
+            request_status = self._comment_issue(issue_number, f'Closed in {self.sha}.')
 
             # Update the description if this is a PR.
             if os.getenv('GITHUB_EVENT_NAME') == 'pull_request':
                 pr_number = os.getenv('PR_NUMBER')
                 if pr_number:
-                    req = self._update_pr_body(pr_number, body)
-            return req
+                    request_status = self._update_pr_body(pr_number, body)
+            return request_status
         return None
 
     def _update_pr_body(self, pr_number, issue_number):
@@ -408,7 +411,7 @@ class TodoParser(object):
     ISSUE_NUMBER_PATTERN = re.compile(r'/issues/(\d+)', re.IGNORECASE)
 
     def __init__(self):
-        # Determine if the Issues should be escaped.
+        # Determine if the issues should be escaped.
         self.should_escape = os.getenv('INPUT_ESCAPE', 'true') == 'true'
         # Load any custom identifiers, otherwise use the default.
         custom_identifiers = os.getenv('INPUT_IDENTIFIERS')
@@ -426,8 +429,7 @@ class TodoParser(object):
                 print('Invalid identifiers dict, ignoring.')
 
         self.languages_dict = None
-
-        # Check if the standard collections should be loaded
+        # Check if the standard collections should be loaded.
         if os.getenv('INPUT_NO_STANDARD', 'false') != 'true':
             # Load the languages data for ascertaining file types.
             languages_url = 'https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml'
@@ -452,28 +454,28 @@ class TodoParser(object):
 
         custom_languages = os.getenv('INPUT_LANGUAGES', '')
         if custom_languages != '':
-            # Load all custom languages
+            # Load all custom languages.
             for path in custom_languages.split(','):
                 # noinspection PyBroadException
                 try:
-                    # Decide if the path is a url or local file
+                    # Decide if the path is a url or local file.
                     if path.startswith('http'):
                         languages_request = requests.get(path)
                         if languages_request.status_code != 200:
-                            print('Cannot retrieve custom language file. (\''+path+'\')')
+                            print(f'Cannot retrieve custom language file "{path}".')
                             continue
                         data = languages_request.json()
                     else:
                         path = os.path.join(os.getcwd(), path)
                         if not os.path.exists(path) or not os.path.isfile(path):
-                            print('Cannot retrieve custom language file. (\''+path+'\')')
+                            print(f'Cannot retrieve custom language file "{path}".')
                             continue
                         f = open(path)
                         data = json.load(f)
 
-                    # Iterate through the definitions
+                    # Iterate through the definitions.
                     for lang in data:
-                        # Add/Replace the language definition
+                        # Add/replace the language definition.
                         self.languages_dict[lang['language']] = {}
                         self.languages_dict[lang['language']]['type'] = ''
                         self.languages_dict[lang['language']]['color'] = ''
@@ -482,7 +484,7 @@ class TodoParser(object):
                         self.languages_dict[lang['language']]['ace_mode'] = 'text'
                         self.languages_dict[lang['language']]['language_id'] = 0
 
-                        # Check if a syntax with the language name already exists
+                        # Check if comment syntax for the language name already exists.
                         counter = 0
                         exists = False
                         for syntax in self.syntax_dict:
@@ -493,18 +495,18 @@ class TodoParser(object):
                             counter = counter + 1
 
                         if exists:
-                            # When the syntax exists it will be popped out of the list
+                            # When the syntax exists it will be popped out of the list.
                             self.syntax_dict.pop(counter)
 
-                        # And be replaced with the new syntax definition
+                        # And be replaced with the new syntax definition.
                         self.syntax_dict.append({
                             'language': lang['language'],
                             'markers': lang['markers']
                         })
                 except Exception:
-                    print('An error occurred in the custom language file (\''+path+'\')')
+                    print(f'An error occurred in the custom language file "{path}".')
                     print('Please check the file, or if it represents undefined behavior, '
-                          'create an issue at \'https://github.com/alstr/todo-to-issue-action/issues\'')
+                          'create an issue at https://github.com/alstr/todo-to-issue-action/issues.')
 
     # noinspection PyTypeChecker
     def parse(self, diff_file):
@@ -542,7 +544,7 @@ class TodoParser(object):
                 continue
             curr_markers, curr_markdown_language = self._get_file_details(curr_file)
             if not curr_markers or not curr_markdown_language:
-                print(f'Could not check {curr_file} for TODOs as this language is not yet supported by default.')
+                print(f'Could not check "{curr_file}" for TODOs as this language is not yet supported by default.')
                 continue
 
             # Break this section down into individual changed code blocks.
@@ -587,7 +589,7 @@ class TodoParser(object):
             for marker in block['markers']:
                 # Check if there are line or block comments.
                 if marker['type'] == 'line':
-                    # Add a negative lookup include the second character from alternative comment patterns
+                    # Add a negative lookup to include the second character from alternative comment patterns.
                     # This step is essential to handle cases like in Julia, where '#' and '#=' are comment patterns.
                     # It ensures that when a space after the comment is optional ('\s' => '\s*'),
                     # the second character would be matched because of the any character expression ('.+').
@@ -601,7 +603,7 @@ class TodoParser(object):
                                 suff_escape_list.append(self._extract_character(to_escape['pattern'], 1))
                         else:
                             # Block comments and line comments cannot have the same comment pattern,
-                            # so a check if the string is the same is unnecessary
+                            # so a check if the string is the same is unnecessary.
                             if to_escape['pattern']['start'][0] == marker['pattern'][0]:
                                 suff_escape_list.append(self._extract_character(to_escape['pattern']['start'], 1))
                             search = to_escape['pattern']['end'].find(marker['pattern'])
@@ -656,8 +658,7 @@ class TodoParser(object):
         return issues
 
     def _get_language_details(self, language_name, attribute, value):
-        """Try and get the Markdown language and comment syntax
-        data based on a specified attribute of the language."""
+        """Try and get the Markdown language and comment syntax data based on a specified attribute of the language."""
         attributes = [at.lower() for at in self.languages_dict[language_name][attribute]]
         if value.lower() in attributes:
             for syntax_details in self.syntax_dict:
@@ -669,7 +670,7 @@ class TodoParser(object):
         """Try and get the Markdown language and comment syntax data for the given file."""
         file_name, extension = os.path.splitext(os.path.basename(file))
         for language_name in self.languages_dict:
-            if extension != "" and 'extensions' in self.languages_dict[language_name]:
+            if extension != '' and 'extensions' in self.languages_dict[language_name]:
                 syntax_details, ace_mode = self._get_language_details(language_name, 'extensions', extension)
                 if syntax_details is not None and ace_mode is not None:
                     return syntax_details, ace_mode
@@ -700,7 +701,7 @@ class TodoParser(object):
                         found_issues.append(curr_issue)
                     curr_issue = Issue(
                         title=line_title,
-                        labels=['todo'],
+                        labels=[],
                         assignees=[],
                         milestone=None,
                         body=[],
@@ -728,7 +729,7 @@ class TodoParser(object):
                             start_line += 1
 
                 elif curr_issue:
-                    # Extract other issue information that may exist.
+                    # Extract other issue information that may exist below the title.
                     line_labels = self._get_labels(cleaned_line)
                     line_assignees = self._get_assignees(cleaned_line)
                     line_milestone = self._get_milestone(cleaned_line)
@@ -845,13 +846,13 @@ class TodoParser(object):
         title_identifier = None
         for identifier in self.identifiers:
             title_identifier = identifier
-            title_pattern = re.compile(r'(?<=' + identifier + r'[\s:]).+', re.IGNORECASE)
+            title_pattern = re.compile(fr'(?<={identifier}[\s:]).+', re.IGNORECASE)
             title_search = title_pattern.search(comment, re.IGNORECASE)
             if title_search:
                 title = title_search.group(0).strip(': ')
                 break
             else:
-                title_ref_pattern = re.compile(r'(?<=' + identifier + r'\().+', re.IGNORECASE)
+                title_ref_pattern = re.compile(fr'(?<={identifier}\().+', re.IGNORECASE)
                 title_ref_search = title_ref_pattern.search(comment, re.IGNORECASE)
                 if title_ref_search:
                     title = title_ref_search.group(0).strip()
@@ -896,8 +897,6 @@ class TodoParser(object):
         milestone = None
         if milestone_search:
             milestone = milestone_search.group(0)
-            if milestone.isdigit():
-                milestone = int(milestone)
         return milestone
 
     # noinspection PyMethodMayBeStatic
