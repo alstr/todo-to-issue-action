@@ -17,7 +17,7 @@ inputs:
     required: false
     default: '${{ github.event.before || github.base_ref }}'
   COMMITS:
-    description: 'An array of commit objects describing the pushed commits'
+    description: 'An array of commit objects describing the pushed commits (automatically set)'
     required: false
     default: '${{ toJSON(github.event.commits) }}'
   DIFF_URL:
@@ -32,14 +32,8 @@ inputs:
     description: 'The GitHub access token to allow us to retrieve, create and update issues (automatically set)'
     required: false
     default: ${{ github.token }}
-  LABEL:
-    description: 'The label that will be used to identify TODO comments (deprecated)'
-    required: false
-  COMMENT_MARKER:
-    description: 'The marker used to signify a line comment in your code (deprecated)'
-    required: false
   CLOSE_ISSUES:
-    description: 'Optional input that specifies whether to attempt to close an issue when a TODO is removed'
+    description: 'Optional input specifying whether to attempt to close an issue when a TODO is removed'
     required: false
     default: true
   AUTO_P:
@@ -60,7 +54,7 @@ inputs:
     required: false
     default: false
   ACTOR:
-    description: 'The username of the person who triggered the action'
+    description: 'The username of the person who triggered the action (automatically set)'
     required: false
     default: '${{ github.actor }}'
   ISSUE_TEMPLATE:
@@ -78,11 +72,10 @@ inputs:
     required: false
     default: true
   LANGUAGES:
-    description: 'A collection of comma-delimited URLs or local paths starting from the current working directory of the action for custom languages'
+    description: 'A collection of comma-delimited URLs or local paths for custom language files'
     required: false
-    default: ''
   NO_STANDARD:
-    description: 'Exclude loading the default ''syntax.json'' and ''language.yml'' files from the repository'
+    description: "Exclude loading the default 'syntax.json' and 'languages.yml' files from the repository"
     required: false
     default: false
   INSERT_ISSUE_URLS:
