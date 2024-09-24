@@ -127,24 +127,24 @@ Only a single milestone can be specified. If the milestone does not exist, it wi
 - Agda
 - AutoHotkey
 - C
-- C++
 - C#
-- CSS
-- Crystal
+- C++
 - Clojure
+- Crystal
+- CSS
 - Cuda
 - Dart
 - Elixir
 - GDScript
 - Go
 - Handlebars
-- HCL
 - Haskell
+- HCL
 - HTML
 - Java
 - JavaScript
-- JSON5
 - JSON with Comments
+- JSON5
 - Julia
 - Kotlin
 - Less
@@ -155,8 +155,8 @@ Only a single milestone can be specified. If the milestone does not exist, it wi
 - Objective-C
 - Org Mode
 - PHP
-- Python
 - PureScript
+- Python
 - R
 - Razor
 - RMarkdown
@@ -168,6 +168,7 @@ Only a single milestone can be specified. If the milestone does not exist, it wi
 - Shell
 - SQL
 - Starlark
+- Svelte
 - Swift
 - TeX
 - TSX
