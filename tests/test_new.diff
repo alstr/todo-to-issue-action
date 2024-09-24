@@ -201,6 +201,20 @@ index 0000000..525e25d
 +    #  This function should probably do something more interesting
 +    #  labels: help wanted
 +    pass
+diff --git a/tests/BUILD.bazel b/tests/BUILD.bazel
+new file mode 100644
+index 0000000..525e25d
+--- /dev/null
++++ b/tests/BUILD.bazel
+@@ -0,0 +1,23 @@
++def hello_world():
++    # TODO: Come up with a more imaginative greeting
++    print('Hello world')
++
++    # TODO: Do more stuff
++    #  This function should probably do something more interesting
++    #  labels: help wanted
++    pass
 diff --git a/tests/example_file.ahk b/src/tests/example_file.ahk
 new file mode 100644
 index 0000000..7cccc5b
@@ -452,3 +466,62 @@ index 0000000..7cccc5b
 +{% assign featured_product = all_products["product_handle"] %}
 +{% render "product", product: featured_product %}
 +{% endcomment %}
+diff --git a/tests/example_file.tsx b/tests/example_file.tsx
+new file mode 100644
+index 0000000..7cccc5b
+--- /dev/null
++++ b/tests/example_file.tsx
+@@ -0,0 +1,13 @@
++// TODO: rename component
++export default async function Component() {
++  /* TODO: Use state here
++  labels: client  */
++
++  return (
++    <div>
++      {/* 
++       TODO: use styled component library 
++      */}
++    </div>
++  );
++}
+diff --git a/src/Swarm/Game/example.purs b/src/Swarm/Game/example.purs
+new file mode 100644
+index 0000000..0ce9b1a
+--- /dev/null
++++ b/src/Swarm/Game/example.purs
+@@ -0,0 +1,14 @@
++-- | Standard devices that are always installed.
++--
++-- TODO: Remove standard devices
++--   In the future, make a way to build these and just start the base
++--   out with a large supply of each?
++--   labels: redesign
++stdDeviceList =
++  ["treads", "grabber", "solar panel", "scanner", "plasma cutter"]
++
++{- | Very complicated function.
++
++TODO: Create an issue for TODO
++-}
++sum a b = a + b
+diff --git a/src/Swarm/Game/example.agda b/src/Swarm/Game/example.agda
+new file mode 100644
+index 0000000..0ce9b1a
+--- /dev/null
++++ b/src/Swarm/Game/example.agda
+@@ -0,0 +1,14 @@
++-- | Standard devices that are always installed.
++--
++-- TODO: Remove standard devices
++--   In the future, make a way to build these and just start the base
++--   out with a large supply of each?
++--   labels: redesign
++stdDeviceList =
++  ["treads", "grabber", "solar panel", "scanner", "plasma cutter"]
++
++{- | Very complicated function.
++
++TODO: Create an issue for TODO
++-}
++sum a b = a + b

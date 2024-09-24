@@ -23,8 +23,8 @@ class NewIssueTests(unittest.TestCase):
         self.raw_issues = parser.parse(diff_file)
 
     def test_python_issues(self):
-        # Includes 2 tests for Starlark.
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 6)
+        # Includes 4 tests for Starlark.
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 8)
 
     def test_yaml_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
@@ -35,11 +35,9 @@ class NewIssueTests(unittest.TestCase):
     def test_java_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 2)
 
-    def test_json_with_comments_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 2)
-
-    def test_json5_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 2)
+    def test_javascript_issues(self):
+        # Includes 1 test for JSON with Comments, 1 test for JSON5, 3 tests for TSX.
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 5)
 
     def test_ruby_issues(self):
         # Includes 2 tests for Crystal.
@@ -58,7 +56,7 @@ class NewIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'julia'), 2)
 
     def test_starlark_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 6)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 8)
 
     def test_autohotkey_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'autohotkey'), 1)
@@ -67,7 +65,7 @@ class NewIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_org_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 4)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 6)
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
@@ -85,7 +83,7 @@ class NewIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'r'), 2)
 
     def test_haskell_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'haskell'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'haskell'), 4)
 
     def test_clojure_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'clojure'), 2)
@@ -144,11 +142,9 @@ class ClosedIssueTests(unittest.TestCase):
     def test_starlark_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 5)
 
-    def test_json_with_comments_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 2)
-
-    def test_json5_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 2)
+    def test_javascript_issues(self):
+        # Includes 1 test for JSON with Comments, 1 test for JSON5, 3 tests for TSX.
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 5)
 
     def test_autohotkey_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'autohotkey'), 1)
@@ -157,7 +153,7 @@ class ClosedIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_org_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 4)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 6)
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
@@ -175,7 +171,7 @@ class ClosedIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'r'), 2)
 
     def test_haskell_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'haskell'), 2)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'haskell'), 4)
 
     def test_clojure_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'clojure'), 2)

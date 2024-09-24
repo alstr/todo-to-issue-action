@@ -242,6 +242,13 @@
           "start": "/\\*",
           "end": "\\*/"
         }
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "{/\\*",
+          "end": "\\*/}"
+        }
       }
     ]
   },
@@ -353,6 +360,22 @@
         "pattern": {
           "start": "/\\*",
           "end": "\\*/"
+        }
+      }
+    ]
+  },
+  {
+    "language": "PureScript",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "--"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "{-",
+          "end": "-}"
         }
       }
     ]
@@ -786,6 +809,22 @@
         "pattern": {
           "start": "{% comment %}",
           "end": "{% endcomment %}"
+        }
+      }
+    ]
+  },
+  {
+    "language": "Agda",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "--"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "{-",
+          "end": "-}"
         }
       }
     ]

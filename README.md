@@ -124,6 +124,7 @@ Only a single milestone can be specified. If the milestone does not exist, it wi
 
 - ABAP
 - ABAP CDS
+- Agda
 - AutoHotkey
 - C
 - C++
@@ -155,6 +156,7 @@ Only a single milestone can be specified. If the milestone does not exist, it wi
 - Org Mode
 - PHP
 - Python
+- PureScript
 - R
 - Razor
 - RMarkdown
