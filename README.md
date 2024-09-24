@@ -36,7 +36,7 @@ Here's an example for Python creating an issue named after the TODO _description
 
 ```python
 def hello_world():
-    # TODO Come up with a more imaginative greeting
+    # TODO: Come up with a more imaginative greeting
     print('Hello world!')
 ```
 
