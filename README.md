@@ -230,6 +230,14 @@ jobs:
           git push origin main
 ```
 
+You will probably also want to use the setting `CLOSE_ISSUES: "true"`, to allow issues to be closed when a TODO is
+removed.
+
+Please note, URL insertion works best with line comments, as it has to insert a line into the file. If using block
+comments, you should put the start and end tags on their own lines. This may be improved in the future.
+
+This feature is not perfect. Please make sure you're comfortable with that before enabling.
+
 ### Projects
 
 You can configure the action to add newly created issues to a specified v2 project (i.e., not a classic project).
