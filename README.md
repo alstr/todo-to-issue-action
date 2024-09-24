@@ -506,3 +506,9 @@ Thanks to GitHub's [linguist repo](https://github.com/github/linguist/) for the 
 and determine the correct highlighting to apply to code snippets.
 
 Thanks to all those who have [contributed](https://github.com/alstr/todo-to-issue-action/graphs/contributors) to the further development of this action.
+
+## Supporting the Project
+
+If you’ve found this action helpful and it has made your workflow easier, please consider buying a coffee to help keep it going. Thank you in advance!
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/alstr18858)
