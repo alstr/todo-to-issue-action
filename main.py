@@ -259,10 +259,6 @@ class GitHubClient(object):
 
     def create_issue(self, issue):
         """Create a dict containing the issue details and send it to GitHub."""
-        title = issue.title
-        if len(title) > 80:
-            # Title is too long.
-            title = title[:80] + '...'
         formatted_issue_body = self.line_break.join(issue.body)
         line_num_anchor = f'#L{issue.start_line}'
         if issue.num_lines > 1:
@@ -282,12 +278,12 @@ class GitHubClient(object):
         else:
             issue_contents = url_to_line + '\n\n' + snippet
 
-        new_issue_body = {'title': title, 'body': issue_contents, 'labels': issue.labels}
-
         endpoint = self.issues_url
         if issue.issue_url:
             # Issue already exists, update existing rather than create new.
             endpoint += f'/{issue.issue_number}'
+
+        title = issue.title
 
         if issue.ref:
             if issue.ref.startswith('@'):
@@ -304,7 +300,10 @@ class GitHubClient(object):
                     return self._comment_issue(issue_number, f'{issue.title}\n\n{issue_contents}'), None
             else:
                 # Just prepend the ref to the title.
-                issue.title = f'[{issue.ref}] {issue.title}'
+                title = f'[{issue.ref}] {issue.title}'
+
+        title = title + '...' if len(title) > 80 else title
+        new_issue_body = {'title': title, 'body': issue_contents, 'labels': issue.labels}
 
         # We need to check if any assignees/milestone specified exist, otherwise issue creation will fail.
         valid_assignees = []
@@ -710,7 +709,7 @@ class TodoParser(object):
                         start_line=code_block['start_line'],
                         num_lines=1,
                         markdown_language=code_block['markdown_language'],
-                        status=None,
+                        status=line_status,
                         identifier=identifier,
                         ref=ref,
                         issue_url=None,
@@ -745,7 +744,7 @@ class TodoParser(object):
                         issue_number_search = self.ISSUE_NUMBER_PATTERN.search(line_url)
                         if issue_number_search:
                             curr_issue.issue_number = issue_number_search.group(1)
-                    elif len(cleaned_line):
+                    elif len(cleaned_line) and line_status != LineStatus.DELETED:
                         if self.should_escape:
                             curr_issue.body.append(self._escape_markdown(cleaned_line))
                         else:
@@ -765,9 +764,10 @@ class TodoParser(object):
             # If all the lines are unchanged, don't do anything.
             if all(s == LineStatus.UNCHANGED for s in line_statuses):
                 return None
-            # LineStatus.ADDED also covers modifications.
-            curr_issue.status = LineStatus.DELETED if all(s == LineStatus.DELETED for s in line_statuses) \
-                else LineStatus.ADDED
+            # If the title line hasn't changed, but the info below has, we need to mark it as an update (addition).
+            if (curr_issue.status == LineStatus.UNCHANGED
+                    and (LineStatus.ADDED in line_statuses or LineStatus.DELETED in line_statuses)):
+                curr_issue.status = LineStatus.ADDED
 
             found_issues.append(curr_issue)
 
@@ -987,9 +987,9 @@ if __name__ == "__main__":
                         if line_number < len(file_lines):
                             # Duplicate the line to retain the comment syntax.
                             new_line = file_lines[line_number]
-                            url_to_insert = f'{client.line_base_url}{client.repo}/issues/{new_issue_number}'
-                            new_line = (new_line.replace(raw_issue.identifier, 'Issue URL')
-                                        .replace(raw_issue.title, url_to_insert))
+                            remove = fr'{raw_issue.identifier}.*{raw_issue.title}'
+                            insert = f'Issue URL: {client.line_base_url}{client.repo}/issues/{new_issue_number}'
+                            new_line = re.sub(remove, insert, new_line)
                             # Check if the URL line already exists, if so abort.
                             if line_number == len(file_lines) - 1 or file_lines[line_number + 1] != new_line:
                                 file_lines.insert(line_number + 1, new_line)
