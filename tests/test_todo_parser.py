@@ -249,7 +249,7 @@ class EscapeMarkdownTest(unittest.TestCase):
         self.assertEqual(issue.body[1], '\\<AnotherTag\\>')
 
 
-class customLanguageTest(unittest.TestCase):
+class CustomLanguageTest(unittest.TestCase):
     def test_custom_lang_load(self):
         os.environ['INPUT_LANGUAGES'] = 'tests/custom_languages.json'
         parser = TodoParser()
