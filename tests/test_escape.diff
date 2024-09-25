@@ -1,0 +1,19 @@
+diff --git a/tests/ExampleFile.java b/tests/ExampleFile.java
+index d340f6a..29b54da 100644
+--- a/tests/ExampleFile.java
++++ b/tests/ExampleFile.java
+@@ -0,0 +1,13 @@
++package com.mydomain.myapp;
++
++public class JavaTests {
++    // TODO: Some Java
++    // # Some title
++    // <SomeTag>
++
++    /*
++    TODO: Definitely some Java
++    # Another title
++    <AnotherTag>
++    */
++}
+\ No newline at end of file

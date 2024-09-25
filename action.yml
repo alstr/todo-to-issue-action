@@ -3,7 +3,7 @@ description: 'Converts IDE TODO comments to GitHub issues'
 author: 'Alastair Mooney'
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/alstr/todo-to-issue-action:v4.10.1'
+  image: 'docker://ghcr.io/alstr/todo-to-issue-action:v5.0'
 branding:
   icon: 'check-square'
   color: 'orange'
@@ -17,7 +17,7 @@ inputs:
     required: false
     default: '${{ github.event.before || github.base_ref }}'
   COMMITS:
-    description: 'An array of commit objects describing the pushed commits'
+    description: 'An array of commit objects describing the pushed commits (automatically set)'
     required: false
     default: '${{ toJSON(github.event.commits) }}'
   DIFF_URL:
@@ -32,28 +32,19 @@ inputs:
     description: 'The GitHub access token to allow us to retrieve, create and update issues (automatically set)'
     required: false
     default: ${{ github.token }}
-  LABEL:
-    description: 'The label that will be used to identify TODO comments (deprecated)'
-    required: false
-  COMMENT_MARKER:
-    description: 'The marker used to signify a line comment in your code (deprecated)'
-    required: false
   CLOSE_ISSUES:
-    description: 'Optional input that specifies whether to attempt to close an issue when a TODO is removed'
+    description: 'Optional input specifying whether to attempt to close an issue when a TODO is removed'
     required: false
     default: true
   AUTO_P:
     description: 'For multiline TODOs, format each line as a new paragraph when creating the issue'
     required: false
     default: true
+  PROJECT:
+    description: "User or organization project to link issues to, format 'project_type/owner/project_name'"
+    required: false
   PROJECTS_SECRET:
     description: 'Encrypted secret corresponding to your personal access token (do not enter the actual secret)'
-    required: false
-  USER_PROJECTS:
-    description: 'Default user projects'
-    required: false
-  ORG_PROJECTS:
-    description: 'Default organisation projects'
     required: false
   IGNORE:
     description: 'A collection of comma-delimited regular expression that matches files that should be ignored when searching for TODOs'
@@ -63,7 +54,7 @@ inputs:
     required: false
     default: false
   ACTOR:
-    description: 'The username of the person who triggered the action'
+    description: 'The username of the person who triggered the action (automatically set)'
     required: false
     default: '${{ github.actor }}'
   ISSUE_TEMPLATE:
@@ -76,3 +67,18 @@ inputs:
     description: 'Base url of GitHub API'
     required: false
     default: ${{ github.api_url }}
+  ESCAPE:
+    description: 'Escape all special Markdown characters'
+    required: false
+    default: true
+  LANGUAGES:
+    description: 'A collection of comma-delimited URLs or local paths for custom language files'
+    required: false
+  NO_STANDARD:
+    description: "Exclude loading the default 'syntax.json' and 'languages.yml' files from the repository"
+    required: false
+    default: false
+  INSERT_ISSUE_URLS:
+    description: 'Whether the action should insert the URL for a newly-created issue into the associated TODO comment'
+    required: false
+    default: false

@@ -153,9 +153,14 @@ index 0000000..7cccc5b
 --- /dev/null
 +++ b/src/tests/example_file.jl
 @@ -0,0 +1,2 @@
-- # TODO: Hopefully this comment turns into an issue
+- #TODO: Hopefully this comment turns into an issue
+- # TODO: Hopefully this comment also turns into an issue
 - print("Hello World")
 - #= TODO: Multiline comments
+-   also need to be turned into task, and hopefully
+-   kept together as one.
+- =#
+- #=TODO: Another copied multiline comment
 -   also need to be turned into task, and hopefully
 -   kept together as one.
 - =#
@@ -384,11 +389,106 @@ index 6b0c6cf..b37e70a 100644
 -' TODO: remove feature to prevent legal issues
 -Public Sub Plagiarize()
 +Public Sub MakeOriginalIdea()
-diff --git a/tests/example.sht b/tests/example.sht
-index 6b0c6cf..b37e70a 100644
---- a/tests/example.sht
-+++ b/tests/example.sht
-@@ -1,2 +1,1 @@
--' TODO: switch to tea
--Public Sub MakeCoffee()
-+Public Sub MakeTea()
+diff --git a/tests/example.cu b/tests/example.cu
+index 0000000..a6c6cb0
+--- /dev/null
++++ b/tests/example.cu
+@@ -1,9 +1,5 @@
+-// TODO rename this function
+ __global__ void test() {
+-    /*
+-    TODO fill this with something useful
+-    */
+ }
+diff --git a/tests/Makefile b/tests/Makefile
+index 2996176..7545ccf 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -1,12 +1,9 @@
+-# TODO change name.
+ NAME = asm
+ 
+-# TODO source files must be explicitly named.
+ SRC = $(shell find mandatory/src -name "*.asm")
+ OBJ = $(patsubst src/%.asm, obj/%.o, $(SRC))
+ .PHONY: all
+ all: $(NAME)
+ $(NAME): $(OBJ)
+-	# TODO create the directory.
+ 	$(AR) rc $@ $(OBJ)
+  
+diff --git a/tests/example_file.liquid b/tests/example_file.liquid
+index 0000000..7cccc5b 100644
+--- a/tests/example_file.liquid
++++ b/tests/example_file.liquid
+@@ -1,6 +0,0 @@
+-{% comment %} TODO: remove loop logic {% endcomment %}
+ {% for i in (1..3) -%}
+- # TODO: Do math here!
+- # labels: help wanted
+   {{ i }}
+ {% endfor %}
+-{% comment %}
+-TODO: Render Liquid file
+ {% assign featured_product = all_products["product_handle"] %}
+ {% render "product", product: featured_product %}
+-{% endcomment %}
+diff --git a/tests/example_file.tsx b/tests/example_file.tsx
+index 0000000..7cccc5b 100644
+--- a/tests/example_file.tsx
++++ b/tests/example_file.tsx
+@@ -1,7 +1,3 @@
+-// TODO: rename component
+-export default async function Component() {
++export default async function MyComponent() {
+-  /* TODO: Use state here
+-  labels: client  */
++  const [data, setData] = useState<string>("");
+ 
+   return (
+     <div>
+-      {/* 
+-       TODO: use styled component library 
+-      */}
++      <StyledComponent>{data}</StyledComponent>
+     </div>
+   );
+ }
+diff --git a/src/Swarm/Game/example.purs b/src/Swarm/Game/example.purs
+index 525e25d..ba4e68d 100644
+--- a/src/Swarm/Game/example.purs
++++ b/src/Swarm/Game/example.purs
+@@ -1,14 +0,0 @@
+--- | Standard devices that are always installed.
+---
+--- TODO: Remove standard devices
+---  In the future, make a way to build these and just start the base
+---  out with a large supply of each?
+---  labels: redesign
+-stdDeviceList =
+-  ["treads", "grabber", "solar panel", "scanner", "plasma cutter"]
+-
+-{- | Very complicated function.
+-
+-TODO: Create an issue for TODO
+--}
+-sum a b = a + b
+diff --git a/src/Swarm/Game/example.agda b/src/Swarm/Game/example.agda
+index 525e25d..ba4e68d 100644
+--- a/src/Swarm/Game/example.agda
++++ b/src/Swarm/Game/example.agda
+@@ -1,14 +0,0 @@
+--- | Standard devices that are always installed.
+---
+--- TODO: Remove standard devices
+---  In the future, make a way to build these and just start the base
+---  out with a large supply of each?
+---  labels: redesign
+-stdDeviceList =
+-  ["treads", "grabber", "solar panel", "scanner", "plasma cutter"]
+-
+-{- | Very complicated function.
+-
+-TODO: Create an issue for TODO
+--}
+-sum a b = a + b
