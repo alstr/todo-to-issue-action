@@ -179,6 +179,7 @@ Only a single milestone can be specified. If the milestone does not exist, it wi
 - TSX
 - Twig
 - TypeScript
+- Visual Basic for Applications (VBA)
 - Vue
 - XML
 - YAML

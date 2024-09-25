@@ -417,6 +417,27 @@ index 0000000..a6c6cb0
 +<Label Text="why"/>
 +<!-- TODO: please -->
 +<Label Text="ok"/>
+diff --git a/tests/example.cls b/tests/example.cls
+index 6b0c6cf..b37e70a 100644
+--- a/tests/example.cls
++++ b/tests/example.cls
+@@ -1,1 +1,2 @@
++' TODO: import library instead
+ Public Sub ReinventTheWheel()
+diff --git a/tests/example.bas b/tests/example.bas
+index 6b0c6cf..b37e70a 100644
+--- a/tests/example.bas
++++ b/tests/example.bas
+@@ -1,1 +1,2 @@
++' TODO: simplify
+ Public Sub MakeThingsComplicated()
+diff --git a/tests/example.frm b/tests/example.frm
+index 6b0c6cf..b37e70a 100644
+--- a/tests/example.frm
++++ b/tests/example.frm
+@@ -1,1 +1,2 @@
++' TODO: remove feature to prevent legal issues
+ Public Sub Plagiarize()
 diff --git a/tests/example.cu b/tests/example.cu
 new file mode 100644
 index 0000000..a6c6cb0

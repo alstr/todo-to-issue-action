@@ -773,6 +773,15 @@
     ]
   },
   {
+    "language": "VBA",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "'"
+      }
+    ]
+  },
+  {
     "language": "Cuda",
     "markers": [
       {
