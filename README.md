@@ -487,6 +487,8 @@ In the interests of stability, PRs without tests cannot be considered.**
 When adding languages, follow the structure of existing entries, and use the language name defined by
 [GitHub's `languages.yml`](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) file.
 
+For full details, please refer to the (contributing guidelines)[https://github.com/alstr/todo-to-issue-action/blob/master/CONTRIBUTING.md].
+
 ## Running tests locally
 
 To run the tests locally, simply run the following in the main repo:
