@@ -1,5 +1,9 @@
 # TODO to Issue
 
+![GitHub Release](https://img.shields.io/github/v/release/alstr/todo-to-issue-action)
+![GitHub Issues or Pull Requests by label](https://img.shields.io/github/issues/alstr/todo-to-issue-action/help%20wanted)
+![GitHub Issues or Pull Requests by label](https://img.shields.io/github/issues/alstr/todo-to-issue-action/good%20first%20issue)
+
 Action to create, update and close issues based on committed TODO comments.
 
 ![Diagram showing how the action works](diagram.png)
