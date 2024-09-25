@@ -364,15 +364,6 @@ index 0000000..a6c6cb0
 -<Label Text="ok"/>
 <Label Text="There you go"/>
 <Label Text="Thank you"/>
-diff --git a/tests/example.cls b/tests/example.cls
-index 6b0c6cf..b37e70a 100644
---- a/tests/example.cls
-+++ b/tests/example.cls
-@@ -1,2 +1,2 @@
--' TODO: import library instead
--Public Sub ReinventTheWheel()
-+Dim helper as HelperLibrary
-+Set helper = New HelperLibrary
 diff --git a/tests/example.bas b/tests/example.bas
 index 6b0c6cf..b37e70a 100644
 --- a/tests/example.bas
