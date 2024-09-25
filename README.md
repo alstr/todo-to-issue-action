@@ -1,8 +1,10 @@
 # TODO to Issue
 
-![GitHub Release](https://img.shields.io/github/v/release/alstr/todo-to-issue-action)
-![GitHub Issues or Pull Requests by label](https://img.shields.io/github/issues/alstr/todo-to-issue-action/help%20wanted)
-![GitHub Issues or Pull Requests by label](https://img.shields.io/github/issues/alstr/todo-to-issue-action/good%20first%20issue)
+<p>
+    <a href="https://github.com/alstr/todo-to-issue-action/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/alstr/todo-to-issue-action"></a>
+    <a href="https://github.com/alstr/todo-to-issue-action/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22"><img alt="Issues labelled 'help wanted'" src="https://img.shields.io/github/issues/alstr/todo-to-issue-action/help%20wanted"></a>
+    <a href="https://github.com/alstr/todo-to-issue-action/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22"><img alt="Issues labelled 'good first issue'" src="https://img.shields.io/github/issues/alstr/todo-to-issue-action/good%20first%20issue"></a>
+</p>
 
 Action to create, update and close issues based on committed TODO comments.
 
