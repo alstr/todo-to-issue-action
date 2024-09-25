@@ -8,7 +8,7 @@ Thank you for contributing a new language definition! Please follow the guidelin
 
 Fixes # (issue number, if applicable)
 
-## Checklist for Adding a New Language**
+## Checklist for Adding a New Language
 
 Before submitting your pull request, please ensure the following requirements are met:
 
