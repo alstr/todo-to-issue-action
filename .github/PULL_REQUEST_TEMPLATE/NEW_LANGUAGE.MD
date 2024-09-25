@@ -2,15 +2,11 @@
 
 Thank you for contributing a new language definition! Please follow the guidelines below to ensure that your contribution can be easily reviewed and integrated into the project.
 
----
-
 ## Description
 
-- **Language Name**: (e.g., Python, JavaScript)
+**Language Name**: (e.g., Python, JavaScript)
 
 Fixes # (issue number, if applicable)
-
----
 
 ## Checklist for Adding a New Language**
 
