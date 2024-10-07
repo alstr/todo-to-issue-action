@@ -235,7 +235,7 @@ jobs:
       - name: Commit and Push Changes
         run: |
           git add .
-          git commit -m "Automatically added GitHub issue links to TODOs"
+          git commit --allow-empty -m "Automatically added GitHub issue links to TODOs"
           git push origin main
 ```
 
