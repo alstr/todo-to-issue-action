@@ -539,3 +539,25 @@ index 0000000..0ce9b1a
 +TODO: Create an issue for TODO
 +-}
 +sum a b = a + b
+diff --git a/tests/Counter.sol b/tests/Counter.sol
+new file mode 100644
+index 0000000..d340f6a
+--- /dev/null
++++ b/src/Counter.sol
+@@ -0,0 +1,18 @@
++contract Counter {
++    // TODO: Test this
++    //  Do it
++    // labels: urgent
++
++    /*
++    TODO: Test this too
++    Do it ASAP
++    labels: urgent
++    */
+
++    /**
++    * TODO: And this too
++    * labels: urgent
++    */
++}

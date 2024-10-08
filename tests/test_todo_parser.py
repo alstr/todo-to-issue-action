@@ -100,6 +100,9 @@ class NewIssueTests(unittest.TestCase):
     def test_liquid_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'liquid'), 3)
 
+    def test_liquid_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'solidity'), 3)
+
 class ClosedIssueTests(unittest.TestCase):
     # Check for removed TODOs across the files specified.
     def setUp(self):
