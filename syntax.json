@@ -843,7 +843,7 @@
     "markers": [
       {
         "type": "line",
-        "pattern": "//"
+        "pattern": "///?"
       },
       {
         "type": "block",

@@ -544,11 +544,15 @@ new file mode 100644
 index 0000000..d340f6a
 --- /dev/null
 +++ b/src/Counter.sol
-@@ -0,0 +1,18 @@
+@@ -0,0 +1,20 @@
 +contract Counter {
 +    // TODO: Test this
 +    //  Do it
 +    // labels: urgent
+
++    /// TODO: Natspec comment
++    ///  Do it
++    /// labels: urgent
 +
 +    /*
 +    TODO: Test this too

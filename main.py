@@ -662,6 +662,7 @@ class TodoParser(object):
         if value.lower() in attributes:
             for syntax_details in self.syntax_dict:
                 if syntax_details['language'] == language_name:
+                    print(self.languages_dict[language_name])
                     return syntax_details['markers'], self.languages_dict[language_name]['ace_mode']
         return None, None
 
