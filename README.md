@@ -234,9 +234,13 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - name: Commit and Push Changes
         run: |
-          git add .
-          git commit -m "Automatically added GitHub issue links to TODOs"
-          git push origin main
+          git add -A
+          if [[ `git status --porcelain` ]]; then
+            git commit -m "Automatically added GitHub issue links to TODOs"
+            git push origin main
+          else
+            echo "No changes to commit"
+          fi
 ```
 
 You will probably also want to use the setting `CLOSE_ISSUES: "true"`, to allow issues to be closed when a TODO is
