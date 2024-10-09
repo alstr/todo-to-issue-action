@@ -539,6 +539,23 @@ index 0000000..0ce9b1a
 +TODO: Create an issue for TODO
 +-}
 +sum a b = a + b
+diff --git a/init.lua b/init.lua
+new file mode 100644
+index 0000000..0ce9b1a
+--- /dev/null
++++ b/init.lua
+@@ -0,0 +1,11 @@
++-- TODO: Fix this
++--   In the future, make a way to build these and just start the base
++--   out with a large supply of each
++--   labels: redesign
++local a = 1
++
++--[[
++  TODO: Fix this todo
++  labels: urgent
++--]]
++local b = 2
 diff --git a/tests/Counter.sol b/tests/Counter.sol
 new file mode 100644
 index 0000000..d340f6a

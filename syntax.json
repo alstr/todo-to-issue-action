@@ -839,6 +839,22 @@
     ]
   },
   {
+    "language": "Lua",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "--"
+      },
+      {
+        "type": "block",
+        "pattern": {
+          "start": "--\\[\\[",
+          "end": "--\\]\\]"
+        }
+      }
+    ]
+  },
+  {
     "language": "Solidity",
     "markers": [
       {

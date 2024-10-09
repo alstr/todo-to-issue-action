@@ -662,9 +662,6 @@ class TodoParser(object):
         if value.lower() in attributes:
             for syntax_details in self.syntax_dict:
                 if syntax_details['language'] == language_name:
-                    # TODO: this is a hotfix to make it temporarily work for solidity. Currently using it in my own project. happy to implement a proper solution if possible
-                    if language_name == "Solidity":
-                        return syntax_details['markers'], "solidity"
                     return syntax_details['markers'], self.languages_dict[language_name]['ace_mode']
         return None, None
 
