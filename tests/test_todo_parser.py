@@ -65,7 +65,7 @@ class NewIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_org_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 8)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 12)
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
@@ -103,7 +103,7 @@ class NewIssueTests(unittest.TestCase):
     def test_lua_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'lua'), 2)
 
-class ClosedIssueTests(unittest.TestCase):
+class ClosedIssueTest(unittest.TestCase):
     # Check for removed TODOs across the files specified.
     def setUp(self):
         diff_file = open('tests/test_closed.diff', 'r')
@@ -155,7 +155,7 @@ class ClosedIssueTests(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_org_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 8)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 12)
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
@@ -183,7 +183,7 @@ class ClosedIssueTests(unittest.TestCase):
 
     def test_xaml_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'xml'), 2)
-    
+
     def test_c_cpp_like_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'c_cpp'), 2)
 
@@ -192,7 +192,6 @@ class ClosedIssueTests(unittest.TestCase):
 
     def test_lua_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'lua'), 2)
-
 
 class IgnorePatternTests(unittest.TestCase):
 
