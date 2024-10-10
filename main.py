@@ -469,8 +469,8 @@ class TodoParser(object):
                         if not os.path.exists(path) or not os.path.isfile(path):
                             print(f'Cannot retrieve custom language file "{path}".')
                             continue
-                        f = open(path)
-                        data = json.load(f)
+                        with open(path) as f:
+                            data = json.load(f)
 
                     # Iterate through the definitions.
                     for lang in data:
