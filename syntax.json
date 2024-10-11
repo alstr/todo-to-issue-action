@@ -41,6 +41,15 @@
     ]
   },
   {
+    "language": "TOML",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "#"
+      }
+    ]
+  },
+  {
     "language": "Ruby",
     "markers": [
       {
