@@ -29,6 +29,9 @@ class NewIssueTest(unittest.TestCase):
     def test_yaml_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
 
+    def test_toml_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'toml'), 2)
+
     def test_php_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 4)
 
@@ -119,6 +122,9 @@ class ClosedIssueTest(unittest.TestCase):
 
     def test_yaml_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
+
+    def test_toml_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'toml'), 2)
 
     def test_php_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 4)

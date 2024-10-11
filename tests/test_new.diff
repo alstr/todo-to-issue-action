@@ -143,6 +143,19 @@ index 0000000..6397789
 +# TODO: Define inputs
 +#  Need to do this before the action is released
 +#  labels: urgent
+diff --git a/tests/example_file.toml b/tests/example_file.toml
+new file mode 100644
+index 0000000..6397789
+--- /dev/null
++++ b/tests/example_file.toml
+@@ -0,0 +1,7 @@
++name = "TODO to Issue"
++# TODO: Write a more interesting description
++description = "Converts IDE TODO comments to GitHub issues"
++author = "Alastair Mooney"
++# TODO: Define inputs
++#  Need to do this before the action is released
++#  labels: urgent
 diff --git a/tests/example_file.prog.abap b/src/tests/example_file.prog.abap
 new file mode 100644
 index 0000000..7cccc5b
