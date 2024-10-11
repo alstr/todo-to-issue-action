@@ -13,7 +13,7 @@ def count_issues_for_file_type(raw_issues, file_type):
     return num_issues
 
 
-class NewIssueTests(unittest.TestCase):
+class NewIssueTest(unittest.TestCase):
     # Check for newly added TODOs across the files specified.
     def setUp(self):
         diff_file = open('tests/test_new.diff', 'r')
@@ -64,7 +64,8 @@ class NewIssueTests(unittest.TestCase):
     def test_handlebars_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
-    def test_org_issues(self):
+    def test_text_issues(self):
+        # Includes 2 tests for Org, 2 tests for GAP, 2 tests for Visual Basic, 2 tests for Agda, 4 tests for Sol.
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 12)
 
     def test_scss_issues(self):
@@ -154,7 +155,8 @@ class ClosedIssueTest(unittest.TestCase):
     def test_handlebars_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
-    def test_org_issues(self):
+    def test_text_issues(self):
+        # Includes 2 tests for Org, 2 tests for GAP, 2 tests for Visual Basic, 2 tests for Agda, 4 tests for Sol.
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 12)
 
     def test_scss_issues(self):
@@ -193,8 +195,7 @@ class ClosedIssueTest(unittest.TestCase):
     def test_lua_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'lua'), 2)
 
-class IgnorePatternTests(unittest.TestCase):
-
+class IgnorePatternTest(unittest.TestCase):
     def test_single_ignore(self):
         os.environ['INPUT_IGNORE'] = '.*\\.java'
         parser = TodoParser()
