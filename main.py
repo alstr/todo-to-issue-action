@@ -102,7 +102,7 @@ if __name__ == "__main__":
                             # Duplicate the line to retain the comment syntax.
                             new_line = file_lines[line_number]
                             remove = fr'{raw_issue.identifier}.*{raw_issue.title}'
-                            insert = f'Issue URL: {client.line_base_url}{client.repo}/issues/{new_issue_number}'
+                            insert = client.get_issue_url(new_issue_number)
                             new_line = re.sub(remove, insert, new_line)
                             # Check if the URL line already exists, if so abort.
                             if line_number == len(file_lines) - 1 or file_lines[line_number + 1] != new_line:

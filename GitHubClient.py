@@ -351,3 +351,5 @@ class GitHubClient(object):
                 return pr_update_request.status_code
         return pr_request.status_code
 
+    def get_issue_url(self, new_issue_number):
+        return f'Issue URL: {self.line_base_url}{self.repo}/issues/{new_issue_number}'
