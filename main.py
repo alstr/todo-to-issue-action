@@ -11,12 +11,21 @@ import operator
 from collections import defaultdict
 from TodoParser import *
 from LineStatus import *
+from LocalClient import *
 from GitHubClient import *
 
 
 if __name__ == "__main__":
-    # Create a basic client for communicating with GitHub, automatically initialised with environment variables.
-    client = GitHubClient()
+    # Try to create a basic client for communicating with the remote version control server, automatically initialised with environment variables.
+    try:
+        # try to build a GitHub client
+        client = GitHubClient()
+    except EnvironmentError:
+        # don't immediately give up
+        client = None
+    # if needed, fall back to using a local client for testing
+    client = client or LocalClient()
+
     # Check to see if the workflow has been run manually.
     # If so, adjust the client SHA and diff URL to use the manually supplied inputs.
     manual_commit_ref = os.getenv('MANUAL_COMMIT_REF')
