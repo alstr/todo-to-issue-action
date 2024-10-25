@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Convert IDE TODOs to GitHub issues."""
 
-import os
-import re
 from time import sleep
 from io import StringIO
 import itertools
