@@ -67,6 +67,10 @@ inputs:
     description: 'Base url of GitHub API'
     required: false
     default: ${{ github.api_url }}
+  GITHUB_SERVER_URL:
+    description: 'Base URL of GitHub web interface'
+    required: false
+    default: ${{ github.server_url }}
   ESCAPE:
     description: 'Escape all special Markdown characters'
     required: false
