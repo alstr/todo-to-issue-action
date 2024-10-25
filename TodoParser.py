@@ -1,6 +1,5 @@
 import os
 import re
-import requests
 from ruamel.yaml import YAML
 from LineStatus import LineStatus
 from Issue import Issue
