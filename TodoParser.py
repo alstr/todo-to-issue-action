@@ -2,8 +2,8 @@ import os
 import re
 import requests
 from ruamel.yaml import YAML
-from LineStatus import *
-from Issue import *
+from LineStatus import LineStatus
+from Issue import Issue
 import requests
 import json
 from urllib.parse import urlparse

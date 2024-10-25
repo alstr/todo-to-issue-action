@@ -5,14 +5,13 @@ import os
 import re
 from time import sleep
 from io import StringIO
-from ruamel.yaml import YAML
 import itertools
 import operator
 from collections import defaultdict
-from TodoParser import *
-from LineStatus import *
-from LocalClient import *
-from GitHubClient import *
+from TodoParser import TodoParser
+from LineStatus import LineStatus
+from LocalClient import LocalClient
+from GitHubClient import GitHubClient
 
 
 if __name__ == "__main__":
