@@ -1,5 +1,5 @@
 FROM python:3-slim AS builder
-ADD main.py /app/main.py
+ADD *.py /app/
 WORKDIR /app
 
 RUN pip install --target=/app requests
