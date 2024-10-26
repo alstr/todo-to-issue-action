@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
         # Cycle through the Issue objects and create or close a corresponding GitHub issue for each.
         for j, raw_issue in enumerate(issues_to_process):
-            print(f'Processing issue {j + 1} of {len(issues_to_process)}')
+            print(f"Processing issue {j + 1} of {len(issues_to_process)}: '{raw_issue.title}' @ {raw_issue.file_name}:{raw_issue.start_line}")
             if raw_issue.status == LineStatus.ADDED:
                 status_code, new_issue_number = client.create_issue(raw_issue)
                 if status_code == 201:
