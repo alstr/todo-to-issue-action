@@ -17,7 +17,7 @@ class GitHubClient(object):
         self.before = os.getenv('INPUT_BEFORE')
         self.sha = os.getenv('INPUT_SHA')
         self.commits = json.loads(os.getenv('INPUT_COMMITS')) or []
-        self.diff_url = os.getenv('INPUT_DIFF_URL')
+        self.__init_diff_url__()
         self.token = os.getenv('INPUT_TOKEN')
         self.issues_url = f'{self.repos_url}{self.repo}/issues'
         self.milestones_url = f'{self.repos_url}{self.repo}/milestones'
@@ -45,6 +45,20 @@ class GitHubClient(object):
         # Populate milestones so we can perform a lookup if one is specified.
         self._get_milestones()
 
+    def __init_diff_url__(self):
+        manual_commit_ref = os.getenv('MANUAL_COMMIT_REF')
+        manual_base_ref = os.getenv('MANUAL_BASE_REF')
+        if manual_commit_ref:
+            self.sha = manual_commit_ref
+        if manual_commit_ref and manual_base_ref:
+            print(f'Manually comparing {manual_base_ref}...{manual_commit_ref}')
+            self.diff_url = f'{self.repos_url}{self.repo}/compare/{manual_base_ref}...{manual_commit_ref}'
+        elif manual_commit_ref:
+            print(f'Manual checking {manual_commit_ref}')
+            self.diff_url = f'{self.repos_url}{self.repo}/commits/{manual_commit_ref}'
+        else:
+            self.diff_url = os.getenv('INPUT_DIFF_URL')
+
     def get_last_diff(self):
         """Get the last diff."""
         if self.diff_url:
@@ -56,10 +70,12 @@ class GitHubClient(object):
         elif len(self.commits) == 1:
             # There is only one commit.
             diff_url = f'{self.repos_url}{self.repo}/commits/{self.sha}'
-        else:
+        elif len(self.commits) > 1:
             # There are several commits: compare with the oldest one.
             oldest = sorted(self.commits, key=self._get_timestamp)[0]['id']
             diff_url = f'{self.repos_url}{self.repo}/compare/{oldest}...{self.sha}'
+        else:
+            return None
 
         diff_headers = {
             'Accept': 'application/vnd.github.v3.diff',

@@ -25,23 +25,12 @@ if __name__ == "__main__":
     # if needed, fall back to using a local client for testing
     client = client or LocalClient()
 
-    # Check to see if the workflow has been run manually.
-    # If so, adjust the client SHA and diff URL to use the manually supplied inputs.
-    manual_commit_ref = os.getenv('MANUAL_COMMIT_REF')
-    manual_base_ref = os.getenv('MANUAL_BASE_REF')
-    if manual_commit_ref:
-        client.sha = manual_commit_ref
-    if manual_commit_ref and manual_base_ref:
-        print(f'Manually comparing {manual_base_ref}...{manual_commit_ref}')
-        client.diff_url = f'{client.repos_url}{client.repo}/compare/{manual_base_ref}...{manual_commit_ref}'
-    elif manual_commit_ref:
-        print(f'Manual checking {manual_commit_ref}')
-        client.diff_url = f'{client.repos_url}{client.repo}/commits/{manual_commit_ref}'
-    if client.diff_url or len(client.commits) != 0:
-        # Get the diff from the last pushed commit.
-        last_diff = StringIO(client.get_last_diff())
+    # Get the diff from the last pushed commit.
+    last_diff = client.get_last_diff()
+
+    if last_diff:
         # Parse the diff for TODOs and create an Issue object for each.
-        raw_issues = TodoParser().parse(last_diff)
+        raw_issues = TodoParser().parse(StringIO(last_diff))
         # This is a simple, non-perfect check to filter out any TODOs that have just been moved.
         # It looks for items that appear in the diff as both an addition and deletion.
         # It is based on the assumption that TODOs will not have identical titles in identical files.
