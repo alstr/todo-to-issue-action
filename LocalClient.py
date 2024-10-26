@@ -37,3 +37,6 @@ class LocalClient(object):
 
     def close_issue(self, issue):
         return 200
+
+    def get_issue_url(self, new_issue_number):
+        return "N/A"
