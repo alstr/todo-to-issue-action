@@ -79,7 +79,7 @@ if __name__ == "__main__":
             if raw_issue.status == LineStatus.ADDED:
                 status_code, new_issue_number = client.create_issue(raw_issue)
                 if status_code == 201:
-                    print('Issue created')
+                    print(f'Issue created: : #{new_issue_number} @ {client.get_issue_url(new_issue_number)}')
                     # Check to see if we should insert the issue URL back into the linked TODO.
                     # Don't insert URLs for comments. Comments do not get updated.
                     if client.insert_issue_urls and not (raw_issue.ref and raw_issue.ref.startswith('#')):
@@ -98,7 +98,7 @@ if __name__ == "__main__":
                                 with open(raw_issue.file_name, 'w') as issue_file:
                                     issue_file.writelines(file_lines)
                 elif status_code == 200:
-                    print('Issue updated')
+                    print(f'Issue updated: : #{new_issue_number} @ {client.get_issue_url(new_issue_number)}')
                 else:
                     print('Issue could not be created')
             elif raw_issue.status == LineStatus.DELETED and os.getenv('INPUT_CLOSE_ISSUES', 'true') == 'true':
