@@ -256,21 +256,34 @@ class EscapeMarkdownTest(unittest.TestCase):
         self.assertEqual(issue.body[1], '\\<AnotherTag\\>')
 
 
-class CustomLanguageTest(unittest.TestCase):
-    def test_custom_lang_load(self):
+class BaseCustomLanguageTests:
+    class BaseTest(unittest.TestCase):
+        @staticmethod
+        def count_syntax(parser: TodoParser, name: str):
+            counter = 0
+
+            for syntax in parser.syntax_dict:
+                if syntax['language'] == name:
+                    counter = counter + 1
+
+            return counter
+
+
+class CustomLanguageFileTest(BaseCustomLanguageTests.BaseTest):
+    def setUp(self):
         os.environ['INPUT_LANGUAGES'] = 'tests/custom_languages.json'
-        parser = TodoParser()
+        self.parser = TodoParser()
+
+    def test_custom_lang_load(self):
         # Test if the custom language ILS is actually loaded into the system
-        self.assertIsNotNone(parser.languages_dict['ILS'])
-        self.assertEqual(self.count_syntax(parser, 'ILS'), 1)
+        self.assertIsNotNone(self.parser.languages_dict['ILS'])
+        self.assertEqual(self.count_syntax(self.parser, 'ILS'), 1)
 
     def test_custom_lang_not_dupplicate(self):
-        os.environ['INPUT_LANGUAGES'] = 'tests/custom_languages.json'
-        parser = TodoParser()
 
         # Test if a custom language can overwrite the rules of an existing one
-        self.assertEqual(self.count_syntax(parser, 'Java'), 1)
-        for syntax in parser.syntax_dict:
+        self.assertEqual(self.count_syntax(self.parser, 'Java'), 1)
+        for syntax in self.parser.syntax_dict:
             if syntax['language'] == 'Java':
                 self.assertEqual(len(syntax['markers']), 2)
                 self.assertEqual(syntax['markers'][0]['pattern'], "////")
@@ -278,24 +291,24 @@ class CustomLanguageTest(unittest.TestCase):
                 self.assertEqual(syntax['markers'][1]['pattern']['end'], '=+')
                 break
 
-        self.assertIsNotNone(parser.languages_dict['Java'])
-        self.assertEqual(len(parser.languages_dict['Java']['extensions']), 1)
-        self.assertEqual(parser.languages_dict['Java']['extensions'][0], ".java2")
+        self.assertIsNotNone(self.parser.languages_dict['Java'])
+        self.assertEqual(len(self.parser.languages_dict['Java']['extensions']), 1)
+        self.assertEqual(self.parser.languages_dict['Java']['extensions'][0], ".java2")
 
-    def test_url_load(self):
+    def tearDown(self):
+        del os.environ['INPUT_LANGUAGES']
+
+
+class CustomLanguageUrlTest(BaseCustomLanguageTests.BaseTest):
+    def setUp(self):
         os.environ['INPUT_LANGUAGES'] = 'https://raw.githubusercontent.com/alstr/todo-to-issue-action/master/tests/custom_languages.json'
         os.environ['INPUT_NO_STANDARD'] = 'true'
-        parser = TodoParser()
+        self.parser = TodoParser()
 
-        self.assertEqual(len(parser.languages_dict), 2)
-        self.assertEqual(len(parser.syntax_dict), 2)
+    def test_url_load(self):
+        self.assertEqual(len(self.parser.languages_dict), 2)
+        self.assertEqual(len(self.parser.syntax_dict), 2)
 
-    @staticmethod
-    def count_syntax(parser: TodoParser, name: str):
-        counter = 0
-
-        for syntax in parser.syntax_dict:
-            if syntax['language'] == name:
-                counter = counter + 1
-
-        return counter
+    def tearDown(self):
+        del os.environ['INPUT_LANGUAGES']
+        del os.environ['INPUT_NO_STANDARD']
