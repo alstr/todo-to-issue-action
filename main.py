@@ -36,9 +36,9 @@ if __name__ == "__main__":
         # It is based on the assumption that TODOs will not have identical titles in identical files.
         # That is about as good as we can do for TODOs without issue URLs.
         issues_to_process = []
-        for values, similar_issues in itertools.groupby(raw_issues, key=operator.attrgetter('title', 'file_name',
+        for values, similar_issues_iter in itertools.groupby(raw_issues, key=operator.attrgetter('title', 'file_name',
                                                                                             'markdown_language')):
-            similar_issues = list(similar_issues)
+            similar_issues = list(similar_issues_iter)
             if (len(similar_issues) == 2 and all(issue.issue_url is None for issue in similar_issues)
                     and ((similar_issues[0].status == LineStatus.ADDED
                           and similar_issues[1].status == LineStatus.DELETED)
