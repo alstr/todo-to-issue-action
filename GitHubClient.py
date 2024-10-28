@@ -1,8 +1,9 @@
 import os
 import requests
 import json
+from Client import Client
 
-class GitHubClient(object):
+class GitHubClient(Client):
     """Basic client for getting the last diff and managing issues."""
     existing_issues = []
     milestones = []

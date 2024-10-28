@@ -10,18 +10,20 @@ import operator
 from collections import defaultdict
 from TodoParser import TodoParser
 from LineStatus import LineStatus
+from Client import Client
 from LocalClient import LocalClient
 from GitHubClient import GitHubClient
 
 
 if __name__ == "__main__":
+    client: Client | None = None
     # Try to create a basic client for communicating with the remote version control server, automatically initialised with environment variables.
     try:
         # try to build a GitHub client
         client = GitHubClient()
     except EnvironmentError:
         # don't immediately give up
-        client = None
+        pass
     # if needed, fall back to using a local client for testing
     client = client or LocalClient()
 

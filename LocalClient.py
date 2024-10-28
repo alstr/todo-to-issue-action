@@ -1,7 +1,8 @@
 import subprocess
 import os
+from Client import Client
 
-class LocalClient(object):
+class LocalClient(Client):
     def __init__(self):
         self.diff_url = None
         self.commits = ['placeholder'] # content doesn't matter, just length
@@ -31,12 +32,3 @@ class LocalClient(object):
 
     def get_last_diff(self):
         return subprocess.run(['git', 'diff', f'{self.base_ref}..{self.sha}'], stdout=subprocess.PIPE).stdout.decode('latin-1')
-
-    def create_issue(self, issue):
-        return [201, None]
-
-    def close_issue(self, issue):
-        return 200
-
-    def get_issue_url(self, new_issue_number):
-        return "N/A"
