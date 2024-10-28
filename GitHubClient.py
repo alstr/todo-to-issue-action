@@ -34,7 +34,6 @@ class GitHubClient(object):
         self.line_break = '\n\n' if auto_p else '\n'
         self.auto_assign = os.getenv('INPUT_AUTO_ASSIGN', 'false') == 'true'
         self.actor = os.getenv('INPUT_ACTOR')
-        self.insert_issue_urls = os.getenv('INPUT_INSERT_ISSUE_URLS', 'false') == 'true'
         if self.base_url == 'https://api.github.com/':
             self.line_base_url = 'https://github.com/'
         else:

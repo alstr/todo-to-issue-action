@@ -73,6 +73,9 @@ if __name__ == "__main__":
         issues_to_process = [issue for issue in issues_to_process if
                              not (issue.issue_url in update_and_close_issues and issue.status == LineStatus.DELETED)]
 
+        # Check to see if we should insert the issue URL back into the linked TODO.
+        insert_issue_urls = os.getenv('INPUT_INSERT_ISSUE_URLS', 'false') == 'true'
+
         # Cycle through the Issue objects and create or close a corresponding GitHub issue for each.
         for j, raw_issue in enumerate(issues_to_process):
             print(f"Processing issue {j + 1} of {len(issues_to_process)}: '{raw_issue.title}' @ {raw_issue.file_name}:{raw_issue.start_line}")
@@ -80,9 +83,8 @@ if __name__ == "__main__":
                 status_code, new_issue_number = client.create_issue(raw_issue)
                 if status_code == 201:
                     print(f'Issue created: : #{new_issue_number} @ {client.get_issue_url(new_issue_number)}')
-                    # Check to see if we should insert the issue URL back into the linked TODO.
                     # Don't insert URLs for comments. Comments do not get updated.
-                    if client.insert_issue_urls and not (raw_issue.ref and raw_issue.ref.startswith('#')):
+                    if insert_issue_urls and not (raw_issue.ref and raw_issue.ref.startswith('#')):
                         line_number = raw_issue.start_line - 1
                         with open(raw_issue.file_name, 'r') as issue_file:
                             file_lines = issue_file.readlines()
