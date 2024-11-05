@@ -8,11 +8,6 @@ from io import StringIO
 import itertools
 import operator
 from collections import defaultdict
-from TodoParser import TodoParser
-from LineStatus import LineStatus
-from Client import Client
-from LocalClient import LocalClient
-from GitHubClient import GitHubClient
 
 
 if __name__ == "__main__":
