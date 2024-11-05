@@ -35,10 +35,9 @@ class GitHubClient(Client):
         self.line_break = '\n\n' if auto_p else '\n'
         self.auto_assign = os.getenv('INPUT_AUTO_ASSIGN', 'false') == 'true'
         self.actor = os.getenv('INPUT_ACTOR')
-        if self.base_url == 'https://api.github.com/':
-            self.line_base_url = 'https://github.com/'
-        else:
-            self.line_base_url = self.base_url
+        self.line_base_url = os.getenv('INPUT_GITHUB_SERVER_URL')
+        if not self.line_base_url.endswith('/'):
+            self.line_base_url += '/'
         self.project = os.getenv('INPUT_PROJECT', None)
         # Retrieve the existing repo issues now so we can easily check them later.
         self._get_existing_issues()
