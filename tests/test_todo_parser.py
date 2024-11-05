@@ -2,7 +2,7 @@ import json
 import os
 import unittest
 
-from main import TodoParser
+from TodoParser import TodoParser
 
 
 def count_issues_for_file_type(raw_issues, file_type):
