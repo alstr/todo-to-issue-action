@@ -10,46 +10,37 @@ import operator
 from collections import defaultdict
 from TodoParser import TodoParser
 from LineStatus import LineStatus
+from Client import Client
 from LocalClient import LocalClient
 from GitHubClient import GitHubClient
 
 
 if __name__ == "__main__":
+    client: Client | None = None
     # Try to create a basic client for communicating with the remote version control server, automatically initialised with environment variables.
     try:
         # try to build a GitHub client
         client = GitHubClient()
     except EnvironmentError:
         # don't immediately give up
-        client = None
+        pass
     # if needed, fall back to using a local client for testing
     client = client or LocalClient()
 
-    # Check to see if the workflow has been run manually.
-    # If so, adjust the client SHA and diff URL to use the manually supplied inputs.
-    manual_commit_ref = os.getenv('MANUAL_COMMIT_REF')
-    manual_base_ref = os.getenv('MANUAL_BASE_REF')
-    if manual_commit_ref:
-        client.sha = manual_commit_ref
-    if manual_commit_ref and manual_base_ref:
-        print(f'Manually comparing {manual_base_ref}...{manual_commit_ref}')
-        client.diff_url = f'{client.repos_url}{client.repo}/compare/{manual_base_ref}...{manual_commit_ref}'
-    elif manual_commit_ref:
-        print(f'Manual checking {manual_commit_ref}')
-        client.diff_url = f'{client.repos_url}{client.repo}/commits/{manual_commit_ref}'
-    if client.diff_url or len(client.commits) != 0:
-        # Get the diff from the last pushed commit.
-        last_diff = StringIO(client.get_last_diff())
+    # Get the diff from the last pushed commit.
+    last_diff = client.get_last_diff()
+
+    if last_diff:
         # Parse the diff for TODOs and create an Issue object for each.
-        raw_issues = TodoParser().parse(last_diff)
+        raw_issues = TodoParser().parse(StringIO(last_diff))
         # This is a simple, non-perfect check to filter out any TODOs that have just been moved.
         # It looks for items that appear in the diff as both an addition and deletion.
         # It is based on the assumption that TODOs will not have identical titles in identical files.
         # That is about as good as we can do for TODOs without issue URLs.
         issues_to_process = []
-        for values, similar_issues in itertools.groupby(raw_issues, key=operator.attrgetter('title', 'file_name',
+        for values, similar_issues_iter in itertools.groupby(raw_issues, key=operator.attrgetter('title', 'file_name',
                                                                                             'markdown_language')):
-            similar_issues = list(similar_issues)
+            similar_issues = list(similar_issues_iter)
             if (len(similar_issues) == 2 and all(issue.issue_url is None for issue in similar_issues)
                     and ((similar_issues[0].status == LineStatus.ADDED
                           and similar_issues[1].status == LineStatus.DELETED)
@@ -84,16 +75,18 @@ if __name__ == "__main__":
         issues_to_process = [issue for issue in issues_to_process if
                              not (issue.issue_url in update_and_close_issues and issue.status == LineStatus.DELETED)]
 
+        # Check to see if we should insert the issue URL back into the linked TODO.
+        insert_issue_urls = os.getenv('INPUT_INSERT_ISSUE_URLS', 'false') == 'true'
+
         # Cycle through the Issue objects and create or close a corresponding GitHub issue for each.
         for j, raw_issue in enumerate(issues_to_process):
-            print(f'Processing issue {j + 1} of {len(issues_to_process)}')
+            print(f"Processing issue {j + 1} of {len(issues_to_process)}: '{raw_issue.title}' @ {raw_issue.file_name}:{raw_issue.start_line}")
             if raw_issue.status == LineStatus.ADDED:
                 status_code, new_issue_number = client.create_issue(raw_issue)
                 if status_code == 201:
-                    print('Issue created')
-                    # Check to see if we should insert the issue URL back into the linked TODO.
+                    print(f'Issue created: : #{new_issue_number} @ {client.get_issue_url(new_issue_number)}')
                     # Don't insert URLs for comments. Comments do not get updated.
-                    if client.insert_issue_urls and not (raw_issue.ref and raw_issue.ref.startswith('#')):
+                    if insert_issue_urls and not (raw_issue.ref and raw_issue.ref.startswith('#')):
                         line_number = raw_issue.start_line - 1
                         with open(raw_issue.file_name, 'r') as issue_file:
                             file_lines = issue_file.readlines()
@@ -101,7 +94,7 @@ if __name__ == "__main__":
                             # Duplicate the line to retain the comment syntax.
                             new_line = file_lines[line_number]
                             remove = fr'{raw_issue.identifier}.*{raw_issue.title}'
-                            insert = client.get_issue_url(new_issue_number)
+                            insert = f'Issue URL: {client.get_issue_url(new_issue_number)}'
                             new_line = re.sub(remove, insert, new_line)
                             # Check if the URL line already exists, if so abort.
                             if line_number == len(file_lines) - 1 or file_lines[line_number + 1] != new_line:
@@ -109,7 +102,7 @@ if __name__ == "__main__":
                                 with open(raw_issue.file_name, 'w') as issue_file:
                                     issue_file.writelines(file_lines)
                 elif status_code == 200:
-                    print('Issue updated')
+                    print(f'Issue updated: : #{new_issue_number} @ {client.get_issue_url(new_issue_number)}')
                 else:
                     print('Issue could not be created')
             elif raw_issue.status == LineStatus.DELETED and os.getenv('INPUT_CLOSE_ISSUES', 'true') == 'true':
