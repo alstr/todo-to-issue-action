@@ -9,6 +9,11 @@ import itertools
 import operator
 from collections import defaultdict
 
+from Client import Client
+from GitHubClient import GitHubClient
+from LineStatus import LineStatus
+from LocalClient import LocalClient
+from TodoParser import TodoParser
 
 if __name__ == "__main__":
     client: Client | None = None
