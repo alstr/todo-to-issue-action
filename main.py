@@ -33,7 +33,7 @@ def process_diff(diff, client=Client(), insert_issue_urls=False, parser=TodoPars
                     or (similar_issues[1].status == LineStatus.ADDED
                         and similar_issues[0].status == LineStatus.DELETED))):
             print(f'Issue "{values[0]}" appears as both addition and deletion. '
-                    f'Assuming this issue has been moved so skipping.')
+                    f'Assuming this issue has been moved so skipping.', file=output)
             continue
         issues_to_process.extend(similar_issues)
 
@@ -63,11 +63,11 @@ def process_diff(diff, client=Client(), insert_issue_urls=False, parser=TodoPars
 
     # Cycle through the Issue objects and create or close a corresponding GitHub issue for each.
     for j, raw_issue in enumerate(sorted(reversed(sorted(issues_to_process, key = operator.attrgetter('start_line'))), key = operator.attrgetter('file_name'))):
-        print(f"Processing issue {j + 1} of {len(issues_to_process)}: '{raw_issue.title}' @ {raw_issue.file_name}:{raw_issue.start_line}")
+        print(f"Processing issue {j + 1} of {len(issues_to_process)}: '{raw_issue.title}' @ {raw_issue.file_name}:{raw_issue.start_line}", file=output)
         if raw_issue.status == LineStatus.ADDED:
             status_code, new_issue_number = client.create_issue(raw_issue)
             if status_code == 201:
-                print(f'Issue created: #{new_issue_number} @ {client.get_issue_url(new_issue_number)}')
+                print(f'Issue created: #{new_issue_number} @ {client.get_issue_url(new_issue_number)}', file=output)
                 # Don't insert URLs for comments. Comments do not get updated.
                 if insert_issue_urls and not (raw_issue.ref and raw_issue.ref.startswith('#')):
                     line_number = raw_issue.start_line - 1
@@ -85,18 +85,18 @@ def process_diff(diff, client=Client(), insert_issue_urls=False, parser=TodoPars
                             with open(raw_issue.file_name, 'w') as issue_file:
                                 issue_file.writelines(file_lines)
             elif status_code == 200:
-                print(f'Issue updated: #{new_issue_number} @ {client.get_issue_url(new_issue_number)}')
+                print(f'Issue updated: #{new_issue_number} @ {client.get_issue_url(new_issue_number)}', file=output)
             else:
-                print('Issue could not be created')
+                print('Issue could not be created', file=output)
         elif raw_issue.status == LineStatus.DELETED and os.getenv('INPUT_CLOSE_ISSUES', 'true') == 'true':
             if raw_issue.ref and raw_issue.ref.startswith('#'):
-                print('Issue looks like a comment, will not attempt to close.')
+                print('Issue looks like a comment, will not attempt to close.', file=output)
                 continue
             status_code = client.close_issue(raw_issue)
             if status_code in [200, 201]:
-                print('Issue closed')
+                print('Issue closed', file=output)
             else:
-                print('Issue could not be closed')
+                print('Issue could not be closed', file=output)
         # Stagger the requests to be on the safe side.
         sleep(1)
 
