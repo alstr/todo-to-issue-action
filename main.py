@@ -75,16 +75,20 @@ def process_diff(diff, client=Client(), insert_issue_urls=False, parser=TodoPars
                         file_lines = issue_file.readlines()
                     if line_number < len(file_lines):
                         # Duplicate the line to retain the comment syntax.
-                        new_line = file_lines[line_number]
+                        old_line = file_lines[line_number]
                         remove = fr'{raw_issue.identifier}.*{raw_issue.title}'
                         insert = f'Issue URL: {client.get_issue_url(new_issue_number)}'
-                        new_line = re.sub(remove, insert, new_line)
-                        # Check if the URL line already exists, if so abort.
-                        if line_number == len(file_lines) - 1 or file_lines[line_number + 1] != new_line:
-                            file_lines.insert(line_number + 1, new_line)
-                            with open(raw_issue.file_name, 'w') as issue_file:
-                                issue_file.writelines(file_lines)
-                            print('Issue URL successfully inserted', file=output)
+                        new_line = re.sub(remove, insert, old_line)
+                        # make sure the above operation worked as intended
+                        if new_line != old_line:
+                            # Check if the URL line already exists, if so abort.
+                            if line_number == len(file_lines) - 1 or file_lines[line_number + 1] != new_line:
+                                file_lines.insert(line_number + 1, new_line)
+                                with open(raw_issue.file_name, 'w') as issue_file:
+                                    issue_file.writelines(file_lines)
+                                print('Issue URL successfully inserted', file=output)
+                        else:
+                            print('ERROR: Issue URL was NOT successfully inserted', file=output)
             elif status_code == 200:
                 print(f'Issue updated: #{new_issue_number} @ {client.get_issue_url(new_issue_number)}', file=output)
             else:
