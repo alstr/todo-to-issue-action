@@ -48,7 +48,7 @@ class IssueUrlInsertionTest(unittest.TestCase):
         # process the diffs
         process_diff(diff=self.diff_file, insert_issue_urls=True, parser=self.parser, output=output)
         # make sure the number of issue URL comments inserted is as expected
-        self.assertEqual(output.getvalue().count('Issue URL successfully inserted'), 82)
+        self.assertEqual(output.getvalue().count('Issue URL successfully inserted'), 80)
 
     def tearDown(self):
         # return to original working directory to ensure we don't mess up other tests

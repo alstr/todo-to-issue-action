@@ -16,13 +16,16 @@ def count_issues_for_file_type(raw_issues, file_type):
 class NewIssueTest(unittest.TestCase):
     # Check for newly added TODOs across the files specified.
     def setUp(self):
-        diff_file = open('tests/test_new.diff', 'r')
-        diff_file2 = open('tests/test_edit.diff', 'r')
         parser = TodoParser()
+        self.raw_issues = []
         with open('syntax.json', 'r') as syntax_json:
             parser.syntax_dict = json.load(syntax_json)
-        self.raw_issues = parser.parse(diff_file)
-        self.raw_issues.extend(parser.parse(diff_file2))
+        with open('tests/test_new.diff', 'r') as diff_file:
+            self.raw_issues.extend(parser.parse(diff_file))
+        with open('tests/test_new2.diff', 'r') as diff_file:
+            self.raw_issues.extend(parser.parse(diff_file))
+        with open('tests/test_edit.diff', 'r') as diff_file:
+            self.raw_issues.extend(parser.parse(diff_file))
 
     def test_python_issues(self):
         # Includes 4 tests for Starlark.
