@@ -180,7 +180,7 @@ new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
 +++ b/example_file.tex
-@@ -0,0 +1,2 @@
+@@ -0,0 +1,7 @@
 +% TODO Add in preamble details
 +\begin{document}
 +  \begin{comment}
@@ -193,7 +193,7 @@ new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
 +++ b/example_file.jl
-@@ -0,0 +1,2 @@
+@@ -0,0 +1,6 @@
 + # TODO: Hopefully this comment turns into an issue
 + print("Hello World")
 + #= TODO: Multiline comments
@@ -243,7 +243,7 @@ new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
 +++ b/example_file.hbs
-@@ -0,0 +1,2 @@
+@@ -0,0 +1,5 @@
 + <!-- TODO: Hopefully this comment turns into a todo issue -->
 + {{!
 +   TODO: Make a handlebar templtate
@@ -254,7 +254,7 @@ new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
 +++ b/example_file.org
-@@ -0,0 +1,2 @@
+@@ -0,0 +1,9 @@
 + # TODO: Hopefully this comment turns into a todo issue
 + #+begin_src python
 + print("Hello World")
@@ -435,7 +435,7 @@ new file mode 100644
 index 0000000..a6c6cb0
 --- /dev/null
 +++ b/example.cu
-@@ 0,0 +1,8 @@
+@@ -0,0 +1,8 @@
 +
 +// TODO rename this function
 +__global__ void test() {
@@ -560,7 +560,7 @@ new file mode 100644
 index 0000000..d340f6a
 --- /dev/null
 +++ b/Counter.sol
-@@ 0,0 +1,20 @@
+@@ -0,0 +1,20 @@
 +contract Counter {
 +    // TODO: Test this
 +    //  Do it
