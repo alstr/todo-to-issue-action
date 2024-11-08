@@ -84,6 +84,7 @@ def process_diff(diff, client=Client(), insert_issue_urls=False, parser=TodoPars
                             file_lines.insert(line_number + 1, new_line)
                             with open(raw_issue.file_name, 'w') as issue_file:
                                 issue_file.writelines(file_lines)
+                            print('Issue URL successfully inserted', file=output)
             elif status_code == 200:
                 print(f'Issue updated: #{new_issue_number} @ {client.get_issue_url(new_issue_number)}', file=output)
             else:
