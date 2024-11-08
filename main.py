@@ -79,7 +79,7 @@ if __name__ == "__main__":
         insert_issue_urls = os.getenv('INPUT_INSERT_ISSUE_URLS', 'false') == 'true'
 
         # Cycle through the Issue objects and create or close a corresponding GitHub issue for each.
-        for j, raw_issue in enumerate(issues_to_process):
+        for j, raw_issue in enumerate(sorted(reversed(sorted(issues_to_process, key = operator.attrgetter('start_line'))), key = operator.attrgetter('file_name'))):
             print(f"Processing issue {j + 1} of {len(issues_to_process)}: '{raw_issue.title}' @ {raw_issue.file_name}:{raw_issue.start_line}")
             if raw_issue.status == LineStatus.ADDED:
                 status_code, new_issue_number = client.create_issue(raw_issue)
