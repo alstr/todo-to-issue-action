@@ -1,8 +1,8 @@
-diff --git a/tests/ExampleFile.java b/tests/ExampleFile.java
+diff --git a/ExampleFile.java b/ExampleFile.java
 new file mode 100644
 index 0000000..d340f6a
 --- /dev/null
-+++ b/tests/ExampleFile.java
++++ b/ExampleFile.java
 @@ -0,0 +1,13 @@
 +package com.mydomain.myapp;
 +
@@ -18,11 +18,11 @@ index 0000000..d340f6a
 +    */
 +}
 \ No newline at end of file
-diff --git a/tests/example-file.php b/tests/example-file.php
+diff --git a/example-file.php b/example-file.php
 new file mode 100644
 index 0000000..063bb80
 --- /dev/null
-+++ b/tests/example-file.php
++++ b/example-file.php
 @@ -0,0 +1,23 @@
 +<!DOCTYPE html>
 +<html>
@@ -48,11 +48,11 @@ index 0000000..063bb80
 +</body>
 +</html>
 \ No newline at end of file
-diff --git a/tests/example_file.py b/tests/example_file.py
+diff --git a/example_file.py b/example_file.py
 new file mode 100644
 index 0000000..525e25d
 --- /dev/null
-+++ b/tests/example_file.py
++++ b/example_file.py
 @@ -0,0 +1,23 @@
 +def hello_world():
 +    # TODO: Come up with a more imaginative greeting
@@ -78,11 +78,11 @@ index 0000000..525e25d
 +    '''
 +    pass
 \ No newline at end of file
-diff --git a/src/Swarm/Game/example.hs b/src/Swarm/Game/example.hs
+diff --git a/example.hs b/example.hs
 new file mode 100644
 index 0000000..0ce9b1a
 --- /dev/null
-+++ b/src/Swarm/Game/example.hs
++++ b/example.hs
 @@ -0,0 +1,14 @@
 +-- | Standard devices that are always installed.
 +--
@@ -98,23 +98,23 @@ index 0000000..0ce9b1a
 +TODO: Create an issue for TODO
 +-}
 +sum a b = a + b
-diff --git a/tests/example_file.cr b/tests/example_file.cr
+diff --git a/example_file.cr b/example_file.cr
 new file mode 100644
 index 0000000..e6da2ec
 --- /dev/null
-+++ b/tests/example_file.cr
-@@ -0,0 +1,14 @@
++++ b/example_file.cr
+@@ -0,0 +1,6 @@
 +# TODO: Come up with a more imaginative greeting
 +puts "Greetings"
 +
 +# TODO: Do even more stuff
 +# This function should probably do something more interesting
 +# labels: help wanted
-diff --git a/tests/example_file.rb b/tests/example_file.rb
+diff --git a/example_file.rb b/example_file.rb
 new file mode 100644
 index 0000000..e6da2ec
 --- /dev/null
-+++ b/tests/example_file.rb
++++ b/example_file.rb
 @@ -0,0 +1,14 @@
 +#!/usr/bin/ruby -w
 +
@@ -130,11 +130,11 @@ index 0000000..e6da2ec
 +# TODO: Do even more stuff
 +# This function should probably do something more interesting
 +# labels: help wanted
-diff --git a/tests/example_file.yaml b/tests/example_file.yaml
+diff --git a/example_file.yaml b/example_file.yaml
 new file mode 100644
 index 0000000..6397789
 --- /dev/null
-+++ b/tests/example_file.yaml
++++ b/example_file.yaml
 @@ -0,0 +1,7 @@
 +name: "TODO to Issue"
 +# TODO: Write a more interesting description
@@ -143,11 +143,11 @@ index 0000000..6397789
 +# TODO: Define inputs
 +#  Need to do this before the action is released
 +#  labels: urgent
-diff --git a/tests/example_file.toml b/tests/example_file.toml
+diff --git a/example_file.toml b/example_file.toml
 new file mode 100644
 index 0000000..6397789
 --- /dev/null
-+++ b/tests/example_file.toml
++++ b/example_file.toml
 @@ -0,0 +1,7 @@
 +name = "TODO to Issue"
 +# TODO: Write a more interesting description
@@ -156,30 +156,30 @@ index 0000000..6397789
 +# TODO: Define inputs
 +#  Need to do this before the action is released
 +#  labels: urgent
-diff --git a/tests/example_file.prog.abap b/src/tests/example_file.prog.abap
+diff --git a/example_file.prog.abap b/example_file.prog.abap
 new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
-+++ b/tests/example_file.prog.abap
++++ b/example_file.prog.abap
 @@ -0,0 +1,5 @@
 +REPORT ztest_todo_2.
 +
 +DATA moo TYPE i VALUE 2.
 +WRITE moo. " TODO This is an end-of-line to-do
 +moo = 4. * TODO This is another end-of-line to-do
-diff --git a/tests/example_file.sql b/src/tests/example_file.sql
+diff --git a/example_file.sql b/example_file.sql
 new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
-+++ b/src/tests/example_file.sql
++++ b/example_file.sql
 @@ -0,0 +1,2 @@
 +-- TODO Select all:
 +SELECT * FROM Products;
-diff --git a/tests/example_file.tex b/src/tests/example_file.tex
+diff --git a/example_file.tex b/example_file.tex
 new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
-+++ b/src/tests/example_file.tex
++++ b/example_file.tex
 @@ -0,0 +1,2 @@
 +% TODO Add in preamble details
 +\begin{document}
@@ -188,11 +188,11 @@ index 0000000..7cccc5b
 +     label: urgent
 +  \end{comment}
 +\end{document}
-diff --git a/tests/example_file.jl b/src/tests/example_file.jl
+diff --git a/example_file.jl b/example_file.jl
 new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
-+++ b/src/tests/example_file.jl
++++ b/example_file.jl
 @@ -0,0 +1,2 @@
 + # TODO: Hopefully this comment turns into an issue
 + print("Hello World")
@@ -200,12 +200,12 @@ index 0000000..7cccc5b
 +   also need to be turned into task, and hopefully
 +   kept together as one.
 + =#
-diff --git a/tests/defs.bzl b/tests/defs.bzl
+diff --git a/defs.bzl b/defs.bzl
 new file mode 100644
 index 0000000..525e25d
 --- /dev/null
-+++ b/tests/defs.bzl
-@@ -0,0 +1,23 @@
++++ b/defs.bzl
+@@ -0,0 +1,8 @@
 +def hello_world():
 +    # TODO: Come up with a more imaginative greeting
 +    print('Hello world')
@@ -214,12 +214,12 @@ index 0000000..525e25d
 +    #  This function should probably do something more interesting
 +    #  labels: help wanted
 +    pass
-diff --git a/tests/BUILD.bazel b/tests/BUILD.bazel
+diff --git a/BUILD.bazel b/BUILD.bazel
 new file mode 100644
 index 0000000..525e25d
 --- /dev/null
-+++ b/tests/BUILD.bazel
-@@ -0,0 +1,23 @@
++++ b/BUILD.bazel
+@@ -0,0 +1,8 @@
 +def hello_world():
 +    # TODO: Come up with a more imaginative greeting
 +    print('Hello world')
@@ -228,32 +228,32 @@ index 0000000..525e25d
 +    #  This function should probably do something more interesting
 +    #  labels: help wanted
 +    pass
-diff --git a/tests/example_file.ahk b/src/tests/example_file.ahk
+diff --git a/example_file.ahk b/example_file.ahk
 new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
-+++ b/src/tests/example_file.ahk
++++ b/example_file.ahk
 @@ -0,0 +1,2 @@
 + ; TODO: Find a better way to manage hotkeys
 + ; Maybe just switch to vim??
 + #h::
 + RegRead, HiddenFiles_Status, HKEY_CURRENT_USER, Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced, Hidden
-diff --git a/tests/example_file.hbs b/src/tests/example_file.hbs
+diff --git a/example_file.hbs b/example_file.hbs
 new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
-+++ b/src/tests/example_file.hbs
++++ b/example_file.hbs
 @@ -0,0 +1,2 @@
 + <!-- TODO: Hopefully this comment turns into a todo issue -->
 + {{!
 +   TODO: Make a handlebar templtate
 +    This is really just a test, but hopefully this works~!
 + }}
-diff --git a/tests/example_file.org b/src/tests/example_file.org
+diff --git a/example_file.org b/example_file.org
 new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
-+++ b/src/tests/example_file.org
++++ b/example_file.org
 @@ -0,0 +1,2 @@
 + # TODO: Hopefully this comment turns into a todo issue
 + #+begin_src python
@@ -264,11 +264,11 @@ index 0000000..7cccc5b
 +   also need to be turned into todos, and hopefully
 +   kept together as one todo
 + #+end_comment
-diff --git a/tests/example_file.scss b/src/tests/example_file.scss
+diff --git a/example_file.scss b/example_file.scss
 new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
-+++ b/src/tests/example_file.scss
++++ b/example_file.scss
 @@ -0,0 +1,11 @@
 +// TODO: Hopefully this comment turns into a todo issue
 +.my-class {
@@ -281,11 +281,11 @@ index 0000000..7cccc5b
 +    text-align: center;
 +  }
 +}
-diff --git a/tests/example_file.twig b/src/tests/example_file.twig
+diff --git a/example_file.twig b/example_file.twig
 new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
-+++ b/src/tests/example_file.twig
++++ b/example_file.twig
 @@ -0,0 +1,6 @@
 + {# TODO: Hopefully this comment turns into a todo issue #}
 + {#
@@ -293,11 +293,11 @@ index 0000000..7cccc5b
 +   also need to be turned into todos, and hopefully
 +   kept together as one todo
 + #}
-diff --git a/tests/example_file.md b/src/tests/example_file.md
+diff --git a/example_file.md b/example_file.md
 new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
-+++ b/src/tests/example_file.md
++++ b/example_file.md
 @@ -0,0 +1,7 @@
 + {/* TODO: Hopefully this comment turns into a todo issue */}
 + {/*
@@ -306,11 +306,11 @@ index 0000000..7cccc5b
 +   kept together as one todo
 + */}
 + - [ ] TODO: An inline todo that's NOT a comment (what)
-diff --git a/tests/example_file.mdx b/src/tests/example_file.mdx
+diff --git a/example_file.mdx b/example_file.mdx
 new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
-+++ b/src/tests/example_file.mdx
++++ b/example_file.mdx
 @@ -0,0 +1,7 @@
 + {/* TODO: Hopefully this comment turns into a todo issue */}
 + {/*
@@ -319,12 +319,12 @@ index 0000000..7cccc5b
 +   kept together as one todo
 + */}
 + - [ ] TODO: An inline todo that's NOT a comment (what)
-diff --git a/tests/example_file.r b/tests/example_file.r
+diff --git a/example_file.r b/example_file.r
 new file mode 100644
 index 0000000..525e25d
 --- /dev/null
-+++ b/tests/example_file.r
-@@ -0,0 +1,23 @@
++++ b/example_file.r
+@@ -0,0 +1,8 @@
 +hello_world <- function() {
 +    # TODO: Come up with a more imaginative greeting
 +    message("Hello world")
@@ -333,25 +333,25 @@ index 0000000..525e25d
 +    #  This function should probably do something more interesting
 +    #  labels: help wanted
 +}
-diff --git a/tests/example_file.rmd b/src/tests/example_file.rmd
+diff --git a/example_file.rmd b/example_file.rmd
 new file mode 100644
 index 0000000..525e25d
 --- /dev/null
-+++ b/src/tests/example_file.rmd
++++ b/example_file.rmd
 @@ -0,0 +0,1 @@
 +<!-- TODO: Check RMarkdown comments work -->
-diff --git a/tests/example_file.qmd b/src/tests/example_file.qmd
+diff --git a/example_file.qmd b/example_file.qmd
 new file mode 100644
 index 0000000..525e25d
 --- /dev/null
-+++ b/src/tests/example_file.qmd
++++ b/example_file.qmd
 @@ -0,0 +0,1 @@
 +<!-- TODO: Check RMarkdown comments work -->
-diff --git a/tests/config.jsonc b/tests/config.jsonc
+diff --git a/config.jsonc b/config.jsonc
 new file mode 100644
 index 0000000..525e25d
 --- /dev/null
-+++ b/tests/config.jsonc
++++ b/config.jsonc
 @@ -0,0 +0,11 @@
 +{
 +  "myConfig": [
@@ -364,11 +364,11 @@ index 0000000..525e25d
 + "butItHasSomePendingActivities"
 + ]
 +}
-diff --git a/tests/config.json5 b/tests/config.json5
+diff --git a/config.json5 b/config.json5
 new file mode 100644
 index 0000000..525e25d
 --- /dev/null
-+++ b/tests/config.json5
++++ b/config.json5
 @@ -0,0 +0,8 @@
 +{
 +  "myConfig": [
@@ -378,11 +378,11 @@ index 0000000..525e25d
 + "butItHasSomePendingActivities"
 + ]
 +}
-diff --git a/tests/example.clj b/tests/example.clj
+diff --git a/example.clj b/example.clj
 new file mode 100644
 index 0000000..525e25d
 --- /dev/null
-+++ b/tests/example.clj
++++ b/example.clj
 @@ -0,0 +1,8 @@
 +(ns example)
 +
@@ -392,22 +392,22 @@ index 0000000..525e25d
 +  ;; TODO: todo with description (sub-level)
 +  ;;  Body of the issue should stay here
 +  (str "hello" name))
-diff --git a/tests/example.gd b/tests/example.gd
+diff --git a/example.gd b/example.gd
 new file mode 100644
 index 0000000..525e25d
 --- /dev/null
-+++ b/tests/example.gd
++++ b/example.gd
 @@ -0,0 +1,5 @@
 +# TODO Store all the players here
 +var _players: = []
 +
 +# TODO Play the level music
 +export: var music_path: String
-diff --git a/tests/example.nix b/tests/example.nix
+diff --git a/example.nix b/example.nix
 new file mode 100644
 index 0000000..a6c6cb0
 --- /dev/null
-+++ b/tests/example.nix
++++ b/example.nix
 @@ -0,0 +1,11 @@
 +{
 +  # TODO add missing devices
@@ -420,36 +420,22 @@ index 0000000..a6c6cb0
 +  */
 +  sum = a: b: a + b;
 +}
-diff --git a/tests/example.xaml b/tests/example.xaml
+diff --git a/example.xaml b/example.xaml
 new file mode 100644
 index 0000000..a6c6cb0
 --- /dev/null
-+++ b/tests/example.xaml
++++ b/example.xaml
 @@ -0,0 +1,4 @@
 +<!-- TODO: Add xaml support -->
 +<Label Text="why"/>
 +<!-- TODO: please -->
 +<Label Text="ok"/>
-diff --git a/tests/example.bas b/tests/example.bas
-index 6b0c6cf..b37e70a 100644
---- a/tests/example.bas
-+++ b/tests/example.bas
-@@ -1,1 +1,2 @@
-+' TODO: simplify
- Public Sub MakeThingsComplicated()
-diff --git a/tests/example.frm b/tests/example.frm
-index 6b0c6cf..b37e70a 100644
---- a/tests/example.frm
-+++ b/tests/example.frm
-@@ -1,1 +1,2 @@
-+' TODO: remove feature to prevent legal issues
- Public Sub Plagiarize()
-diff --git a/tests/example.cu b/tests/example.cu
+diff --git a/example.cu b/example.cu
 new file mode 100644
 index 0000000..a6c6cb0
 --- /dev/null
-+++ b/tests/example.cu
-@@ -1,3 +1,11 @@
++++ b/example.cu
+@@ 0,0 +1,8 @@
 +
 +// TODO rename this function
 +__global__ void test() {
@@ -458,11 +444,11 @@ index 0000000..a6c6cb0
 +    */
 +}
 +
-diff --git a/tests/Makefile b/tests/Makefile
+diff --git a/Makefile b/Makefile
 new file mode 100644
 index 0000000..2996176
 --- /dev/null
-+++ b/tests/Makefile
++++ b/Makefile
 @@ -0,0 +1,12 @@
 +# TODO change name.
 +NAME = asm
@@ -476,11 +462,11 @@ index 0000000..2996176
 +	# TODO create the directory.
 +	$(AR) rc $@ $(OBJ)
 +
-diff --git a/tests/example_file.liquid b/tests/example_file.liquid
+diff --git a/example_file.liquid b/example_file.liquid
 new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
-+++ b/tests/example_file.liquid
++++ b/example_file.liquid
 @@ -0,0 +1,11 @@
 +{% comment %} TODO: remove loop logic {% endcomment %}
 +{% for i in (1..3) -%}
@@ -493,11 +479,11 @@ index 0000000..7cccc5b
 +{% assign featured_product = all_products["product_handle"] %}
 +{% render "product", product: featured_product %}
 +{% endcomment %}
-diff --git a/tests/example_file.tsx b/tests/example_file.tsx
+diff --git a/example_file.tsx b/example_file.tsx
 new file mode 100644
 index 0000000..7cccc5b
 --- /dev/null
-+++ b/tests/example_file.tsx
++++ b/example_file.tsx
 @@ -0,0 +1,13 @@
 +// TODO: rename component
 +export default async function Component() {
@@ -512,11 +498,11 @@ index 0000000..7cccc5b
 +    </div>
 +  );
 +}
-diff --git a/src/Swarm/Game/example.purs b/src/Swarm/Game/example.purs
+diff --git a/example.purs b/example.purs
 new file mode 100644
 index 0000000..0ce9b1a
 --- /dev/null
-+++ b/src/Swarm/Game/example.purs
++++ b/example.purs
 @@ -0,0 +1,14 @@
 +-- | Standard devices that are always installed.
 +--
@@ -532,11 +518,11 @@ index 0000000..0ce9b1a
 +TODO: Create an issue for TODO
 +-}
 +sum a b = a + b
-diff --git a/src/Swarm/Game/example.agda b/src/Swarm/Game/example.agda
+diff --git a/example.agda b/example.agda
 new file mode 100644
 index 0000000..0ce9b1a
 --- /dev/null
-+++ b/src/Swarm/Game/example.agda
++++ b/example.agda
 @@ -0,0 +1,14 @@
 +-- | Standard devices that are always installed.
 +--
@@ -569,17 +555,17 @@ index 0000000..0ce9b1a
 +  labels: urgent
 +--]]
 +local b = 2
-diff --git a/tests/Counter.sol b/tests/Counter.sol
+diff --git a/Counter.sol b/Counter.sol
 new file mode 100644
 index 0000000..d340f6a
 --- /dev/null
-+++ b/src/Counter.sol
-@@ -0,0 +1,20 @@
++++ b/Counter.sol
+@@ 0,0 +1,20 @@
 +contract Counter {
 +    // TODO: Test this
 +    //  Do it
 +    // labels: urgent
-
++
 +    /// TODO: Natspec comment
 +    ///  Do it
 +    /// labels: urgent
@@ -589,7 +575,7 @@ index 0000000..d340f6a
 +    Do it ASAP
 +    labels: urgent
 +    */
-
++
 +    /**
 +    * TODO: And this too
 +    * labels: urgent
