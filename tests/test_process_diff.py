@@ -9,7 +9,7 @@ from TodoParser import TodoParser
 from main import process_diff
 
 
-class IssueUrlInsertionTestBase(unittest.TestCase):
+class ProcessDiffTestBase(unittest.TestCase):
     orig_cwd = None
     tempdir = None
     diff_file = None
@@ -37,6 +37,16 @@ class IssueUrlInsertionTestBase(unittest.TestCase):
         # change to the simulated filesystem directory
         os.chdir(self.tempdir.name)
 
+    def _standardTest(self, expected_count):
+        # create object to hold output
+        output = io.StringIO()
+        # process the diffs
+        process_diff(diff=self.diff_file, insert_issue_urls=True, parser=self.parser, output=output)
+        # make sure the number of issue URL comments inserted is as expected
+        self.assertEqual(output.getvalue().count('Issue URL successfully inserted'),
+                         expected_count,
+                         msg='\nProcessing log\n--------------\n'+output.getvalue())
+
     def _tearDown(self):
         # return to original working directory to ensure we don't mess up other tests
         os.chdir(self.orig_cwd)
@@ -46,7 +56,7 @@ class IssueUrlInsertionTestBase(unittest.TestCase):
         self.tempdir = None
 
 
-class IssueUrlInsertionTest(IssueUrlInsertionTestBase):
+class IssueUrlInsertionTest(ProcessDiffTestBase):
     def setUp(self):
         return super()._setUp('test_new.diff')
 
@@ -56,12 +66,18 @@ class IssueUrlInsertionTest(IssueUrlInsertionTestBase):
     @unittest.skipIf(os.getenv('SKIP_PROCESS_DIFF_TEST', 'false') == 'true',
                      "Skipping because 'SKIP_PROCESS_DIFF_TEST' is 'true'")
     def test_url_insertion(self):
-        # create object to hold output
-        output = io.StringIO()
-        # process the diffs
-        process_diff(diff=self.diff_file, insert_issue_urls=True, parser=self.parser, output=output)
-        # make sure the number of issue URL comments inserted is as expected
-        self.assertEqual(output.getvalue().count('Issue URL successfully inserted'), 80)
+        self._standardTest(80)
+
+    def tearDown(self):
+        return super()._tearDown()
+
+class IdenticalTodoTest(ProcessDiffTestBase):
+    def setUp(self):
+        return super()._setUp('test_same_title_in_same_file.diff')
+
+    @unittest.expectedFailure
+    def test_same_title_in_same_file(self):
+        self._standardTest(5)
 
     def tearDown(self):
         return super()._tearDown()

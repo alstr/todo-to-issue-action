@@ -1,0 +1,27 @@
+diff --git a/Counter.sol b/Counter.sol
+new file mode 100644
+index 0000000..d340f6a
+--- /dev/null
++++ b/Counter.sol
+@@ -0,0 +1,21 @@
++contract Counter {
++    // TODO: Test this
++    //  Do it
++    // labels: urgent
++
++    /// TODO: Natspec comment
++    ///  Do it
++    /// labels: urgent
++
++    /*
++    TODO: Test this too
++    Do it ASAP
++    labels: urgent
++    */
++
++    // TODO: Test this
++    /**
++    * TODO: Test this too
++    * labels: urgent
++    */
++}
