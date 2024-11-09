@@ -9,7 +9,7 @@ from TodoParser import TodoParser
 from main import process_diff
 
 
-class ProcessDiffTestBase(unittest.TestCase):
+class IssueUrlInsertionTest(unittest.TestCase):
     orig_cwd = None
     tempdir = None
     diff_file = None
@@ -47,37 +47,24 @@ class ProcessDiffTestBase(unittest.TestCase):
                          expected_count,
                          msg='\nProcessing log\n--------------\n'+output.getvalue())
 
-    def _tearDown(self):
-        # return to original working directory to ensure we don't mess up other tests
-        os.chdir(self.orig_cwd)
-
-        # explicitly cleanup to avoid warning being printed about implicit cleanup
-        self.tempdir.cleanup()
-        self.tempdir = None
-
-
-class IssueUrlInsertionTest(ProcessDiffTestBase):
-    def setUp(self):
-        return super()._setUp('test_new.diff')
-
     # this test can take a while and, as far as TodoParser is concerned,
     # redundant with the tests of test_todo_parser, so enable the means
     # to skip it if desired
     @unittest.skipIf(os.getenv('SKIP_PROCESS_DIFF_TEST', 'false') == 'true',
                      "Skipping because 'SKIP_PROCESS_DIFF_TEST' is 'true'")
     def test_url_insertion(self):
+        self._setUp('test_new.diff')
         self._standardTest(80)
-
-    def tearDown(self):
-        return super()._tearDown()
-
-class IdenticalTodoTest(ProcessDiffTestBase):
-    def setUp(self):
-        return super()._setUp('test_same_title_in_same_file.diff')
 
     @unittest.expectedFailure
     def test_same_title_in_same_file(self):
+        self._setUp('test_same_title_in_same_file.diff')
         self._standardTest(5)
 
     def tearDown(self):
-        return super()._tearDown()
+        # return to original working directory to ensure we don't mess up other tests
+        os.chdir(self.orig_cwd)
+
+        # explicitly cleanup to avoid warning being printed about implicit cleanup
+        self.tempdir.cleanup()
+        self.tempdir = None
