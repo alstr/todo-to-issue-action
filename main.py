@@ -105,6 +105,9 @@ def process_diff(diff, client=Client(), insert_issue_urls=False, parser=TodoPars
         # Stagger the requests to be on the safe side.
         sleep(1)
 
+    return raw_issues
+
+
 if __name__ == "__main__":
     client: Client | None = None
     # Try to create a basic client for communicating with the remote version control server, automatically initialised with environment variables.

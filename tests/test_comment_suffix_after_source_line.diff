@@ -1,0 +1,10 @@
+diff --git a/comment_suffix_after_source_line.c b/comment_suffix_after_source_line.c
+new file mode 100644
+index 0000000..d340f6a
+--- /dev/null
++++ b/comment_suffix_after_source_line.c
+@@ -0,0 +1,4 @@
++void some_func() {
++  int x = 0; // TODO: give this a better name
++  x++;
++}
