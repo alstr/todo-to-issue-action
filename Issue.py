@@ -19,3 +19,9 @@ class Issue(object):
         self.issue_url = issue_url
         self.issue_number = issue_number
 
+    def __str__(self):
+        selflist = []
+        for key in [x for x in vars(self).keys() if x not in ("hunk")]:
+            selflist.append(f'"{key}": "{getattr(self, key)}"')
+        selflist.append((f'"hunk": "{self.hunk}"'))
+        return '\n'.join(selflist)
