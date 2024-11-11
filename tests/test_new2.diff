@@ -1,0 +1,31 @@
+diff --git a/config.jsonc b/config.jsonc
+new file mode 100644
+index 0000000..525e25d
+--- /dev/null
++++ b/config.jsonc
+@@ -0,0 +0,11 @@
++{
++  "myConfig": [
++ /*
++   GitRepository where 'Git release/tag'
++   matches 'Helm' version
++ */
++ "itIsWonderful",
++ // TODO: Delete this line from the codebase
++ "butItHasSomePendingActivities"
++ ]
++}
+diff --git a/config.json5 b/config.json5
+new file mode 100644
+index 0000000..525e25d
+--- /dev/null
++++ b/config.json5
+@@ -0,0 +0,8 @@
++{
++  "myConfig": [
++ // GitRepository where 'Git release/tag' matches 'Helm' version
++ "itIsWonderful",
++ // TODO: Delete this line from the codebase
++ "butItHasSomePendingActivities"
++ ]
++}
