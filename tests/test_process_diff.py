@@ -108,10 +108,6 @@ class IssueUrlInsertionTest(unittest.TestCase):
                 ''])+
                 self.output_log)
 
-    # There is a known bug related to this issue, so until it's resolved
-    # this is an expected failure.
-    # See #225 and #224
-    @unittest.expectedFailure
     def test_same_title_in_same_file(self):
         self._setUp(['test_same_title_in_same_file.diff'])
         self._standardTest(5)
