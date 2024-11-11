@@ -16,21 +16,22 @@ class IssueUrlInsertionTest(unittest.TestCase):
     diff_file = None
     parser = None
 
-    def _setUp(self, diff_file):
+    def _setUp(self, diff_files):
         # get current working directory
         self.orig_cwd = os.getcwd()
 
         # Create temporary directory to hold simulated filesystem.
         self.tempdir = tempfile.TemporaryDirectory()
 
-        # run patch against the diff file to generate the simulated filesystem
-        subprocess.run(['patch', '-d', self.tempdir.name,
-                        '-i', f'{os.getcwd()}/tests/{diff_file}'],
-                        stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL,
-                        check=True)
+        for diff_file in diff_files:
+            # run patch against the diff file to generate/update the simulated filesystem
+            subprocess.run(['patch', '-d', self.tempdir.name,
+                            '-i', f'{os.getcwd()}/tests/{diff_file}'],
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL,
+                            check=True)
 
-        self.diff_file = open(f'tests/{diff_file}', 'r')
+        self.diff_file = open(f'tests/{diff_files[-1]}', 'r')
         self.parser = TodoParser()
         with open('syntax.json', 'r') as syntax_json:
             self.parser.syntax_dict = json.load(syntax_json)
@@ -54,7 +55,7 @@ class IssueUrlInsertionTest(unittest.TestCase):
     @unittest.skipIf(os.getenv('SKIP_PROCESS_DIFF_TEST', 'false') == 'true',
                      "Skipping because 'SKIP_PROCESS_DIFF_TEST' is 'true'")
     def test_url_insertion(self):
-        self._setUp('test_new.diff')
+        self._setUp(['test_new.diff'])
         self._standardTest(80)
 
     # There is a known bug related to this issue, so until it's resolved
@@ -62,7 +63,7 @@ class IssueUrlInsertionTest(unittest.TestCase):
     # See #225 and #224
     @unittest.expectedFailure
     def test_same_title_in_same_file(self):
-        self._setUp('test_same_title_in_same_file.diff')
+        self._setUp(['test_same_title_in_same_file.diff'])
         self._standardTest(5)
 
     # There is a known bug related to this issue, so until it's resolved
@@ -70,7 +71,7 @@ class IssueUrlInsertionTest(unittest.TestCase):
     # See #229
     @unittest.expectedFailure
     def test_comment_suffix_after_source_line(self):
-        self._setUp('test_comment_suffix_after_source_line.diff')
+        self._setUp(['test_comment_suffix_after_source_line.diff'])
         self._standardTest(1)
         # get details about the issue and source file
         issue = self.raw_issues[0]
