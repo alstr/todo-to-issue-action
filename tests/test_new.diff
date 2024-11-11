@@ -53,7 +53,7 @@ new file mode 100644
 index 0000000..525e25d
 --- /dev/null
 +++ b/example_file.py
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,36 @@
 +def hello_world():
 +    # TODO: Come up with a more imaginative greeting
 +    print('Hello world')
@@ -77,6 +77,19 @@ index 0000000..525e25d
 +    kept together as one.
 +    '''
 +    pass
++
++"""
++The docstring documentation of MyClass
++
++Using a docstring in order to generate autodocumentation
++"""
++def SuffixAdder:
++  def __init__(self, base_str):
++    self.base_str=base_str
++
++  def add_suffix(self, suffix):
++    # add the suffix after the base string
++    return self.base_str + suffix
 \ No newline at end of file
 diff --git a/example.hs b/example.hs
 new file mode 100644
