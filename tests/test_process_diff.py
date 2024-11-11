@@ -39,7 +39,7 @@ class IssueUrlInsertionTest(unittest.TestCase):
         # change to the simulated filesystem directory
         os.chdir(self.tempdir.name)
 
-    def _standardTest(self, expected_count):
+    def _standardTest(self, expected_count, output_log_on_failure=True):
         # create object to hold output
         output = io.StringIO()
         # process the diffs
@@ -47,7 +47,9 @@ class IssueUrlInsertionTest(unittest.TestCase):
         # make sure the number of issue URL comments inserted is as expected
         self.assertEqual(output.getvalue().count('Issue URL successfully inserted'),
                          expected_count,
-                         msg='\nProcessing log\n--------------\n'+output.getvalue())
+                         msg=(
+                             '\nProcessing log\n--------------\n'+output.getvalue()
+                                if output_log_on_failure else None))
 
     # this test can take a while and, as far as TodoParser is concerned,
     # redundant with the tests of test_todo_parser, so enable the means
