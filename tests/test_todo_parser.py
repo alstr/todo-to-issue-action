@@ -140,8 +140,6 @@ class CustomOptionsTest(unittest.TestCase):
         with open('tests/test_new.diff', 'r') as diff_file:
             self.raw_issues.extend(parser.parse(diff_file))
 
-    # See GitHub issue #234
-    @unittest.expectedFailure
     def test_exact_identifier_match(self):
         """
         Verify that issues are only created when there's an exact identifier match
