@@ -6,6 +6,7 @@ from Issue import Issue
 import requests
 import json
 from urllib.parse import urlparse
+import itertools
 
 class TodoParser(object):
     """Parser for extracting information from a given diff file."""
@@ -24,22 +25,30 @@ class TodoParser(object):
     ISSUE_URL_PATTERN = re.compile(r'(?<=Issue URL:\s).+', re.IGNORECASE)
     ISSUE_NUMBER_PATTERN = re.compile(r'/issues/(\d+)', re.IGNORECASE)
 
-    def __init__(self):
+    def __init__(self, options=dict()):
         # Determine if the issues should be escaped.
         self.should_escape = os.getenv('INPUT_ESCAPE', 'true') == 'true'
-        # Load any custom identifiers, otherwise use the default.
+        # Load any custom identifiers specified by the environment,
+        # falling back to any specified by the constructor argument,
+        # otherwise using the default.
         custom_identifiers = os.getenv('INPUT_IDENTIFIERS')
         self.identifiers = ['TODO']
         self.identifiers_dict = None
         if custom_identifiers:
             try:
                 custom_identifiers_dict = json.loads(custom_identifiers)
+            except json.JSONDecodeError:
+                print('Invalid identifiers dict, ignoring.')
+        else:
+            custom_identifiers_dict = options.get("identifiers", None)
+        if custom_identifiers_dict:
+            try:
                 for identifier_dict in custom_identifiers_dict:
                     if type(identifier_dict['name']) is not str or type(identifier_dict['labels']) is not list:
                         raise TypeError
                 self.identifiers = [identifier['name'] for identifier in custom_identifiers_dict]
                 self.identifiers_dict = custom_identifiers_dict
-            except (json.JSONDecodeError, KeyError, TypeError):
+            except (KeyError, TypeError):
                 print('Invalid identifiers dict, ignoring.')
 
         self.languages_dict = None
@@ -200,7 +209,13 @@ class TodoParser(object):
 
         # Now for each code block, check for comments, then those comments for TODOs.
         for block in code_blocks:
+            # convert hunk string into newline-separated list (excluding first element which is always null and not actually first line of hunk)
+            bl=block['hunk'].split('\n')[1:]
+
             for marker in block['markers']:
+                # initialize list
+                contiguous_comments_and_positions = []
+
                 # Check if there are line or block comments.
                 if marker['type'] == 'line':
                     # Add a negative lookup to include the second character from alternative comment patterns.
@@ -232,32 +247,95 @@ class TodoParser(object):
                                        + (r'(?!(' + '|'.join(suff_escape_list) + r'))' if len(suff_escape_list) > 0
                                           else '')
                                        + r'\s*.+$)')
-                    comments = re.finditer(comment_pattern, block['hunk'], re.MULTILINE)
-                    extracted_comments = []
-                    prev_comment = None
-                    for i, comment in enumerate(comments):
-                        if prev_comment and comment.start() == prev_comment.end() + 1:
-                            extracted_comments[len(extracted_comments) - 1].append(comment)
-                        else:
-                            extracted_comments.append([comment])
-                        prev_comment = comment
-                    for comment in extracted_comments:
-                        extracted_issues = self._extract_issue_if_exists(comment, marker, block)
-                        if extracted_issues:
-                            issues.extend(extracted_issues)
-                else:
-                    comment_pattern = (r'(?:[+\-\s]\s*' + marker['pattern']['start'] + r'.*?'
-                                       + marker['pattern']['end'] + ')')
-                    comments = re.finditer(comment_pattern, block['hunk'], re.DOTALL)
-                    extracted_comments = []
-                    for i, comment in enumerate(comments):
-                        if re.search('|'.join(self.identifiers), comment.group(0)):
-                            extracted_comments.append([comment])
 
-                    for comment in extracted_comments:
-                        extracted_issues = self._extract_issue_if_exists(comment, marker, block)
-                        if extracted_issues:
-                            issues.extend(extracted_issues)
+                    # create regex object to search for comments
+                    compiled_pattern=re.compile(comment_pattern)
+                    # for each element of list, enumerate it and if value is a regex match, include it in list that is returned,
+                    # where each element of the list is a dictionary that is the start end end lines of the match (relative to
+                    # start of the hunk) and the matching string itself
+                    comments_and_positions = [{'start': i, 'end': i, 'comment': x} for i, x in enumerate(bl) if compiled_pattern.search(x)]
+                    if len(comments_and_positions) > 0:
+                        # create filtered list which consolidates contiguous lines
+                        contiguous_comments_and_positions=[comments_and_positions[0]]
+                        for j, x in enumerate(comments_and_positions[1:]):
+                            if x['start'] == (comments_and_positions[j]['end'] + 1):
+                                contiguous_comments_and_positions[-1]['end']+=1
+                                contiguous_comments_and_positions[-1]['comment'] += '\n' + x['comment']
+                            else:
+                                contiguous_comments_and_positions.append(x)
+                else:
+                    # pattern consists of one group, the first comment block encountered
+                    pattern=(r'([+\-\s]\s*' + marker['pattern']['start'] + r'.*?'
+                                       + marker['pattern']['end'] + ')')
+                    # compile above pattern
+                    compiled_pattern = re.compile(pattern, re.DOTALL)
+
+                    # search for the pattern within the hunk and
+                    # return a list of iterators to all of the matches
+                    match_iters = compiled_pattern.finditer(block['hunk'])
+
+                    # split off into overlapping pairs. i.e. ['A', 'B', C'] => [('A', 'B'), ('B', 'C')]
+                    pairs = itertools.pairwise(match_iters)
+
+                    for i, pair in enumerate(pairs):
+                        # get start/end index (within hunk) of previous section
+                        prev_span = pair[0].span()
+
+                        # if first iteration, special handling
+                        if i == 0:
+                            # set start line and comment string of first section
+                            contiguous_comments_and_positions.append({
+                                        # -1 to ignore first newline, which isn't actually part of the hunk
+                                        'start': block['hunk'].count('\n', 0, prev_span[0]) - 1,
+                                        'end': 0,
+                                        'comment': pair[0].group(0)
+                                    })
+                            # get number of lines in first section
+                            num_lines_in_first_section = block['hunk'].count('\n', prev_span[0], prev_span[1])
+                            # set end line of first section relative to its start
+                            contiguous_comments_and_positions[-1]['end'] = contiguous_comments_and_positions[-1]['start'] + num_lines_in_first_section
+
+                        # get start/end index (within hunk) of current section
+                        curr_span = pair[1].span()
+                        # determine number of lines between previous end and current start
+                        num_lines_from_prev_section_end_line = block['hunk'].count('\n', prev_span[1], curr_span[0])
+                        # set start line of current section based on previous end
+                        contiguous_comments_and_positions.append({
+                                    'start': contiguous_comments_and_positions[-1]['end'] + num_lines_from_prev_section_end_line,
+                                    'end': 0,
+                                    'comment': pair[1].group(0)
+                                })
+                        # get number of lines in current section
+                        num_lines_in_curr_section = block['hunk'].count('\n', curr_span[0], curr_span[1])
+                        # set end line of current section relative to its start
+                        contiguous_comments_and_positions[-1]['end'] = contiguous_comments_and_positions[-1]['start'] + num_lines_in_curr_section
+
+                    # handle potential corner case where there was only one match
+                    # and therefore it couldn't be paired off
+                    if len(contiguous_comments_and_positions) == 0:
+                        # redo the search, this time returning the
+                        # result directly rather than an iterator
+                        match = compiled_pattern.search(block['hunk'])
+
+                        if match:
+                            # get start/end index (within hunk) of this section
+                            span = match.span()
+                            # set start line and comment string of first section
+                            contiguous_comments_and_positions.append({
+                                        # -1 to ignore first newline, which isn't actually part of the hunk
+                                        'start': block['hunk'].count('\n', 0, span[0]) - 1,
+                                        'end': 0,
+                                        'comment': match.group(0)
+                                    })
+                            # get number of lines in first section
+                            num_lines_in_first_section = block['hunk'].count('\n', span[0], span[1])
+                            # set end line of first section relative to its start
+                            contiguous_comments_and_positions[-1]['end'] = contiguous_comments_and_positions[-1]['start'] + num_lines_in_first_section
+
+                for comment_and_position in contiguous_comments_and_positions:
+                    extracted_issues = self._extract_issue_if_exists(comment_and_position, marker, block)
+                    if extracted_issues:
+                        issues.extend(extracted_issues)
 
         for i, issue in enumerate(issues):
             # Strip some of the diff symbols so it can be included as a code snippet in the issue body.
@@ -296,80 +374,72 @@ class TodoParser(object):
                     return syntax_details, ace_mode
         return None, None
 
-    def _extract_issue_if_exists(self, comment, marker, code_block):
+    def _extract_issue_if_exists(self, comment_block, marker, hunk_info):
         """Check this comment for TODOs, and if found, build an Issue object."""
         curr_issue = None
         found_issues = []
         line_statuses = []
         prev_line_title = False
-        for match in comment:
-            comment_lines = match.group().split('\n')
-            for line in comment_lines:
-                line_status, committed_line = self._get_line_status(line)
-                line_statuses.append(line_status)
-                cleaned_line = self._clean_line(committed_line, marker)
-                line_title, ref, identifier = self._get_title(cleaned_line)
-                if line_title:
-                    if prev_line_title and line_status == line_statuses[-2]:
-                        # This means that there is a separate one-line TODO directly above this one.
-                        # We need to store the previous one.
-                        curr_issue.status = line_status
-                        found_issues.append(curr_issue)
-                    curr_issue = Issue(
-                        title=line_title,
-                        labels=[],
-                        assignees=[],
-                        milestone=None,
-                        body=[],
-                        hunk=code_block['hunk'],
-                        file_name=code_block['file'],
-                        start_line=code_block['start_line'],
-                        num_lines=1,
-                        markdown_language=code_block['markdown_language'],
-                        status=line_status,
-                        identifier=identifier,
-                        ref=ref,
-                        issue_url=None,
-                        issue_number=None
-                    )
-                    prev_line_title = True
+        comment_lines = comment_block['comment'].split('\n')
+        for line_number_within_comment_block, line in enumerate(comment_lines):
+            line_status, committed_line = self._get_line_status(line)
+            line_statuses.append(line_status)
+            cleaned_line = self._clean_line(committed_line, marker)
+            line_title, ref, identifier, identifier_actual = self._get_title(cleaned_line)
+            if line_title:
+                if prev_line_title and line_status == line_statuses[-2]:
+                    # This means that there is a separate one-line TODO directly above this one.
+                    # We need to store the previous one.
+                    curr_issue.status = line_status
+                    found_issues.append(curr_issue)
+                curr_issue = Issue(
+                    title=line_title,
+                    labels=[],
+                    assignees=[],
+                    milestone=None,
+                    body=[],
+                    hunk=hunk_info['hunk'],
+                    file_name=hunk_info['file'],
+                    start_line=hunk_info['start_line'] + comment_block['start'] + line_number_within_comment_block,
+                    start_line_within_hunk=comment_block['start'] + line_number_within_comment_block + 1,
+                    num_lines=1,
+                    markdown_language=hunk_info['markdown_language'],
+                    status=line_status,
+                    identifier=identifier,
+                    identifier_actual=identifier_actual,
+                    ref=ref,
+                    issue_url=None,
+                    issue_number=None
+                )
+                prev_line_title = True
 
-                    # Calculate the file line number that this issue references.
-                    hunk_lines = re.finditer(self.LINE_PATTERN, code_block['hunk'], re.MULTILINE)
-                    start_line = code_block['start_line']
-                    for i, hunk_line in enumerate(hunk_lines):
-                        if hunk_line.group(0) == line:
-                            curr_issue.start_line = start_line
-                            break
-                        if i != 0 and (hunk_line.group(0).startswith('+') or not hunk_line.group(0).startswith('-')):
-                            start_line += 1
+            elif curr_issue:
+                # Extract other issue information that may exist below the title.
+                line_labels = self._get_labels(cleaned_line)
+                line_assignees = self._get_assignees(cleaned_line)
+                line_milestone = self._get_milestone(cleaned_line)
+                line_url = self._get_issue_url(cleaned_line)
+                if line_labels:
+                    curr_issue.labels.extend(line_labels)
+                elif line_assignees:
+                    curr_issue.assignees.extend(line_assignees)
+                elif line_milestone:
+                    curr_issue.milestone = line_milestone
+                elif line_url:
+                    curr_issue.issue_url = line_url
+                    issue_number_search = self.ISSUE_NUMBER_PATTERN.search(line_url)
+                    if issue_number_search:
+                        curr_issue.issue_number = issue_number_search.group(1)
+                elif len(cleaned_line) and line_status != LineStatus.DELETED:
+                    if self.should_escape:
+                        curr_issue.body.append(self._escape_markdown(cleaned_line))
+                    else:
+                        curr_issue.body.append(cleaned_line)
+                if not line.startswith('-'):
+                    curr_issue.num_lines += 1
+            if not line_title:
+                prev_line_title = False
 
-                elif curr_issue:
-                    # Extract other issue information that may exist below the title.
-                    line_labels = self._get_labels(cleaned_line)
-                    line_assignees = self._get_assignees(cleaned_line)
-                    line_milestone = self._get_milestone(cleaned_line)
-                    line_url = self._get_issue_url(cleaned_line)
-                    if line_labels:
-                        curr_issue.labels.extend(line_labels)
-                    elif line_assignees:
-                        curr_issue.assignees.extend(line_assignees)
-                    elif line_milestone:
-                        curr_issue.milestone = line_milestone
-                    elif line_url:
-                        curr_issue.issue_url = line_url
-                        issue_number_search = self.ISSUE_NUMBER_PATTERN.search(line_url)
-                        if issue_number_search:
-                            curr_issue.issue_number = issue_number_search.group(1)
-                    elif len(cleaned_line) and line_status != LineStatus.DELETED:
-                        if self.should_escape:
-                            curr_issue.body.append(self._escape_markdown(cleaned_line))
-                        else:
-                            curr_issue.body.append(cleaned_line)
-                    if not line.startswith('-'):
-                        curr_issue.num_lines += 1
-                if not line_title:
-                    prev_line_title = False
         if curr_issue is not None and curr_issue.identifier is not None and self.identifiers_dict is not None:
             for identifier_dict in self.identifiers_dict:
                 if identifier_dict['name'] == curr_issue.identifier:
@@ -460,25 +530,18 @@ class TodoParser(object):
         """Check the passed comment for a new issue title (and reference, if specified)."""
         title = None
         ref = None
+        title_identifier_actual = None
         title_identifier = None
         for identifier in self.identifiers:
-            title_identifier = identifier
-            title_pattern = re.compile(fr'(?<={identifier}[\s:]).+', re.IGNORECASE)
-            title_search = title_pattern.search(comment, re.IGNORECASE)
+            title_pattern = re.compile(fr'(\b{re.escape(identifier)}\b)(\(([^)]+)\))?\s*:?\s*(.+)', re.IGNORECASE)
+            title_search = title_pattern.search(comment)
             if title_search:
-                title = title_search.group(0).strip(': ')
+                title_identifier_actual = title_search.group(1)
+                title_identifier = identifier
+                ref = title_search.group(3) # may be empty, which is OK
+                title = title_search.group(4)
                 break
-            else:
-                title_ref_pattern = re.compile(fr'(?<={identifier}\().+', re.IGNORECASE)
-                title_ref_search = title_ref_pattern.search(comment, re.IGNORECASE)
-                if title_ref_search:
-                    title = title_ref_search.group(0).strip()
-                    ref_search = self.REF_PATTERN.search(title)
-                    if ref_search:
-                        ref = ref_search.group(0)
-                        title = title.replace(ref, '', 1).lstrip(':) ')
-                    break
-        return title, ref, title_identifier
+        return title, ref, title_identifier, title_identifier_actual
 
     def _get_issue_url(self, comment):
         """Check the passed comment for a GitHub issue URL."""

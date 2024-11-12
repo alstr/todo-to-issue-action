@@ -11,26 +11,32 @@ from main import process_diff
 
 
 class IssueUrlInsertionTest(unittest.TestCase):
+    _original_addSubTest = None
+    num_subtest_failures = 0
     orig_cwd = None
     tempdir = None
     diff_file = None
     parser = None
 
-    def _setUp(self, diff_file):
+    def _setUp(self, diff_files):
+        # reset counter
+        self.num_subtest_failures = 0
+
         # get current working directory
         self.orig_cwd = os.getcwd()
 
         # Create temporary directory to hold simulated filesystem.
         self.tempdir = tempfile.TemporaryDirectory()
 
-        # run patch against the diff file to generate the simulated filesystem
-        subprocess.run(['patch', '-d', self.tempdir.name,
-                        '-i', f'{os.getcwd()}/tests/{diff_file}'],
-                        stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL,
-                        check=True)
+        for diff_file in diff_files:
+            # run patch against the diff file to generate/update the simulated filesystem
+            subprocess.run(['patch', '-d', self.tempdir.name,
+                            '-i', f'{os.getcwd()}/tests/{diff_file}'],
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL,
+                            check=True)
 
-        self.diff_file = open(f'tests/{diff_file}', 'r')
+        self.diff_file = open(f'tests/{diff_files[-1]}', 'r')
         self.parser = TodoParser()
         with open('syntax.json', 'r') as syntax_json:
             self.parser.syntax_dict = json.load(syntax_json)
@@ -38,15 +44,32 @@ class IssueUrlInsertionTest(unittest.TestCase):
         # change to the simulated filesystem directory
         os.chdir(self.tempdir.name)
 
-    def _standardTest(self, expected_count):
+    def _standardTest(self, expected_count, output_log_on_failure=True):
         # create object to hold output
         output = io.StringIO()
         # process the diffs
         self.raw_issues = process_diff(diff=self.diff_file, insert_issue_urls=True, parser=self.parser, output=output)
+        # store the log for later processing
+        self.output_log = output.getvalue()
         # make sure the number of issue URL comments inserted is as expected
         self.assertEqual(output.getvalue().count('Issue URL successfully inserted'),
                          expected_count,
-                         msg='\nProcessing log\n--------------\n'+output.getvalue())
+                         msg=(
+                             '\nProcessing log\n--------------\n'+output.getvalue()
+                                if output_log_on_failure else None))
+
+    def _addSubTest(self, test, subtest, outcome):
+        if outcome:
+            self.num_subtest_failures+=1
+        if self._original_addSubTest:
+            self._original_addSubTest(test, subtest, outcome)
+
+    def run(self, result=None):
+        if result and getattr(result, "addSubTest", None):
+            self._original_addSubTest = result.addSubTest
+            result.addSubTest = self._addSubTest
+
+        super().run(result)
 
     # this test can take a while and, as far as TodoParser is concerned,
     # redundant with the tests of test_todo_parser, so enable the means
@@ -54,15 +77,39 @@ class IssueUrlInsertionTest(unittest.TestCase):
     @unittest.skipIf(os.getenv('SKIP_PROCESS_DIFF_TEST', 'false') == 'true',
                      "Skipping because 'SKIP_PROCESS_DIFF_TEST' is 'true'")
     def test_url_insertion(self):
-        self._setUp('test_new.diff')
+        self._setUp(['test_new.diff'])
         self._standardTest(80)
 
-    # There is a known bug related to this issue, so until it's resolved
-    # this is an expected failure.
-    # See #225 and #224
+    # See GitHub issue #236
     @unittest.expectedFailure
+    def test_line_numbering_with_deletions(self):
+        self._setUp(['test_new_py.diff', 'test_edit_py.diff'])
+        with self.subTest("Issue URL insertion"):
+            # was issue URL successfully inserted?
+            self._standardTest(1, False)
+        with self.subTest("Issue insertion line numbering"):
+            # make sure the log reports having inserted the issue based on the
+            # correct line numbering of the updated file
+            self.assertIn("Processing issue 1 of 2: 'Do more stuff' @ example_file.py:7",
+                          self.output_log)
+        with self.subTest("Issue deletion line numbering"):
+            # make sure the log reports having closed the issue based on the
+            # correct line numbering of the old (not the updated!) file
+            self.assertIn("Processing issue 2 of 2: 'Come up with a more imaginative greeting' @ example_file.py:2",
+                          self.output_log)
+
+        if self.num_subtest_failures > 0:
+            self.fail(
+                '\n'.join([
+                '',
+                'One or more subtests have failed',
+                'Processing log',
+                '--------------',
+                ''])+
+                self.output_log)
+
     def test_same_title_in_same_file(self):
-        self._setUp('test_same_title_in_same_file.diff')
+        self._setUp(['test_same_title_in_same_file.diff'])
         self._standardTest(5)
 
     # There is a known bug related to this issue, so until it's resolved
@@ -70,7 +117,7 @@ class IssueUrlInsertionTest(unittest.TestCase):
     # See #229
     @unittest.expectedFailure
     def test_comment_suffix_after_source_line(self):
-        self._setUp('test_comment_suffix_after_source_line.diff')
+        self._setUp(['test_comment_suffix_after_source_line.diff'])
         self._standardTest(1)
         # get details about the issue and source file
         issue = self.raw_issues[0]

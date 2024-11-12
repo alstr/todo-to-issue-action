@@ -12,6 +12,22 @@ def count_issues_for_file_type(raw_issues, file_type):
             num_issues += 1
     return num_issues
 
+def get_issues_for_fields(raw_issues, fields):
+    matching_issues = []
+    for issue in raw_issues:
+        for key in fields.keys():
+            if getattr(issue, key) != fields.get(key):
+                break
+        else:
+            matching_issues.append(issue)
+    return matching_issues
+
+def print_unexpected_issues(unexpected_issues):
+    return '\n'.join([
+           '',
+           'Unexpected issues:',
+           '\n=========================\n'.join(map(str, unexpected_issues))])
+
 
 class NewIssueTest(unittest.TestCase):
     # Check for newly added TODOs across the files specified.
@@ -111,6 +127,70 @@ class NewIssueTest(unittest.TestCase):
 
     def test_lua_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'lua'), 2)
+
+
+class CustomOptionsTest(unittest.TestCase):
+    def setUp(self):
+        parser = TodoParser(options={"identifiers":
+                                     [{"name": "FIX", "labels": []},
+                                      {"name": "TODO", "labels": []}]})
+        self.raw_issues = []
+        with open('syntax.json', 'r') as syntax_json:
+            parser.syntax_dict = json.load(syntax_json)
+        with open('tests/test_new.diff', 'r') as diff_file:
+            self.raw_issues.extend(parser.parse(diff_file))
+
+    def test_exact_identifier_match(self):
+        """
+        Verify that issues are only created when there's an exact identifier match
+
+        Other than case-insensitivity, an issue should only be matched if the
+        identifier is exactly within the list of identifiers. For instances, if
+        "FIX" is an identifier, it should NOT accidentaly match comments with
+        the words "suffix" or "prefix".
+        """
+        matching_issues = get_issues_for_fields(self.raw_issues,
+                                                {
+                                                    "file_name": "example_file.py",
+                                                    "identifier": "FIX"
+                                                })
+        self.assertEqual(len(matching_issues), 0,
+                         msg=print_unexpected_issues(matching_issues))
+
+    # See GitHub issue #235
+    @unittest.expectedFailure
+    def test_multiple_identifiers(self):
+        """
+        Verify that issues by matching the first identifier on the line
+
+        Issues should be identified such that the priority is where the identifier
+        is found within the comment line, which is not necessarily the order they're
+        specified in the identifier dictionary. For instance, if the dictionary is
+            [{"name": "FIX", "labels": []},
+             {"name": "TODO", "labels": []}]})
+        then a comment line such as
+            # TODO: Fix this
+        should match because of the "TODO", not because of the "Fix". This is not
+        a trivial difference. If it matches for the "TODO", then the title will be
+        "Fix this", but if it matches for the "Fix", then the title will erroneously
+        be just "this".
+        """
+        matching_issues = get_issues_for_fields(self.raw_issues,
+                                                {
+                                                    "file_name": "init.lua",
+                                                    "identifier": "FIX"
+                                                })
+        self.assertEqual(len(matching_issues), 0,
+                         msg=print_unexpected_issues(matching_issues))
+
+        matching_issues = get_issues_for_fields(self.raw_issues,
+                                                {
+                                                    "file_name": "init.lua",
+                                                    "identifier": "TODO"
+                                                })
+        self.assertEqual(len(matching_issues), 2,
+                         msg=print_unexpected_issues(matching_issues))
+
 
 class ClosedIssueTest(unittest.TestCase):
     # Check for removed TODOs across the files specified.

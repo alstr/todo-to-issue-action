@@ -1,0 +1,15 @@
+diff --git a/example_file.py b/example_file.py
+index 6b0c6cf..b37e70a 100644
+@@ -1,3 +1,9 @@
++def imaginative_string():
++    return 'figment of my imagination'
++
+ def hello_world():
+-    # TODO: Come up with a more imaginative greeting
+-    print('Hello world')
+\ No newline at end of file
++    print(f'Hello {imaginative_string()}')
++
++    # TODO: Do more stuff
++    #  This function should probably do something more interesting
++    #  labels: help wanted
