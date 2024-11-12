@@ -80,8 +80,6 @@ class IssueUrlInsertionTest(unittest.TestCase):
         self._setUp(['test_new.diff'])
         self._standardTest(80)
 
-    # See GitHub issue #236
-    @unittest.expectedFailure
     def test_line_numbering_with_deletions(self):
         self._setUp(['test_new_py.diff', 'test_edit_py.diff'])
         with self.subTest("Issue URL insertion"):
