@@ -11,9 +11,7 @@ import itertools
 class TodoParser(object):
     """Parser for extracting information from a given diff file."""
     FILE_HUNK_PATTERN = r'(?<=diff)(.*?)(?=diff\s--git\s)'
-    HEADER_PATTERN = r'(?<=--git).*?(?=$\n(index|new|deleted))'
-    LINE_PATTERN = r'^.*$'
-    FILENAME_PATTERN = re.compile(r'(?<=a/).+?(?=\sb/)')
+    HEADERS_PATTERN = re.compile(r'(?<=--git) a/(.*?) b/(.*?)$\n(?=((new|deleted).*?$\n)?index ([0-9a-f]+)\.\.([0-9a-f]+))', re.MULTILINE)
     LINE_NUMBERS_PATTERN = re.compile(r'@@[\d\s,\-+]*\s@@.*')
     LINE_NUMBERS_INNER_PATTERN = re.compile(r'@@[\d\s,\-+]*\s@@')
     ADDITION_PATTERN = re.compile(r'(?<=^\+).*')
@@ -154,15 +152,10 @@ class TodoParser(object):
         # Iterate through each section extracted above.
         for hunk in extracted_file_hunks:
             # Extract the file information so we can figure out the Markdown language and comment syntax.
-            header_search = re.search(self.HEADER_PATTERN, hunk, re.MULTILINE)
-            if not header_search:
+            headers = self.HEADERS_PATTERN.search(hunk)
+            if not headers:
                 continue
-            files = header_search.group(0)
-
-            filename_search = re.search(self.FILENAME_PATTERN, files)
-            if not filename_search:
-                continue
-            curr_file = filename_search.group(0)
+            curr_file = headers.group(2)
             if self._should_ignore(curr_file):
                 continue
             curr_markers, curr_markdown_language = self._get_file_details(curr_file)
@@ -175,15 +168,18 @@ class TodoParser(object):
             for i, line_numbers in enumerate(line_numbers_iterator):
                 line_numbers_inner_search = re.search(self.LINE_NUMBERS_INNER_PATTERN, line_numbers.group(0))
                 line_numbers_str = line_numbers_inner_search.group(0).strip('@@ -')
-                start_line = line_numbers_str.split(' ')[1].strip('+')
-                start_line = int(start_line.split(',')[0])
+                deleted_start_line = line_numbers_str.split(' ')[0]
+                deleted_start_line = int(deleted_start_line.split(',')[0])
+                added_start_line = line_numbers_str.split(' ')[1].strip('+')
+                added_start_line = int(added_start_line.split(',')[0])
 
                 # Put this information into a temporary dict for simplicity.
                 block = {
                     'file': curr_file,
                     'markers': curr_markers,
                     'markdown_language': curr_markdown_language,
-                    'start_line': start_line,
+                    'deleted_start_line': deleted_start_line,
+                    'added_start_line': added_start_line,
                     'hunk': hunk,
                     'hunk_start': line_numbers.end(),
                     'hunk_end': None
@@ -209,8 +205,25 @@ class TodoParser(object):
 
         # Now for each code block, check for comments, then those comments for TODOs.
         for block in code_blocks:
-            # convert hunk string into newline-separated list (excluding first element which is always null and not actually first line of hunk)
-            bl=block['hunk'].split('\n')[1:]
+            # for both the set of deleted lines and set of new lines, convert hunk string into
+            # newline-separated list (excluding first element which is always null and not
+            # actually first line of hunk)
+            old=[]
+            new=[]
+            for line in block['hunk'].split('\n')[1:]:
+                if line: # if not empty
+                    match line[0]:
+                        case '-':
+                            old.append(line)
+                        case '+':
+                            new.append(line)
+                        case _:
+                            if line != '\\ No newline at end of file':
+                                old.append(line)
+                                new.append(line)
+                elif line != '\\ No newline at end of file':
+                    old.append(line)
+                    new.append(line)
 
             for marker in block['markers']:
                 # initialize list
@@ -250,19 +263,22 @@ class TodoParser(object):
 
                     # create regex object to search for comments
                     compiled_pattern=re.compile(comment_pattern)
-                    # for each element of list, enumerate it and if value is a regex match, include it in list that is returned,
-                    # where each element of the list is a dictionary that is the start end end lines of the match (relative to
-                    # start of the hunk) and the matching string itself
-                    comments_and_positions = [{'start': i, 'end': i, 'comment': x} for i, x in enumerate(bl) if compiled_pattern.search(x)]
-                    if len(comments_and_positions) > 0:
-                        # create filtered list which consolidates contiguous lines
-                        contiguous_comments_and_positions=[comments_and_positions[0]]
-                        for j, x in enumerate(comments_and_positions[1:]):
-                            if x['start'] == (comments_and_positions[j]['end'] + 1):
-                                contiguous_comments_and_positions[-1]['end']+=1
-                                contiguous_comments_and_positions[-1]['comment'] += '\n' + x['comment']
-                            else:
-                                contiguous_comments_and_positions.append(x)
+                    # analyze the set of old lines and new lines separately, so that we don't, for example,
+                    # accidentally treat deleted lines as if they were being added in this diff
+                    for block_lines in [old, new]:
+                        # for each element of list, enumerate it and if value is a regex match, include it in list that is returned,
+                        # where each element of the list is a dictionary that is the start and end lines of the match (relative to
+                        # start of the hunk) and the matching string itself
+                        comments_and_positions = [{'start': i, 'end': i, 'comment': x} for i, x in enumerate(block_lines) if compiled_pattern.search(x)]
+                        if len(comments_and_positions) > 0:
+                            # append filtered list which consolidates contiguous lines
+                            contiguous_comments_and_positions.append(comments_and_positions[0])
+                            for j, x in enumerate(comments_and_positions[1:]):
+                                if x['start'] == (comments_and_positions[j]['end'] + 1):
+                                    contiguous_comments_and_positions[-1]['end']+=1
+                                    contiguous_comments_and_positions[-1]['comment'] += '\n' + x['comment']
+                                else:
+                                    contiguous_comments_and_positions.append(x)
                 else:
                     # pattern consists of one group, the first comment block encountered
                     pattern=(r'([+\-\s]\s*' + marker['pattern']['start'] + r'.*?'
@@ -270,67 +286,70 @@ class TodoParser(object):
                     # compile above pattern
                     compiled_pattern = re.compile(pattern, re.DOTALL)
 
-                    # search for the pattern within the hunk and
-                    # return a list of iterators to all of the matches
-                    match_iters = compiled_pattern.finditer(block['hunk'])
+                    # analyze the set of old lines and new lines separately, so that we don't, for example,
+                    # accidentally treat deleted lines as if they were being added in this diff
+                    for block_lines in [old, new]:
+                        # convert list to string
+                        block_lines_str = '\n'.join(block_lines)
+                        # search for the pattern within the hunk and
+                        # return a list of iterators to all of the matches
+                        match_iters = compiled_pattern.finditer(block_lines_str)
 
-                    # split off into overlapping pairs. i.e. ['A', 'B', C'] => [('A', 'B'), ('B', 'C')]
-                    pairs = itertools.pairwise(match_iters)
+                        # split off into overlapping pairs. i.e. ['A', 'B', C'] => [('A', 'B'), ('B', 'C')]
+                        pairs = itertools.pairwise(match_iters)
 
-                    for i, pair in enumerate(pairs):
-                        # get start/end index (within hunk) of previous section
-                        prev_span = pair[0].span()
+                        for i, pair in enumerate(pairs):
+                            # get start/end index (within hunk) of previous section
+                            prev_span = pair[0].span()
 
-                        # if first iteration, special handling
-                        if i == 0:
-                            # set start line and comment string of first section
+                            # if first iteration, special handling
+                            if i == 0:
+                                # set start line and comment string of first section
+                                contiguous_comments_and_positions.append({
+                                            'start': block_lines_str.count('\n', 0, prev_span[0]),
+                                            'end': 0,
+                                            'comment': pair[0].group(0)
+                                        })
+                                # get number of lines in first section
+                                num_lines_in_first_section = block_lines_str.count('\n', prev_span[0], prev_span[1])
+                                # set end line of first section relative to its start
+                                contiguous_comments_and_positions[-1]['end'] = contiguous_comments_and_positions[-1]['start'] + num_lines_in_first_section
+
+                            # get start/end index (within hunk) of current section
+                            curr_span = pair[1].span()
+                            # determine number of lines between previous end and current start
+                            num_lines_from_prev_section_end_line = block_lines_str.count('\n', prev_span[1], curr_span[0])
+                            # set start line of current section based on previous end
                             contiguous_comments_and_positions.append({
-                                        # -1 to ignore first newline, which isn't actually part of the hunk
-                                        'start': block['hunk'].count('\n', 0, prev_span[0]) - 1,
+                                        'start': contiguous_comments_and_positions[-1]['end'] + num_lines_from_prev_section_end_line,
                                         'end': 0,
-                                        'comment': pair[0].group(0)
+                                        'comment': pair[1].group(0)
                                     })
-                            # get number of lines in first section
-                            num_lines_in_first_section = block['hunk'].count('\n', prev_span[0], prev_span[1])
-                            # set end line of first section relative to its start
-                            contiguous_comments_and_positions[-1]['end'] = contiguous_comments_and_positions[-1]['start'] + num_lines_in_first_section
+                            # get number of lines in current section
+                            num_lines_in_curr_section = block_lines_str.count('\n', curr_span[0], curr_span[1])
+                            # set end line of current section relative to its start
+                            contiguous_comments_and_positions[-1]['end'] = contiguous_comments_and_positions[-1]['start'] + num_lines_in_curr_section
 
-                        # get start/end index (within hunk) of current section
-                        curr_span = pair[1].span()
-                        # determine number of lines between previous end and current start
-                        num_lines_from_prev_section_end_line = block['hunk'].count('\n', prev_span[1], curr_span[0])
-                        # set start line of current section based on previous end
-                        contiguous_comments_and_positions.append({
-                                    'start': contiguous_comments_and_positions[-1]['end'] + num_lines_from_prev_section_end_line,
-                                    'end': 0,
-                                    'comment': pair[1].group(0)
-                                })
-                        # get number of lines in current section
-                        num_lines_in_curr_section = block['hunk'].count('\n', curr_span[0], curr_span[1])
-                        # set end line of current section relative to its start
-                        contiguous_comments_and_positions[-1]['end'] = contiguous_comments_and_positions[-1]['start'] + num_lines_in_curr_section
+                        # handle potential corner case where there was only one match
+                        # and therefore it couldn't be paired off
+                        if len(contiguous_comments_and_positions) == 0:
+                            # redo the search, this time returning the
+                            # result directly rather than an iterator
+                            match = compiled_pattern.search(block_lines_str)
 
-                    # handle potential corner case where there was only one match
-                    # and therefore it couldn't be paired off
-                    if len(contiguous_comments_and_positions) == 0:
-                        # redo the search, this time returning the
-                        # result directly rather than an iterator
-                        match = compiled_pattern.search(block['hunk'])
-
-                        if match:
-                            # get start/end index (within hunk) of this section
-                            span = match.span()
-                            # set start line and comment string of first section
-                            contiguous_comments_and_positions.append({
-                                        # -1 to ignore first newline, which isn't actually part of the hunk
-                                        'start': block['hunk'].count('\n', 0, span[0]) - 1,
-                                        'end': 0,
-                                        'comment': match.group(0)
-                                    })
-                            # get number of lines in first section
-                            num_lines_in_first_section = block['hunk'].count('\n', span[0], span[1])
-                            # set end line of first section relative to its start
-                            contiguous_comments_and_positions[-1]['end'] = contiguous_comments_and_positions[-1]['start'] + num_lines_in_first_section
+                            if match:
+                                # get start/end index (within hunk) of this section
+                                span = match.span()
+                                # set start line and comment string of first section
+                                contiguous_comments_and_positions.append({
+                                            'start': block_lines_str.count('\n', 0, span[0]),
+                                            'end': 0,
+                                            'comment': match.group(0)
+                                        })
+                                # get number of lines in first section
+                                num_lines_in_first_section = block_lines_str.count('\n', span[0], span[1])
+                                # set end line of first section relative to its start
+                                contiguous_comments_and_positions[-1]['end'] = contiguous_comments_and_positions[-1]['start'] + num_lines_in_first_section
 
                 for comment_and_position in contiguous_comments_and_positions:
                     extracted_issues = self._extract_issue_if_exists(comment_and_position, marker, block)
@@ -400,7 +419,8 @@ class TodoParser(object):
                     body=[],
                     hunk=hunk_info['hunk'],
                     file_name=hunk_info['file'],
-                    start_line=hunk_info['start_line'] + comment_block['start'] + line_number_within_comment_block,
+                    start_line=((hunk_info['deleted_start_line'] if line_status == LineStatus.DELETED else hunk_info['added_start_line'])
+                                + comment_block['start'] + line_number_within_comment_block),
                     start_line_within_hunk=comment_block['start'] + line_number_within_comment_block + 1,
                     num_lines=1,
                     markdown_language=hunk_info['markdown_language'],
