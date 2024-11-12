@@ -110,10 +110,6 @@ class IssueUrlInsertionTest(unittest.TestCase):
         self._setUp(['test_same_title_in_same_file.diff'])
         self._standardTest(5)
 
-    # There is a known bug related to this issue, so until it's resolved
-    # this is an expected failure.
-    # See #229
-    @unittest.expectedFailure
     def test_comment_suffix_after_source_line(self):
         self._setUp(['test_comment_suffix_after_source_line.diff'])
         self._standardTest(1)
