@@ -76,7 +76,7 @@ def process_diff(diff, client=Client(), insert_issue_urls=False, parser=TodoPars
                     if line_number < len(file_lines):
                         # Duplicate the line to retain the comment syntax.
                         old_line = file_lines[line_number]
-                        remove = fr'(?i:{raw_issue.identifier}).*{re.escape(raw_issue.title)}'
+                        remove = fr'(?i:{re.escape(raw_issue.identifier)}).*{re.escape(raw_issue.title)}'
                         insert = f'Issue URL: {client.get_issue_url(new_issue_number)}'
                         new_line = re.sub('^.*'+remove, raw_issue.prefix + insert, old_line)
                         # make sure the above operation worked as intended
