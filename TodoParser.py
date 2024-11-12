@@ -563,13 +563,14 @@ class TodoParser(object):
         title_identifier_actual = None
         title_identifier = None
         for identifier in self.identifiers:
-            title_pattern = re.compile(fr'(^.*?)(\s*?)(\b{re.escape(identifier)}\b)(\(([^)]+)\))?\s*:?\s*(.+)', re.IGNORECASE)
+            title_pattern = re.compile(fr'(^|(^.*?)(\s*?)\s)({re.escape(identifier)})(\(([^)]+)\))?\s*(:|\s)\s*(.+)',
+                                       re.IGNORECASE)
             title_search = title_pattern.search(comment)
             if title_search:
-                title_identifier_actual = title_search.group(3)
+                title_identifier_actual = title_search.group(4)
                 title_identifier = identifier
-                ref = title_search.group(5) # may be empty, which is OK
-                title = title_search.group(6)
+                ref = title_search.group(6) # may be empty, which is OK
+                title = title_search.group(8)
                 break
         return title, ref, title_identifier, title_identifier_actual
 

@@ -58,7 +58,7 @@ index 0000000..525e25d
 +    # TODO: Come up with a more imaginative greeting
 +    print('Hello world')
 +
-+    # TODO: Do more stuff
++    # [TODO]: Do more stuff
 +    #  This function should probably do something more interesting
 +    #  labels: help wanted
 +

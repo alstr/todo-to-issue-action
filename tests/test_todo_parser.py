@@ -45,7 +45,7 @@ class NewIssueTest(unittest.TestCase):
 
     def test_python_issues(self):
         # Includes 4 tests for Starlark.
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 8)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 7)
 
     def test_yaml_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
@@ -80,7 +80,7 @@ class NewIssueTest(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'julia'), 2)
 
     def test_starlark_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 8)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 7)
 
     def test_autohotkey_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'autohotkey'), 1)
@@ -133,7 +133,9 @@ class CustomOptionsTest(unittest.TestCase):
     def setUp(self):
         parser = TodoParser(options={"identifiers":
                                      [{"name": "FIX", "labels": []},
-                                      {"name": "TODO", "labels": []}]})
+                                      {"name": "[TODO]", "labels": []},
+                                      {"name": "TODO", "labels": []}
+                                      ]})
         self.raw_issues = []
         with open('syntax.json', 'r') as syntax_json:
             parser.syntax_dict = json.load(syntax_json)
@@ -155,6 +157,23 @@ class CustomOptionsTest(unittest.TestCase):
                                                     "identifier": "FIX"
                                                 })
         self.assertEqual(len(matching_issues), 0,
+                         msg=print_unexpected_issues(matching_issues))
+
+    # See GitHub issue #242
+    def test_regex_identifier_chars(self):
+        """
+        Verify that the presence of regex characters in the identifier
+        doesn't confuse the parser
+
+        An identifier such as "[TODO]" should be matched literally, not treating
+        the "[" and "]" characters as part of a regular expression pattern.
+        """
+        matching_issues = get_issues_for_fields(self.raw_issues,
+                                                {
+                                                    "file_name": "example_file.py",
+                                                    "identifier": "[TODO]"
+                                                })
+        self.assertEqual(len(matching_issues), 1,
                          msg=print_unexpected_issues(matching_issues))
 
     # See GitHub issue #235
