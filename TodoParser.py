@@ -403,7 +403,7 @@ class TodoParser(object):
         for line_number_within_comment_block, line in enumerate(comment_lines):
             line_status, committed_line = self._get_line_status(line)
             line_statuses.append(line_status)
-            cleaned_line = self._clean_line(committed_line, marker)
+            cleaned_line, pre_marker_length, post_marker_length = self._clean_line(committed_line, marker)
             line_title, ref, identifier, identifier_actual = self._get_title(cleaned_line)
             if line_title:
                 if prev_line_title and line_status == line_statuses[-2]:
@@ -423,6 +423,7 @@ class TodoParser(object):
                                 + comment_block['start'] + line_number_within_comment_block),
                     start_line_within_hunk=comment_block['start'] + line_number_within_comment_block + 1,
                     num_lines=1,
+                    prefix=(' '*pre_marker_length)+(marker['pattern'] if marker['type'] == 'line' else '')+(' '*post_marker_length),
                     markdown_language=hunk_info['markdown_language'],
                     status=line_status,
                     identifier=identifier,
@@ -532,8 +533,10 @@ class TodoParser(object):
     @staticmethod
     def _clean_line(comment, marker):
         """Remove unwanted symbols and whitespace."""
-        comment = comment.strip()
+        post_marker_length = 0
         if marker['type'] == 'block':
+            original_comment = comment
+            comment = comment.strip()
             start_pattern = r'^' + marker['pattern']['start']
             end_pattern = marker['pattern']['end'] + r'$'
             comment = re.sub(start_pattern, '', comment)
@@ -541,10 +544,17 @@ class TodoParser(object):
             # Some block comments might have an asterisk on each line.
             if '*' in start_pattern and comment.startswith('*'):
                 comment = comment.lstrip('*')
+            comment = comment.strip()
+            pre_marker_length = original_comment.find(comment)
         else:
-            pattern = r'^' + marker['pattern']
-            comment = re.sub(pattern, '', comment)
-        return comment.strip()
+            comment_segments = re.search(fr'^(.*?)({marker["pattern"]})(\s*)(.*)', comment)
+            if comment_segments:
+                pre_marker_text, _, post_marker_whitespace, comment = comment_segments.groups()
+                pre_marker_length = len(pre_marker_text)
+                post_marker_length = len(post_marker_whitespace)
+            else:
+                pre_marker_length = 0
+        return comment, pre_marker_length, post_marker_length
 
     def _get_title(self, comment):
         """Check the passed comment for a new issue title (and reference, if specified)."""
@@ -553,13 +563,13 @@ class TodoParser(object):
         title_identifier_actual = None
         title_identifier = None
         for identifier in self.identifiers:
-            title_pattern = re.compile(fr'(\b{re.escape(identifier)}\b)(\(([^)]+)\))?\s*:?\s*(.+)', re.IGNORECASE)
+            title_pattern = re.compile(fr'(^.*?)(\s*?)(\b{re.escape(identifier)}\b)(\(([^)]+)\))?\s*:?\s*(.+)', re.IGNORECASE)
             title_search = title_pattern.search(comment)
             if title_search:
-                title_identifier_actual = title_search.group(1)
+                title_identifier_actual = title_search.group(3)
                 title_identifier = identifier
-                ref = title_search.group(3) # may be empty, which is OK
-                title = title_search.group(4)
+                ref = title_search.group(5) # may be empty, which is OK
+                title = title_search.group(6)
                 break
         return title, ref, title_identifier, title_identifier_actual
 
