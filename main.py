@@ -73,18 +73,56 @@ def process_diff(diff, client=Client(), insert_issue_urls=False, parser=TodoPars
                     line_number = raw_issue.start_line - 1
                     with open(raw_issue.file_name, 'r') as issue_file:
                         file_lines = issue_file.readlines()
+
+                        # Get style of newlines used in this file, so that we
+                        # use the same type when writing the file back out.
+                        # Note:
+                        #   - if only one newline type is detected, then
+                        #     'newlines' will be a string with that value
+                        #   - if no newlines are detected, 'newlines' will
+                        #     be 'None' and the platform-dependent default
+                        #     will be used when terminating lines on write
+                        #   - if multiple newline types are detected (e.g.
+                        #     a mix of Windows- and Unix-style newlines in
+                        #     the same file), then that is handled within
+                        #     the following if block...
+                        newline_style = issue_file.newlines
+
+                        if isinstance(issue_file.newlines, tuple):
+                            # A tuple being returned indicates that a mix of
+                            # line ending styles was found in the file. In
+                            # order to not perturb the file any more than
+                            # intended (i.e. inserting the issue URL comment(s))
+                            # we'll reread the file and keep the line endings.
+                            # On write, we'll tell writelines to not introduce
+                            # any explicit line endings. This modification
+                            # of the read and write behavior is handled by
+                            # passing '' to the newline argument of open().
+                            # Note: the line ending of the issue URLs line(s)
+                            # itself will be that of the TODO line above it
+                            # and is handled later in this function.
+                            newline_style = ''
+
+                            # reread the file without stripping off line endings
+                            with open(raw_issue.file_name, 'r',
+                                      newline=newline_style) as issue_file_reread:
+                                file_lines = issue_file_reread.readlines()
+                        else:
+                            newline_style = issue_file.newlines
                     if line_number < len(file_lines):
                         # Duplicate the line to retain the comment syntax.
                         old_line = file_lines[line_number]
                         remove = fr'(?i:{re.escape(raw_issue.identifier)}).*{re.escape(raw_issue.title)}.*?(\r|\r\n|\n)?$'
                         insert = f'Issue URL: {client.get_issue_url(new_issue_number)}'
-                        new_line = re.sub('^.*'+remove, raw_issue.prefix + insert, old_line)
+                        # note that the '\1' capture group is the line ending character sequence and
+                        # will only be non-empty in the case of a mixed line-endings file
+                        new_line = re.sub('^.*'+remove, fr'{raw_issue.prefix + insert}\1', old_line)
                         # make sure the above operation worked as intended
                         if new_line != old_line:
                             # Check if the URL line already exists, if so abort.
                             if line_number == len(file_lines) - 1 or file_lines[line_number + 1] != new_line:
                                 file_lines.insert(line_number + 1, new_line)
-                                with open(raw_issue.file_name, 'w') as issue_file:
+                                with open(raw_issue.file_name, 'w', newline=newline_style) as issue_file:
                                     issue_file.writelines(file_lines)
                                 print('Issue URL successfully inserted', file=output)
                         else:
