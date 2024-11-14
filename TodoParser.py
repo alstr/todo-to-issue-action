@@ -547,7 +547,7 @@ class TodoParser(object):
             comment = comment.strip()
             pre_marker_length = original_comment.find(comment)
         else:
-            comment_segments = re.search(fr'^(.*?)({marker["pattern"]})(\s*)(.*)', comment)
+            comment_segments = re.search(fr'^(.*?)({marker["pattern"]})(\s*)(.*?)\s*$', comment)
             if comment_segments:
                 pre_marker_text, _, post_marker_whitespace, comment = comment_segments.groups()
                 pre_marker_length = len(pre_marker_text)
