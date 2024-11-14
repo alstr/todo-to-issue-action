@@ -393,6 +393,13 @@ class TodoParser(object):
                     return syntax_details, ace_mode
         return None, None
 
+    def _tabs_and_spaces(self, num_tabs: int, num_spaces: int) -> str:
+        """
+        Helper function which returns a string containing the
+        specified number of tabs and spaces (in that order)
+        """
+        return '\t'*num_tabs + ' '*num_spaces
+
     def _extract_issue_if_exists(self, comment_block, marker, hunk_info):
         """Check this comment for TODOs, and if found, build an Issue object."""
         curr_issue = None
@@ -403,7 +410,11 @@ class TodoParser(object):
         for line_number_within_comment_block, line in enumerate(comment_lines):
             line_status, committed_line = self._get_line_status(line)
             line_statuses.append(line_status)
-            cleaned_line, pre_marker_length, post_marker_length = self._clean_line(committed_line, marker)
+            (cleaned_line,
+             pre_marker_length,
+             num_pre_marker_tabs,
+             post_marker_length,
+             num_post_marker_tabs) = self._clean_line(committed_line, marker)
             line_title, ref, identifier, identifier_actual = self._get_title(cleaned_line)
             if line_title:
                 if prev_line_title and line_status == line_statuses[-2]:
@@ -423,7 +434,9 @@ class TodoParser(object):
                                 + comment_block['start'] + line_number_within_comment_block),
                     start_line_within_hunk=comment_block['start'] + line_number_within_comment_block + 1,
                     num_lines=1,
-                    prefix=(' '*pre_marker_length)+(marker['pattern'] if marker['type'] == 'line' else '')+(' '*post_marker_length),
+                    prefix=self._tabs_and_spaces(num_pre_marker_tabs, (pre_marker_length-num_pre_marker_tabs)) +
+                           str(marker['pattern'] if marker['type'] == 'line' else '') +
+                           self._tabs_and_spaces(num_post_marker_tabs, post_marker_length-num_post_marker_tabs),
                     markdown_language=hunk_info['markdown_language'],
                     status=line_status,
                     identifier=identifier,
@@ -534,6 +547,7 @@ class TodoParser(object):
     def _clean_line(comment, marker):
         """Remove unwanted symbols and whitespace."""
         post_marker_length = 0
+        num_post_marker_tabs = 0
         if marker['type'] == 'block':
             original_comment = comment
             comment = comment.strip()
@@ -546,15 +560,19 @@ class TodoParser(object):
                 comment = comment.lstrip('*')
             comment = comment.strip()
             pre_marker_length = original_comment.find(comment)
+            num_pre_marker_tabs = comment.count('\t', 0, pre_marker_length)
         else:
             comment_segments = re.search(fr'^(.*?)({marker["pattern"]})(\s*)(.*?)\s*$', comment)
             if comment_segments:
                 pre_marker_text, _, post_marker_whitespace, comment = comment_segments.groups()
                 pre_marker_length = len(pre_marker_text)
+                num_pre_marker_tabs = pre_marker_text.count('\t', 0, pre_marker_length)
                 post_marker_length = len(post_marker_whitespace)
+                num_post_marker_tabs = post_marker_whitespace.count('\t', 0, post_marker_length)
             else:
                 pre_marker_length = 0
-        return comment, pre_marker_length, post_marker_length
+                num_pre_marker_tabs = 0
+        return comment, pre_marker_length, num_pre_marker_tabs, post_marker_length, num_post_marker_tabs
 
     def _get_title(self, comment):
         """Check the passed comment for a new issue title (and reference, if specified)."""
