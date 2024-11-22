@@ -25,11 +25,13 @@ class GitHubClient(Client):
         self.issue_headers = {
             'Content-Type': 'application/json',
             'Authorization': f'token {self.token}',
-            'X-GitHub-Api-Version': '2022-11-28'
+            'X-GitHub-Api-Version': '2022-11-28',
+            'User-Agent': 'TODOToIssue/5.1.5'
         }
         self.graphql_headers = {
             'Authorization': f'Bearer {os.getenv("INPUT_PROJECTS_SECRET", "")}',
-            'Accept': 'application/vnd.github.v4+json'
+            'Accept': 'application/vnd.github.v4+json',
+            'User-Agent': 'TODOToIssue/5.1.5'
         }
         auto_p = os.getenv('INPUT_AUTO_P', 'true') == 'true'
         self.line_break = '\n\n' if auto_p else '\n'
@@ -79,7 +81,8 @@ class GitHubClient(Client):
         diff_headers = {
             'Accept': 'application/vnd.github.v3.diff',
             'Authorization': f'token {self.token}',
-            'X-GitHub-Api-Version': '2022-11-28'
+            'X-GitHub-Api-Version': '2022-11-28',
+            'User-Agent': 'TODOToIssue/5.1.5'
         }
         diff_request = requests.get(url=diff_url, headers=diff_headers)
         if diff_request.status_code == 200:

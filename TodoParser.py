@@ -8,6 +8,10 @@ import json
 from urllib.parse import urlparse
 import itertools
 
+headers = {
+    'User-Agent': 'TODOToIssue/5.1.5'
+}
+
 class TodoParser(object):
     """Parser for extracting information from a given diff file."""
     FILE_HUNK_PATTERN = r'(?<=diff)(.*?)(?=diff\s--git\s)'
@@ -54,7 +58,7 @@ class TodoParser(object):
         if os.getenv('INPUT_NO_STANDARD', 'false') != 'true':
             # Load the languages data for ascertaining file types.
             languages_url = 'https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml'
-            languages_request = requests.get(url=languages_url)
+            languages_request = requests.get(url=languages_url, headers=headers)
             if languages_request.status_code == 200:
                 languages_data = languages_request.text
                 yaml = YAML(typ='safe')
@@ -64,7 +68,7 @@ class TodoParser(object):
 
             # Load the comment syntax data for identifying comments.
             syntax_url = 'https://raw.githubusercontent.com/alstr/todo-to-issue-action/master/syntax.json'
-            syntax_request = requests.get(url=syntax_url)
+            syntax_request = requests.get(url=syntax_url, headers=headers)
             if syntax_request.status_code == 200:
                 self.syntax_dict = syntax_request.json()
             else:
