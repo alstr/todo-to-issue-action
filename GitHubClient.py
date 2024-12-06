@@ -87,7 +87,14 @@ class GitHubClient(Client):
         diff_request = requests.get(url=diff_url, headers=diff_headers)
         if diff_request.status_code == 200:
             return diff_request.text
-        raise Exception('Could not retrieve diff. Operation will abort.')
+
+        error_response = [f'Could not retrieve diff',
+                          f'URL: {diff_url}',
+                          f'Status code: {diff_request.status_code}']
+        if 'application/json' in diff_request.headers['content-type']:
+            error_response.append(f'Server response: {json.loads(diff_request.text)['message']}')
+            error_response.append('Operation will abort')
+        raise Exception('\n'.join(error_response))
 
     # noinspection PyMethodMayBeStatic
     def _get_timestamp(self, commit):
