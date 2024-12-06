@@ -92,7 +92,7 @@ class GitHubClient(Client):
                           f'URL: {diff_url}',
                           f'Status code: {diff_request.status_code}']
         if 'application/json' in diff_request.headers['content-type']:
-            error_response.append(f'Server response: {json.loads(diff_request.text)['message']}')
+            error_response.append(f"Server response: {json.loads(diff_request.text)['message']}")
             error_response.append('Operation will abort')
         raise Exception('\n'.join(error_response))
 
