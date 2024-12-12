@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+import re
 from Client import Client
 
 class GitHubClient(Client):
@@ -65,6 +66,11 @@ class GitHubClient(Client):
         if self.diff_url:
             # Diff url was directly passed in config, likely due to this being a PR.
             diff_url = self.diff_url
+            pr_url_pattern = r'/pull/(\d+)\.diff$'
+            pr_search = re.search(pr_url_pattern, diff_url)
+            if pr_search:
+                pr_number = pr_search.group(1)
+                diff_url = f'self.repos_url{self.repo}/pulls/{pr_number}'
         elif self.before != '0000000000000000000000000000000000000000':
             # There is a valid before SHA to compare with, or this is a release being created.
             diff_url = f'{self.repos_url}{self.repo}/compare/{self.before}...{self.sha}'
