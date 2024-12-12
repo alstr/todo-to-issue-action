@@ -481,8 +481,7 @@ If upgrading from v4 to v5, please note the following:
 
 ### Multiple issues have been created
 
-Issues are created whenever the action runs and finds a newly added TODO in the diff. This can lead to duplicate
-issues if a diff is processed multiple times.
+Issues are created whenever the action runs and finds a newly added TODO in the diff. If you set multiple workflow triggers (i.e. both `pull_request` and `push`), this can result in duplicate issues, as the same diff is processed multiple times.
 
 Enabling [URL Insertion](#url-insertion) can help with the detection of existing issues.
 
