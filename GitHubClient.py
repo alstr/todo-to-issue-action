@@ -27,12 +27,12 @@ class GitHubClient(Client):
             'Content-Type': 'application/json',
             'Authorization': f'token {self.token}',
             'X-GitHub-Api-Version': '2022-11-28',
-            'User-Agent': 'TODOToIssue/5.1.5'
+            'User-Agent': 'TODOToIssue/5.1.9'
         }
         self.graphql_headers = {
             'Authorization': f'Bearer {os.getenv("INPUT_PROJECTS_SECRET", "")}',
             'Accept': 'application/vnd.github.v4+json',
-            'User-Agent': 'TODOToIssue/5.1.5'
+            'User-Agent': 'TODOToIssue/5.1.9'
         }
         auto_p = os.getenv('INPUT_AUTO_P', 'true') == 'true'
         self.line_break = '\n\n' if auto_p else '\n'
@@ -88,7 +88,7 @@ class GitHubClient(Client):
             'Accept': 'application/vnd.github.v3.diff',
             'Authorization': f'token {self.token}',
             'X-GitHub-Api-Version': '2022-11-28',
-            'User-Agent': 'TODOToIssue/5.1.5'
+            'User-Agent': 'TODOToIssue/5.1.9'
         }
         diff_request = requests.get(url=diff_url, headers=diff_headers)
         if diff_request.status_code == 200:
@@ -100,6 +100,16 @@ class GitHubClient(Client):
         if 'application/json' in diff_request.headers['content-type']:
             error_response.append(f"Server response: {json.loads(diff_request.text)['message']}")
             error_response.append('Operation will abort')
+
+        if '/compare/' in diff_url:
+            # The before SHA may no longer be valid due to a force push, fall back to /commits/ endpoint.
+            diff_url = f'{self.repos_url}{self.repo}/commits/{self.sha}'
+            print(f'Falling back to {diff_url}')
+            diff_request = requests.get(url=diff_url, headers=diff_headers)
+            if diff_request.status_code == 200:
+                return diff_request.text
+            error_response.append('Fallback URL also failed')
+
         raise Exception('\n'.join(error_response))
 
     # noinspection PyMethodMayBeStatic
