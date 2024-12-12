@@ -210,6 +210,8 @@ jobs:
         uses: "alstr/todo-to-issue-action@v5"
 ```
 
+It is important to note that if you set multiple triggers (i.e. both `pull_request` and `push`), this can result in duplicate issues.
+
 ### URL Insertion
 
 The action can insert the URL for a created issue back into the associated TODO.
