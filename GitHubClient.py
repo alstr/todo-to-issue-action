@@ -70,7 +70,7 @@ class GitHubClient(Client):
             pr_search = re.search(pr_url_pattern, diff_url)
             if pr_search:
                 pr_number = pr_search.group(1)
-                diff_url = f'self.repos_url{self.repo}/pulls/{pr_number}'
+                diff_url = f'{self.repos_url}{self.repo}/pulls/{pr_number}'
         elif self.before != '0000000000000000000000000000000000000000':
             # There is a valid before SHA to compare with, or this is a release being created.
             diff_url = f'{self.repos_url}{self.repo}/compare/{self.before}...{self.sha}'
