@@ -474,8 +474,8 @@ index 0000000..7cccc5b
 +
 +  return (
 +    <div>
-+      {/* 
-+       TODO: use styled component library 
++      {/*
++       TODO: use styled component library
 +      */}
 +    </div>
 +  );
@@ -544,6 +544,29 @@ index 0000000..d340f6a
 +++ b/Counter.sol
 @@ -0,0 +1,20 @@
 +contract Counter {
++    // TODO: Test this
++    //  Do it
++    // labels: urgent
++
++    /// TODO: Natspec comment
++    ///  Do it
++    /// labels: urgent
++
++    /*
++    TODO: Test this too
++    Do it ASAP
++    labels: urgent
++    */
++
++    /**
++    * TODO: And this too
++    * labels: urgent
++    */
++}
+--- /dev/null
++++ b/package.move
+@@ -0,0 +1,20 @@
++module coin::coin {
 +    // TODO: Test this
 +    //  Do it
 +    // labels: urgent

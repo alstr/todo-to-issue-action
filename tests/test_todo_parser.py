@@ -127,6 +127,9 @@ class NewIssueTest(unittest.TestCase):
 
     def test_lua_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'lua'), 2)
+    
+    def test_move_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'move'), 4)
 
 
 class CustomOptionsTest(unittest.TestCase):
@@ -304,6 +307,9 @@ class ClosedIssueTest(unittest.TestCase):
 
     def test_lua_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'lua'), 2)
+    
+    def test_move_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'move'), 4)
 
 class IgnorePatternTest(unittest.TestCase):
     def test_single_ignore(self):
