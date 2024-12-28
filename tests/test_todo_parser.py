@@ -89,8 +89,8 @@ class NewIssueTest(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_text_issues(self):
-        # Includes 2 tests for Org, 2 tests for GAP, 2 tests for Visual Basic, 2 tests for Agda, 4 tests for Sol.
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 12)
+        # Includes 2 tests for Org, 2 tests for GAP, 2 tests for Visual Basic, 2 tests for Agda, 4 tests for Sol, 4 tests for Move
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 16)
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
@@ -127,10 +127,6 @@ class NewIssueTest(unittest.TestCase):
 
     def test_lua_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'lua'), 2)
-    
-    def test_move_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'move'), 4)
-
 
 class CustomOptionsTest(unittest.TestCase):
     def setUp(self):
@@ -269,8 +265,8 @@ class ClosedIssueTest(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_text_issues(self):
-        # Includes 2 tests for Org, 2 tests for GAP, 2 tests for Visual Basic, 2 tests for Agda, 4 tests for Sol.
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 12)
+        # Includes 2 tests for Org, 2 tests for GAP, 2 tests for Visual Basic, 2 tests for Agda, 4 tests for Sol, 4 tests for Move
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 16)
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
@@ -307,9 +303,6 @@ class ClosedIssueTest(unittest.TestCase):
 
     def test_lua_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'lua'), 2)
-    
-    def test_move_issues(self):
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'move'), 4)
 
 class IgnorePatternTest(unittest.TestCase):
     def test_single_ignore(self):
