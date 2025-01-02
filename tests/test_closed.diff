@@ -410,7 +410,7 @@ index 2996176..7545ccf 100644
 @@ -1,12 +1,9 @@
 -# TODO change name.
  NAME = asm
- 
+
 -# TODO source files must be explicitly named.
  SRC = $(shell find mandatory/src -name "*.asm")
  OBJ = $(patsubst src/%.asm, obj/%.o, $(SRC))
@@ -419,7 +419,7 @@ index 2996176..7545ccf 100644
  $(NAME): $(OBJ)
 -	# TODO create the directory.
  	$(AR) rc $@ $(OBJ)
-  
+
 diff --git a/tests/example_file.liquid b/tests/example_file.liquid
 index 0000000..7cccc5b 100644
 --- a/tests/example_file.liquid
@@ -447,11 +447,11 @@ index 0000000..7cccc5b 100644
 -  /* TODO: Use state here
 -  labels: client  */
 +  const [data, setData] = useState<string>("");
- 
+
    return (
      <div>
--      {/* 
--       TODO: use styled component library 
+-      {/*
+-       TODO: use styled component library
 -      */}
 +      <StyledComponent>{data}</StyledComponent>
      </div>
@@ -533,6 +533,32 @@ index 0000000..d340f6a
 -    labels: urgent
 -    */
 
+-    /**
+-    * TODO: And this too
+-    * labels: urgent
+-    */
+-}
+diff --git a/tests/package.move b/tests/package.move
+new file mode 100644
+index 0000000..d340f6a
+--- a/src/package.move
++++ b/src/package.move
+@@ -0,0 +1,20 @@
+-module coin::coin {
+-    // TODO: Test this
+-    //  Do it
+-    // labels: urgent
+-
+-    /// TODO: Natspec comment
+-    ///  Do it
+-    /// labels: urgent
+-
+-    /*
+-    TODO: Test this too
+-    Do it ASAP
+-    labels: urgent
+-    */
+-
 -    /**
 -    * TODO: And this too
 -    * labels: urgent
