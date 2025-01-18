@@ -205,6 +205,8 @@ on: [ "push" ]
 jobs:
   build:
     runs-on: "ubuntu-latest"
+    permissions:
+      issues: write
     steps:
       - uses: "actions/checkout@v4"
       - name: "TODO to Issue"
@@ -228,6 +230,10 @@ on: [ "push" ]
 jobs:
   build:
     runs-on: "ubuntu-latest"
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
       - uses: "actions/checkout@v4"
       - name: "TODO to Issue"
