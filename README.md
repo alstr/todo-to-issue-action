@@ -400,6 +400,10 @@ placeholders:
 
 If not specified the standard template is used, containing the issue body (if a multiline TODO), URL and snippet.
 
+##### DEFAULT_LABELS
+
+Custom labels that can be automatically appended to newly created issues, in a form of comma-delimited strings.
+
 #### LANGUAGES
 
 A collection of comma-delimited URLs or local paths (starting from the current working directory of the action)
