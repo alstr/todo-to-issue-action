@@ -60,6 +60,9 @@ inputs:
   ISSUE_TEMPLATE:
     description: 'The template used to format new issues'
     required: false
+  DEFAULT_LABELS:
+    description: 'Default labels to be used when adding new issues'
+    required: false
   IDENTIFIERS:
     description: 'Dictionary of custom identifiers'
     required: false
