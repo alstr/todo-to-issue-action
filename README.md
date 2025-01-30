@@ -357,6 +357,10 @@ for improved accuracy.
 
 Default: `False`
 
+##### DEFAULT_LABELS
+
+Custom labels that can be automatically appended to newly created issues, in a form of comma-delimited strings.
+
 #### ESCAPE
 
 Escape all special Markdown characters.
@@ -399,10 +403,6 @@ placeholders:
 * `{{ snippet }}`: code snippet of the relevant section
 
 If not specified the standard template is used, containing the issue body (if a multiline TODO), URL and snippet.
-
-##### DEFAULT_LABELS
-
-Custom labels that can be automatically appended to newly created issues, in a form of comma-delimited strings.
 
 #### LANGUAGES
 
