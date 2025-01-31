@@ -357,10 +357,6 @@ for improved accuracy.
 
 Default: `False`
 
-##### DEFAULT_LABELS
-
-Custom labels that can be automatically appended to newly created issues, in a form of comma-delimited strings.
-
 #### ESCAPE
 
 Escape all special Markdown characters.

@@ -268,7 +268,6 @@ class GitHubClient(Client):
         snippet = '```' + issue.markdown_language + '\n' + issue.hunk + '\n' + '```'
 
         issue_template = os.getenv('INPUT_ISSUE_TEMPLATE', None)
-        default_labels = os.getenv('INPUT_DEFAULT_LABELS', None)
         if issue_template:
             issue_contents = (issue_template.replace('{{ title }}', issue.title)
                               .replace('{{ body }}', formatted_issue_body)
@@ -286,14 +285,6 @@ class GitHubClient(Client):
             endpoint += f'/{issue.issue_number}'
 
         title = issue.title
-
-        if default_labels:
-            # Ensure default_labels is treated as a list (in case it's a string from the environment variable)
-            if isinstance(default_labels, str):
-                default_labels = [label.strip() for label in default_labels.split(',') if label.strip()]
-
-            # Combine default labels with any existing labels, avoiding duplicates
-            issue.labels = list(set(issue.labels + default_labels))
 
         if issue.ref:
             if issue.ref.startswith('@'):
