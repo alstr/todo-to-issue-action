@@ -404,6 +404,15 @@ class TodoParser(object):
         """
         return '\t'*num_tabs + ' '*num_spaces
 
+    @staticmethod
+    def _is_inline_block_comment(marker, line):
+        """
+        Check if this is a block comment (with a start and end marker) on a single line.
+        """
+        if marker['type'] == 'block':
+            return bool(re.match(fr'^[\s\+\-]*{marker["pattern"]["start"]}.*{marker["pattern"]["end"]}\s*$', line))
+        return False
+
     def _extract_issue_if_exists(self, comment_block, marker, hunk_info):
         """Check this comment for TODOs, and if found, build an Issue object."""
         curr_issue = None
@@ -438,9 +447,11 @@ class TodoParser(object):
                                 + comment_block['start'] + line_number_within_comment_block),
                     start_line_within_hunk=comment_block['start'] + line_number_within_comment_block + 1,
                     num_lines=1,
-                    prefix=self._tabs_and_spaces(num_pre_marker_tabs, (pre_marker_length-num_pre_marker_tabs)) +
-                           str(marker['pattern'] if marker['type'] == 'line' else '') +
-                           self._tabs_and_spaces(num_post_marker_tabs, post_marker_length-num_post_marker_tabs),
+                    prefix=self._tabs_and_spaces(num_pre_marker_tabs, (pre_marker_length - num_pre_marker_tabs)) +
+                           str(marker['pattern'] if marker['type'] == 'line' else (
+                               marker['pattern']['start'] if self._is_inline_block_comment(marker, line) else '')) +
+                           self._tabs_and_spaces(num_post_marker_tabs, post_marker_length - num_post_marker_tabs),
+                    suffix=f' {marker["pattern"]["end"]}' if self._is_inline_block_comment(marker, line) else '',
                     markdown_language=hunk_info['markdown_language'],
                     status=line_status,
                     identifier=identifier,
@@ -547,14 +558,15 @@ class TodoParser(object):
                 return LineStatus.DELETED, deletion_search.group(0)
         return LineStatus.UNCHANGED, comment[1:]
 
-    @staticmethod
-    def _clean_line(comment, marker):
+    def _clean_line(self, comment, marker):
         """Remove unwanted symbols and whitespace."""
         post_marker_length = 0
         num_post_marker_tabs = 0
         if marker['type'] == 'block':
             original_comment = comment
             comment = comment.strip()
+            pre_marker_length = original_comment.find(comment)
+            num_pre_marker_tabs = comment.count('\t', 0, pre_marker_length)
             start_pattern = r'^' + marker['pattern']['start']
             end_pattern = marker['pattern']['end'] + r'$'
             comment = re.sub(start_pattern, '', comment)
@@ -563,8 +575,8 @@ class TodoParser(object):
             if '*' in start_pattern and comment.startswith('*'):
                 comment = comment.lstrip('*')
             comment = comment.strip()
-            pre_marker_length = original_comment.find(comment)
-            num_pre_marker_tabs = comment.count('\t', 0, pre_marker_length)
+            if self._is_inline_block_comment(marker, original_comment):
+                post_marker_length = 1
         else:
             comment_segments = re.search(fr'^(.*?)({marker["pattern"]})(\s*)(.*?)\s*$', comment)
             if comment_segments:

@@ -116,7 +116,7 @@ def process_diff(diff, client=Client(), insert_issue_urls=False, parser=TodoPars
                         insert = f'Issue URL: {client.get_issue_url(new_issue_number)}'
                         # note that the '\1' capture group is the line ending character sequence and
                         # will only be non-empty in the case of a mixed line-endings file
-                        new_line = re.sub('^.*'+remove, fr'{raw_issue.prefix + insert}\1', old_line)
+                        new_line = re.sub('^.*' + remove, fr'{raw_issue.prefix + insert + raw_issue.suffix}\1', old_line)
                         # make sure the above operation worked as intended
                         if new_line != old_line:
                             # Check if the URL line already exists, if so abort.

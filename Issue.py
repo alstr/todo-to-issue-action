@@ -2,7 +2,8 @@ class Issue(object):
     """Basic Issue model for collecting the necessary info to send to GitHub."""
 
     def __init__(self, title, labels, assignees, milestone, body, hunk, file_name,
-                 start_line, num_lines, prefix, markdown_language, status, identifier, identifier_actual, ref, issue_url, issue_number, start_line_within_hunk=1):
+                 start_line, num_lines, prefix, suffix, markdown_language, status, identifier, identifier_actual,
+                 ref, issue_url, issue_number, start_line_within_hunk=1):
         self.title = title
         self.labels = labels
         self.assignees = assignees
@@ -13,6 +14,7 @@ class Issue(object):
         self.start_line = start_line
         self.num_lines = num_lines
         self.prefix = prefix
+        self.suffix = suffix
         self.markdown_language = markdown_language
         self.status = status
         self.identifier = identifier
