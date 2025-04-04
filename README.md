@@ -489,6 +489,10 @@ Issues are created whenever the action runs and finds a newly added TODO in the 
 
 Enabling [URL Insertion](#url-insertion) can help with the detection of existing issues.
 
+### Formatting issues with nested code blocks in Markdown files
+
+When creating an issue, the action wraps code blocks in backticks. If the code block itself is a Markdown file containing backticks, this may result in formatting issues. For simplicity, it is recommended to manually edit these issues if needed. One way to resolve this is by using `~` as an alternative delimiter for nested code blocks.
+
 ## Contributing & Issues
 
 If encounter any problems, please file an issue or submit a PR. Everyone is welcome and encouraged to contribute.
