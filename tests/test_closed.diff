@@ -564,3 +564,13 @@ index 0000000..d340f6a
 -    * labels: urgent
 -    */
 -}
+diff --git a/src/Dockerfile b/src/Dockerfile
+new file mode 100644
+index 0000000..d340f6a
+--- a/src/Dockerfile
++++ b/src/Dockerfile
+@@ -0,0 +1,4 @@
+- WORKDIR /app
+- ENV PYTHONPATH /app
+- TODO: Update command
+- CMD ["/app/main.py"]
