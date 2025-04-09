@@ -187,6 +187,7 @@ Only a single milestone can be specified. If the milestone does not exist, it wi
 - Vue
 - XML
 - YAML
+- Dockerfile
 
 New languages can easily be added to the `syntax.json` file used by the action to identify TODO comments.
 
@@ -288,7 +289,7 @@ using the `LANGUAGES` input.
 Just create a file that contains an array of languages, each with the following properties:
 
 | Property   | Description                                                                                                                                        |
-|------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | language   | The unique name of the language                                                                                                                    |
 | extensions | A list of file extensions for the custom language                                                                                                  |
 | markers    | A list of objects (see example below) to declare the comment markers. Make sure to escape all special Markdown characters with a double backslash. |
