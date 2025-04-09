@@ -894,5 +894,14 @@
         }
       }
     ]
+  },
+  {
+    "language": "Dockerfile",
+    "markers": [
+      {
+        "type": "line",
+        "pattern": "#"
+      }
+    ]
   }
 ]
