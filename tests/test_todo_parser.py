@@ -128,6 +128,9 @@ class NewIssueTest(unittest.TestCase):
     def test_lua_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'lua'), 2)
 
+    def test_dockerfile_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'dockerfile'), 1)
+
 class CustomOptionsTest(unittest.TestCase):
     def setUp(self):
         parser = TodoParser(options={"identifiers":
@@ -303,6 +306,9 @@ class ClosedIssueTest(unittest.TestCase):
 
     def test_lua_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'lua'), 2)
+
+    def test_dockerfile_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'dockerfile'), 1)
 
 class IgnorePatternTest(unittest.TestCase):
     def test_single_ignore(self):
