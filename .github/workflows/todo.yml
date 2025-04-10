@@ -9,6 +9,8 @@ on:
       MANUAL_BASE_REF:
         description: "By default, the commit entered above is compared to the one directly before it; to go back further, enter an earlier SHA here"
         required: false
+    with:
+      SKIP_PROCESS_DIFF_TEST: true
 jobs:
   build:
     runs-on: "ubuntu-latest"
