@@ -16,5 +16,5 @@ jobs:
           pip install -r requirements.txt -r requirements-dev.txt
       - name: "Run tests"
         run: python -m unittest discover
-        with:
+        env:
           SKIP_PROCESS_DIFF_TEST: true

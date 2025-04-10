@@ -74,7 +74,7 @@ class IssueUrlInsertionTest(unittest.TestCase):
     # this test can take a while and, as far as TodoParser is concerned,
     # redundant with the tests of test_todo_parser, so enable the means
     # to skip it if desired
-    @unittest.skipIf(os.getenv('INPUT_SKIP_PROCESS_DIFF_TEST', 'false') == 'true',
+    @unittest.skipIf(os.getenv('SKIP_PROCESS_DIFF_TEST', 'false') == 'true',
                      "Skipping because 'SKIP_PROCESS_DIFF_TEST' is 'true'")
     def test_url_insertion(self):
         self._setUp(['test_new.diff'])
