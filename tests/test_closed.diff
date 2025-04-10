@@ -570,7 +570,7 @@ index 0000000..d340f6a
 --- a/src/Dockerfile
 +++ b/src/Dockerfile
 @@ -0,0 +1,4 @@
-- WORKDIR /app
-- ENV PYTHONPATH /app
-- # TODO: Update command
-- CMD ["/app/main.py"]
+-WORKDIR /app
+-ENV PYTHONPATH /app
+-# TODO: Update command
+-CMD ["/app/main.py"]
