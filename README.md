@@ -140,6 +140,7 @@ Only a single milestone can be specified. If the milestone does not exist, it wi
 - Clojure
 - Cuda
 - Dart
+- Dockerfile
 - Elixir
 - GDScript
 - Go
@@ -187,7 +188,6 @@ Only a single milestone can be specified. If the milestone does not exist, it wi
 - Vue
 - XML
 - YAML
-- Dockerfile
 
 New languages can easily be added to the `syntax.json` file used by the action to identify TODO comments.
 
