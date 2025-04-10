@@ -2,6 +2,7 @@ import os
 import requests
 import json
 import re
+from urllib.parse import quote
 from Client import Client
 
 class GitHubClient(Client):
@@ -264,7 +265,7 @@ class GitHubClient(Client):
         line_num_anchor = f'#L{issue.start_line}'
         if issue.num_lines > 1:
             line_num_anchor += f'-L{issue.start_line + issue.num_lines - 1}'
-        url_to_line = f'{self.line_base_url}{self.repo}/blob/{self.sha}/{issue.file_name}{line_num_anchor}'
+        url_to_line = f'{self.line_base_url}{self.repo}/blob/{self.sha}/{quote(issue.file_name)}{line_num_anchor}'
         snippet = '```' + issue.markdown_language + '\n' + issue.hunk + '\n' + '```'
 
         issue_template = os.getenv('INPUT_ISSUE_TEMPLATE', None)
