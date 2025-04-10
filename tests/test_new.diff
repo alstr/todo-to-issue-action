@@ -593,7 +593,7 @@ diff --git a/src/Dockerfile b/src/Dockerfile
 new file mode 100644
 index 0000000..d340f6a
 --- /dev/null
-+++ b/Dockerfile
++++ b/src/Dockerfile
 @@ -0,0 +1,4 @@
 +WORKDIR /app
 +ENV PYTHONPATH /app

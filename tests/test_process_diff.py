@@ -78,7 +78,7 @@ class IssueUrlInsertionTest(unittest.TestCase):
                      "Skipping because 'SKIP_PROCESS_DIFF_TEST' is 'true'")
     def test_url_insertion(self):
         self._setUp(['test_new.diff'])
-        self._standardTest(79)
+        self._standardTest(80)
 
     def test_line_numbering_with_deletions(self):
         self._setUp(['test_new_py.diff', 'test_edit_py.diff'])
