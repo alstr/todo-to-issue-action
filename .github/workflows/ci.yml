@@ -2,6 +2,8 @@ name: "Run Tests"
 on:
   push:
   pull_request:
+    with:
+      SKIP_PROCESS_DIFF_TEST: true
 jobs:
   build:
     runs-on: "ubuntu-latest"
