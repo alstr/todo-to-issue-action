@@ -563,7 +563,7 @@ index 0000000..d340f6a
 +    * labels: urgent
 +    */
 +}
-diff --git a/tests/package.move b/tests/package.move
+diff --git a/package.move b/package.move
 new file mode 100644
 index 0000000..d340f6a
 --- /dev/null
@@ -589,11 +589,11 @@ index 0000000..d340f6a
 +    * labels: urgent
 +    */
 +}
-diff --git a/src/Dockerfile b/src/Dockerfile
+diff --git a/Dockerfile b/Dockerfile
 new file mode 100644
 index 0000000..d340f6a
 --- /dev/null
-+++ b/src/Dockerfile
++++ b/Dockerfile
 @@ -0,0 +1,4 @@
 +WORKDIR /app
 +ENV PYTHONPATH /app
