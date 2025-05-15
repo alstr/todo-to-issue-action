@@ -55,6 +55,22 @@ def hello_world():
     print('Hello world!')
 ```
 
+### Cross-Repository Issues
+
+The action supports creating issues in a different repository than the one where the TODO comments are found. This requires:
+
+1. Setting the `TARGET_REPO` input to specify the target repository (e.g., "owner/repo")
+2. Providing a token with write access to the target repository via the `TOKEN` input
+
+```yaml
+- uses: alstr/todo-to-issue-action@v5
+  with:
+    TARGET_REPO: "my-org/target-repo"
+    TOKEN: ${{ secrets.CROSS_REPO_TOKEN }}
+```
+
+Note: When using a custom token for cross-repository access, it must be properly scoped with permissions to create issues in the target repository.
+
 As per the [Google Style Guide](https://google.github.io/styleguide/cppguide.html#TODO_Comments), you can provide a _reference_ after the TODO identifier:
 
 ```python
@@ -289,7 +305,7 @@ using the `LANGUAGES` input.
 Just create a file that contains an array of languages, each with the following properties:
 
 | Property   | Description                                                                                                                                        |
-|------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | language   | The unique name of the language                                                                                                                    |
 | extensions | A list of file extensions for the custom language                                                                                                  |
 | markers    | A list of objects (see example below) to declare the comment markers. Make sure to escape all special Markdown characters with a double backslash. |
@@ -535,6 +551,6 @@ Thanks to all those who have [contributed](https://github.com/alstr/todo-to-issu
 
 ## Supporting the Project
 
-If you’ve found this action helpful and it has made your workflow easier, please consider buying a coffee to help keep it going. Thank you in advance!
+If you've found this action helpful and it has made your workflow easier, please consider buying a coffee to help keep it going. Thank you in advance!
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/alstr18858)
