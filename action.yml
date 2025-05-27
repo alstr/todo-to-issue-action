@@ -11,7 +11,7 @@ inputs:
   REPO:
     description: "The path to the repository where the action will be used, e.g. 'alstr/my-repo' (automatically set)"
     required: false
-    default: ${{ github.repository }}
+    default: '${{ github.repository }}'
   BEFORE:
     description: 'The SHA of the last pushed commit (automatically set)'
     required: false
