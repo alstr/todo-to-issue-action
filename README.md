@@ -305,7 +305,7 @@ using the `LANGUAGES` input.
 Just create a file that contains an array of languages, each with the following properties:
 
 | Property   | Description                                                                                                                                        |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+|------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
 | language   | The unique name of the language                                                                                                                    |
 | extensions | A list of file extensions for the custom language                                                                                                  |
 | markers    | A list of objects (see example below) to declare the comment markers. Make sure to escape all special Markdown characters with a double backslash. |
@@ -551,6 +551,6 @@ Thanks to all those who have [contributed](https://github.com/alstr/todo-to-issu
 
 ## Supporting the Project
 
-If you've found this action helpful and it has made your workflow easier, please consider buying a coffee to help keep it going. Thank you in advance!
+If you’ve found this action helpful and it has made your workflow easier, please consider buying a coffee to help keep it going. Thank you in advance!
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/alstr18858)
