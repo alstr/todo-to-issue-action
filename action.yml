@@ -11,7 +11,7 @@ inputs:
   REPO:
     description: "The path to the repository where the action will be used, e.g. 'alstr/my-repo' (automatically set)"
     required: false
-    default: '${{ github.repository }}'
+    default: ${{ github.repository }}
   BEFORE:
     description: 'The SHA of the last pushed commit (automatically set)'
     required: false
@@ -27,22 +27,22 @@ inputs:
   SHA:
     description: 'The SHA of the latest commit (automatically set)'
     required: false
-    default: '${{ github.sha }}'
+    default: ${{ github.sha }}
   TOKEN:
     description: 'The GitHub access token to allow us to retrieve, create and update issues (automatically set)'
     required: false
-    default: '${{ github.token }}'
+    default: ${{ github.token }}
   TARGET_REPO:
     description: "Optional target repository to create issues in (e.g. 'owner/repo'). If not provided, issues will be created in the current repository."
     required: false
   CLOSE_ISSUES:
     description: 'Optional input specifying whether to attempt to close an issue when a TODO is removed'
     required: false
-    default: 'true'
+    default: true
   AUTO_P:
     description: 'For multiline TODOs, format each line as a new paragraph when creating the issue'
     required: false
-    default: 'true'
+    default: true
   PROJECT:
     description: "User or organization project to link issues to, format 'project_type/owner/project_name'"
     required: false
@@ -55,7 +55,7 @@ inputs:
   AUTO_ASSIGN:
     description: 'Automatically assign new issues to the user who triggered the action'
     required: false
-    default: 'false'
+    default: false
   ACTOR:
     description: 'The username of the person who triggered the action (automatically set)'
     required: false
@@ -77,15 +77,15 @@ inputs:
   ESCAPE:
     description: 'Escape all special Markdown characters'
     required: false
-    default: 'true'
+    default: true
   LANGUAGES:
     description: 'A collection of comma-delimited URLs or local paths for custom language files'
     required: false
   NO_STANDARD:
     description: "Exclude loading the default 'syntax.json' and 'languages.yml' files from the repository"
     required: false
-    default: 'false'
+    default: false
   INSERT_ISSUE_URLS:
     description: 'Whether the action should insert the URL for a newly-created issue into the associated TODO comment'
     required: false
-    default: 'false'
+    default: false
