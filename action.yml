@@ -2,44 +2,8 @@ name: "TODO to Issue"
 description: "Converts IDE TODO comments to GitHub issues"
 author: "Alastair Mooney"
 runs:
-  using: "composite"
-  steps:
-    - name: Generate token for private repository access
-      if: ${{ inputs.TARGET_REPO != '' && inputs.APP_ID != '' }}
-      id: generate-token
-      uses: actions/create-github-app-token@v1
-      with:
-        app-id: ${{ inputs.APP_ID }}
-        private-key: ${{ inputs.PRIVATE_KEY }}
-        owner: ${{ inputs.OWNER }}
-        repositories: ${{ inputs.TARGET_REPO }}
-      shell: bash
-
-    - name: Run TODO to Issue action
-      uses: docker://ghcr.io/alstr/todo-to-issue-action:v5.1.12
-      with:
-        REPO: ${{ inputs.REPO }}
-        BEFORE: ${{ inputs.BEFORE }}
-        COMMITS: ${{ inputs.COMMITS }}
-        DIFF_URL: ${{ inputs.DIFF_URL }}
-        SHA: ${{ inputs.SHA }}
-        TOKEN: ${{ inputs.APP_ID != '' && steps.generate-token.outputs.token || inputs.TOKEN }}
-        TARGET_REPO: ${{ inputs.TARGET_REPO }}
-        CLOSE_ISSUES: ${{ inputs.CLOSE_ISSUES }}
-        AUTO_P: ${{ inputs.AUTO_P }}
-        PROJECT: ${{ inputs.PROJECT }}
-        PROJECTS_SECRET: ${{ inputs.PROJECTS_SECRET }}
-        IGNORE: ${{ inputs.IGNORE }}
-        AUTO_ASSIGN: ${{ inputs.AUTO_ASSIGN }}
-        ACTOR: ${{ inputs.ACTOR }}
-        ISSUE_TEMPLATE: ${{ inputs.ISSUE_TEMPLATE }}
-        IDENTIFIERS: ${{ inputs.IDENTIFIERS }}
-        GITHUB_URL: ${{ inputs.GITHUB_URL }}
-        GITHUB_SERVER_URL: ${{ inputs.GITHUB_SERVER_URL }}
-        ESCAPE: ${{ inputs.ESCAPE }}
-        LANGUAGES: ${{ inputs.LANGUAGES }}
-        NO_STANDARD: ${{ inputs.NO_STANDARD }}
-        INSERT_ISSUE_URLS: ${{ inputs.INSERT_ISSUE_URLS }}
+  using: "docker"
+  image: "docker://ghcr.io/alstr/todo-to-issue-action:v5.1.12"
 branding:
   icon: "check-square"
   color: "orange"
