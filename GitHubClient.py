@@ -17,13 +17,14 @@ class GitHubClient(Client):
         self.base_url = f'{self.github_url}/'
         self.repos_url = f'{self.base_url}repos/'
         self.repo = os.getenv('INPUT_REPO')
+        self.target_repo = os.getenv('INPUT_TARGET_REPO', self.repo)  # Default to current repo if not specified
         self.before = os.getenv('INPUT_BEFORE')
         self.sha = os.getenv('INPUT_SHA')
         self.commits = json.loads(os.getenv('INPUT_COMMITS')) or []
         self.__init_diff_url__()
         self.token = os.getenv('INPUT_TOKEN')
-        self.issues_url = f'{self.repos_url}{self.repo}/issues'
-        self.milestones_url = f'{self.repos_url}{self.repo}/milestones'
+        self.issues_url = f'{self.repos_url}{self.target_repo}/issues'
+        self.milestones_url = f'{self.repos_url}{self.target_repo}/milestones'
         self.issue_headers = {
             'Content-Type': 'application/json',
             'Authorization': f'token {self.token}',
@@ -394,4 +395,5 @@ class GitHubClient(Client):
         return pr_request.status_code
 
     def get_issue_url(self, new_issue_number):
-        return f'{self.line_base_url}{self.repo}/issues/{new_issue_number}'
+        """Get the URL for the issue."""
+        return f'{self.line_base_url}{self.target_repo}/issues/{new_issue_number}'

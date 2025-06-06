@@ -1,88 +1,136 @@
-name: 'TODO to Issue'
-description: 'Converts IDE TODO comments to GitHub issues'
-author: 'Alastair Mooney'
+name: "TODO to Issue"
+description: "Converts IDE TODO comments to GitHub issues"
+author: "Alastair Mooney"
 runs:
-  using: 'docker'
-  image: 'docker://ghcr.io/alstr/todo-to-issue-action:v5.1.12'
+  using: "composite"
+  steps:
+    - name: Generate token for private repository access
+      if: ${{ inputs.TARGET_REPO != '' && inputs.APP_ID != '' }}
+      id: generate-token
+      uses: actions/create-github-app-token@v1
+      with:
+        app-id: ${{ inputs.APP_ID }}
+        private-key: ${{ inputs.PRIVATE_KEY }}
+        owner: ${{ inputs.OWNER }}
+        repositories: ${{ inputs.TARGET_REPO }}
+      shell: bash
+
+    - name: Run TODO to Issue action
+      uses: docker://ghcr.io/alstr/todo-to-issue-action:v5.1.12
+      with:
+        REPO: ${{ inputs.REPO }}
+        BEFORE: ${{ inputs.BEFORE }}
+        COMMITS: ${{ inputs.COMMITS }}
+        DIFF_URL: ${{ inputs.DIFF_URL }}
+        SHA: ${{ inputs.SHA }}
+        TOKEN: ${{ inputs.APP_ID != '' && steps.generate-token.outputs.token || inputs.TOKEN }}
+        TARGET_REPO: ${{ inputs.TARGET_REPO }}
+        CLOSE_ISSUES: ${{ inputs.CLOSE_ISSUES }}
+        AUTO_P: ${{ inputs.AUTO_P }}
+        PROJECT: ${{ inputs.PROJECT }}
+        PROJECTS_SECRET: ${{ inputs.PROJECTS_SECRET }}
+        IGNORE: ${{ inputs.IGNORE }}
+        AUTO_ASSIGN: ${{ inputs.AUTO_ASSIGN }}
+        ACTOR: ${{ inputs.ACTOR }}
+        ISSUE_TEMPLATE: ${{ inputs.ISSUE_TEMPLATE }}
+        IDENTIFIERS: ${{ inputs.IDENTIFIERS }}
+        GITHUB_URL: ${{ inputs.GITHUB_URL }}
+        GITHUB_SERVER_URL: ${{ inputs.GITHUB_SERVER_URL }}
+        ESCAPE: ${{ inputs.ESCAPE }}
+        LANGUAGES: ${{ inputs.LANGUAGES }}
+        NO_STANDARD: ${{ inputs.NO_STANDARD }}
+        INSERT_ISSUE_URLS: ${{ inputs.INSERT_ISSUE_URLS }}
 branding:
-  icon: 'check-square'
-  color: 'orange'
+  icon: "check-square"
+  color: "orange"
 inputs:
   REPO:
     description: "The path to the repository where the action will be used, e.g. 'alstr/my-repo' (automatically set)"
     required: false
-    default: '${{ github.repository }}'
+    default: "${{ github.repository }}"
   BEFORE:
-    description: 'The SHA of the last pushed commit (automatically set)'
+    description: "The SHA of the last pushed commit (automatically set)"
     required: false
-    default: '${{ github.event.before || github.base_ref }}'
+    default: "${{ github.event.before || github.base_ref }}"
   COMMITS:
-    description: 'An array of commit objects describing the pushed commits (automatically set)'
+    description: "An array of commit objects describing the pushed commits (automatically set)"
     required: false
-    default: '${{ toJSON(github.event.commits) }}'
+    default: "${{ toJSON(github.event.commits) }}"
   DIFF_URL:
-    description: 'The URL to use to get the diff (automatically set)'
+    description: "The URL to use to get the diff (automatically set)"
     required: false
-    default: '${{ github.event.pull_request.diff_url }}'
+    default: "${{ github.event.pull_request.diff_url }}"
   SHA:
-    description: 'The SHA of the latest commit (automatically set)'
+    description: "The SHA of the latest commit (automatically set)"
     required: false
-    default: '${{ github.sha }}'
+    default: "${{ github.sha }}"
   TOKEN:
-    description: 'The GitHub access token to allow us to retrieve, create and update issues (automatically set)'
+    description: "The GitHub access token to allow us to retrieve, create and update issues (automatically set)"
     required: false
     default: ${{ github.token }}
+  TARGET_REPO:
+    description: "Optional target repository to create issues in (e.g. 'owner/repo'). If not provided, issues will be created in the current repository."
+    required: false
+  APP_ID:
+    description: "GitHub App ID for generating tokens to access private repositories"
+    required: false
+  PRIVATE_KEY:
+    description: "Private key for the GitHub App (do not enter the actual secret)"
+    required: false
+  OWNER:
+    description: "Owner of the target repository (required if using GitHub App authentication)"
+    required: false
   CLOSE_ISSUES:
-    description: 'Optional input specifying whether to attempt to close an issue when a TODO is removed'
+    description: "Optional input specifying whether to attempt to close an issue when a TODO is removed"
     required: false
     default: true
   AUTO_P:
-    description: 'For multiline TODOs, format each line as a new paragraph when creating the issue'
+    description: "For multiline TODOs, format each line as a new paragraph when creating the issue"
     required: false
     default: true
   PROJECT:
     description: "User or organization project to link issues to, format 'project_type/owner/project_name'"
     required: false
   PROJECTS_SECRET:
-    description: 'Encrypted secret corresponding to your personal access token (do not enter the actual secret)'
+    description: "Encrypted secret corresponding to your personal access token (do not enter the actual secret)"
     required: false
   IGNORE:
-    description: 'A collection of comma-delimited regular expression that matches files that should be ignored when searching for TODOs'
+    description: "A collection of comma-delimited regular expression that matches files that should be ignored when searching for TODOs"
     required: false
   AUTO_ASSIGN:
-    description: 'Automatically assign new issues to the user who triggered the action'
+    description: "Automatically assign new issues to the user who triggered the action"
     required: false
     default: false
   ACTOR:
-    description: 'The username of the person who triggered the action (automatically set)'
+    description: "The username of the person who triggered the action (automatically set)"
     required: false
-    default: '${{ github.actor }}'
+    default: "${{ github.actor }}"
   ISSUE_TEMPLATE:
-    description: 'The template used to format new issues'
+    description: "The template used to format new issues"
     required: false
   IDENTIFIERS:
-    description: 'Dictionary of custom identifiers'
+    description: "Dictionary of custom identifiers"
     required: false
   GITHUB_URL:
-    description: 'Base url of GitHub API'
+    description: "Base url of GitHub API"
     required: false
     default: ${{ github.api_url }}
   GITHUB_SERVER_URL:
-    description: 'Base URL of GitHub web interface'
+    description: "Base URL of GitHub web interface"
     required: false
     default: ${{ github.server_url }}
   ESCAPE:
-    description: 'Escape all special Markdown characters'
+    description: "Escape all special Markdown characters"
     required: false
     default: true
   LANGUAGES:
-    description: 'A collection of comma-delimited URLs or local paths for custom language files'
+    description: "A collection of comma-delimited URLs or local paths for custom language files"
     required: false
   NO_STANDARD:
     description: "Exclude loading the default 'syntax.json' and 'languages.yml' files from the repository"
     required: false
     default: false
   INSERT_ISSUE_URLS:
-    description: 'Whether the action should insert the URL for a newly-created issue into the associated TODO comment'
+    description: "Whether the action should insert the URL for a newly-created issue into the associated TODO comment"
     required: false
     default: false

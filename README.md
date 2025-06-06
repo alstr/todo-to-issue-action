@@ -55,6 +55,65 @@ def hello_world():
     print('Hello world!')
 ```
 
+### Cross-Repository Issues
+
+The action supports creating issues in a different repository than the one where the TODO comments are found. This requires:
+
+1. Setting the `TARGET_REPO` input to specify the target repository (e.g., "owner/repo")
+
+2. Providing appropriate authentication:
+   - For public repositories or when the target repository is in the same organization, use the default `GITHUB_TOKEN`:
+     ```yaml
+     - uses: alstr/todo-to-issue-action@v5
+       with:
+         TARGET_REPO: "my-org/target-repo"
+     ```
+   - For private repositories, provide GitHub App credentials:
+     ```yaml
+     - uses: alstr/todo-to-issue-action@v5
+       with:
+         TARGET_REPO: "target-org/target-repo"
+         APP_ID: ${{ secrets.APP_ID }}
+         PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+         OWNER: "target-org"
+     ```
+
+The action will automatically:
+1. Use the default `GITHUB_TOKEN` for same-repo or public repository access
+2. Generate a GitHub App token when `APP_ID` and `PRIVATE_KEY` are provided for private repository access
+
+### GitHub App Setup
+
+To use the action with private repositories, you'll need to:
+
+1. Create a GitHub App:
+   - Go to your GitHub account settings
+   - Navigate to "Developer settings" (bottom of the left sidebar)
+   - Click "GitHub Apps" and then "New GitHub App"
+   - Fill in the following details:
+     - **GitHub App name**: Choose a unique name (e.g., "TODO-to-Issue-App")
+     - **Homepage URL**: Your repository URL
+     - **Webhook**: Leave disabled
+     - **Repository permissions**:
+       - Issues: Read & Write
+       - Pull requests: Read & Write (if using PR integration)
+     - **Where can this GitHub App be installed?**: Any account
+   - Click "Create GitHub App"
+   - On the next page, click "Generate a private key" to download your private key file
+   - Note down the "App ID" shown on the page
+
+2. Store the following secrets in your repository:
+   - Go to your repository's "Settings" → "Secrets and variables" → "Actions"
+   - Add two new repository secrets:
+     - `APP_ID`: The App ID you noted down
+     - `PRIVATE_KEY`: The entire contents of the private key file you downloaded (including the BEGIN and END lines)
+
+3. Install the GitHub App:
+   - Go back to your GitHub App settings
+   - Click "Install App" in the left sidebar
+   - Choose the target repository where you want to create issues
+   - Click "Install"
+
 As per the [Google Style Guide](https://google.github.io/styleguide/cppguide.html#TODO_Comments), you can provide a _reference_ after the TODO identifier:
 
 ```python
@@ -289,7 +348,7 @@ using the `LANGUAGES` input.
 Just create a file that contains an array of languages, each with the following properties:
 
 | Property   | Description                                                                                                                                        |
-|------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | language   | The unique name of the language                                                                                                                    |
 | extensions | A list of file extensions for the custom language                                                                                                  |
 | markers    | A list of objects (see example below) to declare the comment markers. Make sure to escape all special Markdown characters with a double backslash. |
@@ -535,6 +594,6 @@ Thanks to all those who have [contributed](https://github.com/alstr/todo-to-issu
 
 ## Supporting the Project
 
-If you’ve found this action helpful and it has made your workflow easier, please consider buying a coffee to help keep it going. Thank you in advance!
+If you've found this action helpful and it has made your workflow easier, please consider buying a coffee to help keep it going. Thank you in advance!
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/alstr18858)
