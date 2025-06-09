@@ -525,7 +525,7 @@ run:
 
 ## Thanks
 
-The action was originally developed for the GitHub Hackathon in 2020. Whilst every effort is made to ensure it works,
+This action was originally developed by [Alastair Mooney](https://mnydigital.com/) for the GitHub Hackathon in 2020. Whilst every effort is made to ensure it works,
 it comes with no guarantee.
 
 Thanks to GitHub's [linguist repo](https://github.com/github/linguist/) for the [`languages.yml`](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) file used by the app to look up file extensions
