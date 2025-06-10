@@ -13,7 +13,6 @@ runs:
         private-key: ${{ inputs.PRIVATE_KEY }}
         owner: ${{ inputs.OWNER }}
         repositories: ${{ inputs.TARGET_REPO }}
-      shell: bash
 
     - name: Run TODO to Issue action
       uses: docker://ghcr.io/alstr/todo-to-issue-action:v5.1.12
