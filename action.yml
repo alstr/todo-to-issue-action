@@ -15,7 +15,7 @@ runs:
         repositories: ${{ inputs.TARGET_REPO }}
 
     - name: Run TODO to Issue action
-      uses: reg.dev.krd.kr/todo-to-issue-action:test
+      uses: reg.dev.krd/test/todo-to-issue-action:test
       with:
         REPO: ${{ inputs.REPO }}
         BEFORE: ${{ inputs.BEFORE }}
