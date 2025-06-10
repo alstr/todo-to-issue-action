@@ -255,7 +255,7 @@ class GitHubClient(Client):
 
     def _comment_issue(self, issue_number, comment):
         """Post a comment on an issue."""
-        issue_comment_url = f'{self.repos_url}{self.repo}/issues/{issue_number}/comments'
+        issue_comment_url = f'{self.repos_url}{self.target_repo}/issues/{issue_number}/comments'
         body = {'body': comment}
         update_issue_request = requests.post(issue_comment_url, headers=self.issue_headers, json=body)
         return update_issue_request.status_code
@@ -313,7 +313,7 @@ class GitHubClient(Client):
         if len(issue.assignees) == 0 and self.auto_assign:
             valid_assignees.append(self.actor)
         for assignee in issue.assignees:
-            assignee_url = f'{self.repos_url}{self.repo}/assignees/{assignee}'
+            assignee_url = f'{self.repos_url}{self.target_repo}/assignees/{assignee}'
             assignee_request = requests.get(url=assignee_url, headers=self.issue_headers)
             if assignee_request.status_code == 204:
                 valid_assignees.append(assignee)
@@ -342,7 +342,7 @@ class GitHubClient(Client):
         if issue_number and self.project:
             project_id = self._get_project_id(self.project)
             if project_id:
-                owner, repo = self.repo.split('/')
+                owner, repo = self.target_repo.split('/')
                 issue_id = self._get_issue_global_id(owner, repo, issue_number)
                 if issue_id:
                     self._add_issue_to_project(issue_id, project_id)
@@ -382,7 +382,7 @@ class GitHubClient(Client):
 
     def _update_pr_body(self, pr_number, issue_number):
         """Add a close message for an issue to a PR."""
-        pr_url = f'{self.repos_url}{self.repo}/pulls/{pr_number}'
+        pr_url = f'{self.repos_url}{self.target_repo}/pulls/{pr_number}'
         pr_request = requests.get(pr_url, headers=self.issue_headers)
         if pr_request.status_code == 200:
             pr_body = pr_request.json()['body']
