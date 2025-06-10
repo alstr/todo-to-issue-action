@@ -7,7 +7,7 @@ runs:
     - name: Generate token for private repository access
       if: ${{ inputs.TARGET_REPO != '' && inputs.APP_ID != '' }}
       id: generate-token
-      uses: actions/create-github-app-token@v1
+      uses: actions/create-github-app-token@v2
       with:
         app-id: ${{ inputs.APP_ID }}
         private-key: ${{ inputs.PRIVATE_KEY }}
