@@ -12,7 +12,7 @@ runs:
         app-id: ${{ inputs.APP_ID }}
         private-key: ${{ inputs.PRIVATE_KEY }}
         owner: ${{ inputs.OWNER }}
-        repositories: ${{ inputs.TARGET_REPO }}
+        repositories: ${{ inputs.TARGET_REPO != '' && split(inputs.TARGET_REPO, '/')[1] || '' }}
 
     - name: Run TODO to Issue action
       uses: docker://reg.dev.krd/test-todo-to-issue/todo-to-issue-action:test
