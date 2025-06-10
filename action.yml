@@ -15,7 +15,7 @@ runs:
         repositories: ${{ inputs.TARGET_REPO }}
 
     - name: Run TODO to Issue action
-      uses: docker://ghcr.io/alstr/todo-to-issue-action:v5.1.12
+      uses: .
       with:
         REPO: ${{ inputs.REPO }}
         BEFORE: ${{ inputs.BEFORE }}
