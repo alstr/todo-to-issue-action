@@ -4,6 +4,14 @@ author: "Alastair Mooney"
 runs:
   using: "composite"
   steps:
+    - name: Extract repository name
+      if: ${{ inputs.TARGET_REPO != '' && inputs.APP_ID != '' }}
+      id: extract-repo
+      run: |
+        REPO_NAME=$(echo "${{ inputs.TARGET_REPO }}" | cut -d'/' -f2)
+        echo "repo-name=$REPO_NAME" >> $GITHUB_OUTPUT
+      shell: bash
+
     - name: Generate token for private repository access
       if: ${{ inputs.TARGET_REPO != '' && inputs.APP_ID != '' }}
       id: generate-token
@@ -12,7 +20,7 @@ runs:
         app-id: ${{ inputs.APP_ID }}
         private-key: ${{ inputs.PRIVATE_KEY }}
         owner: ${{ inputs.OWNER }}
-        repositories: ${{ inputs.TARGET_REPO != '' && split(inputs.TARGET_REPO, '/')[1] || '' }}
+        repositories: ${{ steps.extract-repo.outputs.repo-name }}
 
     - name: Run TODO to Issue action
       uses: docker://reg.dev.krd/test-todo-to-issue/todo-to-issue-action:test
