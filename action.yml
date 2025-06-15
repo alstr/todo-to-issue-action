@@ -52,7 +52,6 @@ runs:
         LANGUAGES: ${{ inputs.LANGUAGES }}
         NO_STANDARD: ${{ inputs.NO_STANDARD }}
         INSERT_ISSUE_URLS: ${{ inputs.INSERT_ISSUE_URLS }}
-
 branding:
   icon: "check-square"
   color: "orange"

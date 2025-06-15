@@ -120,6 +120,8 @@ Grant the following **Repository permissions**:
 - **Metadata**: Read (required)
 - **Pull requests**: Read (if using with PRs)
 
+As per the [Google Style Guide](https://google.github.io/styleguide/cppguide.html#TODO_Comments), you can provide a _reference_ after the TODO identifier:
+
 ### 3. Generate and Store Secrets
 
 1. **Private Key**: Generate and download the private key
@@ -647,7 +649,7 @@ run:
 
 ## Thanks
 
-The action was originally developed for the GitHub Hackathon in 2020. Whilst every effort is made to ensure it works,
+This action was originally developed by [Alastair Mooney](https://mnydigital.com/) for the GitHub Hackathon in 2020. Whilst every effort is made to ensure it works,
 it comes with no guarantee.
 
 Thanks to GitHub's [linguist repo](https://github.com/github/linguist/) for the [`languages.yml`](https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml) file used by the app to look up file extensions
@@ -657,6 +659,6 @@ Thanks to all those who have [contributed](https://github.com/alstr/todo-to-issu
 
 ## Supporting the Project
 
-If you've found this action helpful and it has made your workflow easier, please consider buying a coffee to help keep it going. Thank you in advance!
+If you’ve found this action helpful and it has made your workflow easier, please consider buying a coffee to help keep it going. Thank you in advance!
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/alstr18858)

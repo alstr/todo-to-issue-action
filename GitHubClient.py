@@ -407,5 +407,4 @@ class GitHubClient(Client):
         return pr_request.status_code
 
     def get_issue_url(self, new_issue_number):
-        """Get the URL for the issue."""
-        return f'{self.line_base_url}{self.target_repo}/issues/{new_issue_number}'
+        return f'{self.line_base_url}{self.repo}/issues/{new_issue_number}'
