@@ -17,13 +17,26 @@ class GitHubClient(Client):
         self.base_url = f'{self.github_url}/'
         self.repos_url = f'{self.base_url}repos/'
         self.repo = os.getenv('INPUT_REPO')
+        self.target_repo_name = os.getenv('INPUT_TARGET_REPO')
+        self.owner = os.getenv('INPUT_OWNER')
+        # Construct the full target repository path
+        if self.target_repo_name and self.owner:
+            self.target_repo = f'{self.owner}/{self.target_repo_name}'
+        else:
+            self.target_repo = self.repo  # Default to current repo if not specified
+
+        # Log the repository configuration for debugging
+        if self.target_repo == self.repo:
+            print(f'Creating issues in current repository: {self.repo}')
+        else:
+            print(f'Creating issues in target repository: {self.target_repo} (source: {self.repo})')
         self.before = os.getenv('INPUT_BEFORE')
         self.sha = os.getenv('INPUT_SHA')
         self.commits = json.loads(os.getenv('INPUT_COMMITS')) or []
         self.__init_diff_url__()
         self.token = os.getenv('INPUT_TOKEN')
-        self.issues_url = f'{self.repos_url}{self.repo}/issues'
-        self.milestones_url = f'{self.repos_url}{self.repo}/milestones'
+        self.issues_url = f'{self.repos_url}{self.target_repo}/issues'
+        self.milestones_url = f'{self.repos_url}{self.target_repo}/milestones'
         self.issue_headers = {
             'Content-Type': 'application/json',
             'Authorization': f'token {self.token}',
@@ -254,7 +267,7 @@ class GitHubClient(Client):
 
     def _comment_issue(self, issue_number, comment):
         """Post a comment on an issue."""
-        issue_comment_url = f'{self.repos_url}{self.repo}/issues/{issue_number}/comments'
+        issue_comment_url = f'{self.repos_url}{self.target_repo}/issues/{issue_number}/comments'
         body = {'body': comment}
         update_issue_request = requests.post(issue_comment_url, headers=self.issue_headers, json=body)
         return update_issue_request.status_code
@@ -312,7 +325,7 @@ class GitHubClient(Client):
         if len(issue.assignees) == 0 and self.auto_assign:
             valid_assignees.append(self.actor)
         for assignee in issue.assignees:
-            assignee_url = f'{self.repos_url}{self.repo}/assignees/{assignee}'
+            assignee_url = f'{self.repos_url}{self.target_repo}/assignees/{assignee}'
             assignee_request = requests.get(url=assignee_url, headers=self.issue_headers)
             if assignee_request.status_code == 204:
                 valid_assignees.append(assignee)
@@ -341,7 +354,7 @@ class GitHubClient(Client):
         if issue_number and self.project:
             project_id = self._get_project_id(self.project)
             if project_id:
-                owner, repo = self.repo.split('/')
+                owner, repo = self.target_repo.split('/')
                 issue_id = self._get_issue_global_id(owner, repo, issue_number)
                 if issue_id:
                     self._add_issue_to_project(issue_id, project_id)
@@ -394,4 +407,4 @@ class GitHubClient(Client):
         return pr_request.status_code
 
     def get_issue_url(self, new_issue_number):
-        return f'{self.line_base_url}{self.repo}/issues/{new_issue_number}'
+        return f'{self.line_base_url}{self.target_repo}/issues/{new_issue_number}'

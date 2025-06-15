@@ -36,48 +36,122 @@ See [Upgrading](#upgrading) for breaking changes.
 
 ## Usage
 
-Simply add a line or block comment starting with TODO (or any other comment identifiers configured), followed by a colon and/or space.
+### Basic Usage (Same Repository)
 
-Here's an example for Python creating an issue named after the TODO _description_:
+For most users, you can use the action without any additional configuration. Issues will be created in the same repository where your code and TODOs exist:
 
-```python
-def hello_world():
-    # TODO: Come up with a more imaginative greeting
-    print('Hello world!')
+```yaml
+name: "TODO to Issue"
+on: ["push"]
+jobs:
+  build:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensures all commits are available for processing existing TODOs
+      - name: "TODO to Issue"
+        uses: "alstr/todo-to-issue-action@v5"
 ```
 
-_Multiline_ TODOs are supported, with additional lines inserted into the issue body:
+### Cross-Repository Usage (Advanced)
 
-```python
-def hello_world():
-    # TODO: Come up with a more imaginative greeting
-    #  Everyone uses hello world and it's boring.
-    print('Hello world!')
+If you want to create issues in a different repository (e.g., a GitOps repository), you'll need to set up a GitHub App and provide additional configuration:
+
+```yaml
+name: "TODO to Issue"
+on: ["push"]
+jobs:
+  build:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "TODO to Issue"
+        uses: "alstr/todo-to-issue-action@v5"
+        with:
+          TARGET_REPO: "gitops-repo"
+          APP_ID: ${{ secrets.APP_ID }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          OWNER: "your-org"
 ```
+
+## Configuration
+
+### Required for Cross-Repository Usage
+
+| Input         | Description                                                     | Required            |
+| ------------- | --------------------------------------------------------------- | ------------------- |
+| `TARGET_REPO` | Target repository name to create issues in (e.g. 'gitops-repo') | Only for cross-repo |
+| `APP_ID`      | GitHub App ID for generating tokens                             | Only for cross-repo |
+| `PRIVATE_KEY` | Private key for the GitHub App                                  | Only for cross-repo |
+| `OWNER`       | Owner of the target repository (e.g. 'your-org')                | Only for cross-repo |
+
+### Optional Inputs
+
+| Input               | Description                          | Default   |
+| ------------------- | ------------------------------------ | --------- |
+| `CLOSE_ISSUES`      | Close issues when TODOs are removed  | `"true"`  |
+| `AUTO_P`            | Format multiline TODOs as paragraphs | `"true"`  |
+| `AUTO_ASSIGN`       | Auto-assign issues to the actor      | `"false"` |
+| `ESCAPE`            | Escape Markdown characters           | `"true"`  |
+| `INSERT_ISSUE_URLS` | Insert issue URLs into TODO comments | `"false"` |
+
+## GitHub App Setup (For Cross-Repository Usage)
+
+If you want to create issues in a different repository, you'll need to create a GitHub App:
+
+### 1. Create a GitHub App
+
+1. Go to your GitHub organization/user settings
+2. Navigate to "Developer settings" > "GitHub Apps"
+3. Click "New GitHub App"
+4. Fill in the required fields:
+   - **App name**: Choose a unique name
+   - **Homepage URL**: Your repository or organization URL
+   - **Webhook URL**: Can be a placeholder like `https://example.com`
+
+### 2. Set Permissions
+
+Grant the following **Repository permissions**:
+- **Contents**: Read (to access source code and diffs)
+- **Issues**: Write (to create and manage issues)
+- **Metadata**: Read (required)
+- **Pull requests**: Read (if using with PRs)
 
 As per the [Google Style Guide](https://google.github.io/styleguide/cppguide.html#TODO_Comments), you can provide a _reference_ after the TODO identifier:
 
-```python
-def hello_world():
-  # TODO(@alstr): Come up with a more imaginative greeting
-  #  This will assign the issue to alstr.
-  print('Hello world!')
+### 3. Generate and Store Secrets
 
-  # TODO(!urgent): This is wrong
-  #  This will add an 'urgent' label.
-  assert 1 + 1 == 3
+1. **Private Key**: Generate and download the private key
+2. **App ID**: Note the App ID from the app settings
+3. Store both in your repository secrets:
+   - `APP_ID`: The numeric App ID
+   - `PRIVATE_KEY`: The entire private key file content
 
-  # TODO(#99): We need error handling here
-  #  This will add the comment to the existing issue 99.
-  greeting_time = datetime.fromisoformat(date_string)
+### 4. Install the App
 
-  # TODO(language): Localise this string
-  #  This will prepend the reference to the issue title
-  dialogue = "TODO or not TODO, that is the question."
+Install the GitHub App on both:
+- The source repository (where your code/TODOs are)
+- The target repository (where issues will be created)
+
+## Examples
+
+### Same Repository (Simple)
+```yaml
+- uses: "alstr/todo-to-issue-action@v5"
 ```
 
-Only one reference can be provided. Should you wish to further configure the issue, you can do so via
-[TODO Options](#todo-options).
+### Cross Repository with Custom Settings
+```yaml
+- uses: "alstr/todo-to-issue-action@v5"
+  with:
+    TARGET_REPO: "issues-repo"
+    APP_ID: ${{ secrets.TODO_APP_ID }}
+    PRIVATE_KEY: ${{ secrets.TODO_PRIVATE_KEY }}
+    OWNER: "myorg"
+```
 
 ## TODO Options
 
@@ -125,6 +199,56 @@ def hello_world():
 ```
 
 Only a single milestone can be specified. If the milestone does not exist, it will be created.
+
+## TODO References
+
+TODOs can include references in parentheses to control their behavior:
+
+### Labels
+
+Use `!` to add a label to the issue:
+
+```python
+def calculate_tax():
+    # TODO(!urgent): This is wrong
+    #  This will add an 'urgent' label.
+    assert 1 + 1 == 3
+```
+
+### Comment on Existing Issue
+
+Use `#` followed by an issue number to add a comment to an existing issue instead of creating a new one:
+
+```python
+def parse_date():
+    # TODO(#99): We need error handling here
+    #  This will add the comment to the existing issue 99.
+    greeting_time = datetime.fromisoformat(date_string)
+```
+
+### Custom Reference
+
+Use any other text to prepend a reference to the issue title:
+
+```python
+def get_greeting():
+    # TODO(language): Localise this string
+    #  This will prepend the reference to the issue title
+    dialogue = "TODO or not TODO, that is the question."
+```
+
+### Assignees
+
+Use `@` to assign the issue to a specific user:
+
+```python
+def optimize_performance():
+    # TODO(@username): This needs optimization
+    #  This will assign the issue to 'username'
+    slow_function()
+```
+
+Multiple references can be combined: `# TODO(@alice !priority #123): Fix this`
 
 ## Supported Languages
 
@@ -289,7 +413,7 @@ using the `LANGUAGES` input.
 Just create a file that contains an array of languages, each with the following properties:
 
 | Property   | Description                                                                                                                                        |
-|------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | language   | The unique name of the language                                                                                                                    |
 | extensions | A list of file extensions for the custom language                                                                                                  |
 | markers    | A list of objects (see example below) to declare the comment markers. Make sure to escape all special Markdown characters with a double backslash. |
