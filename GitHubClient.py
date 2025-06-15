@@ -394,7 +394,7 @@ class GitHubClient(Client):
 
     def _update_pr_body(self, pr_number, issue_number):
         """Add a close message for an issue to a PR."""
-        pr_url = f'{self.repos_url}{self.target_repo}/pulls/{pr_number}'
+        pr_url = f'{self.repos_url}{self.repo}/pulls/{pr_number}'
         pr_request = requests.get(pr_url, headers=self.issue_headers)
         if pr_request.status_code == 200:
             pr_body = pr_request.json()['body']
@@ -407,4 +407,4 @@ class GitHubClient(Client):
         return pr_request.status_code
 
     def get_issue_url(self, new_issue_number):
-        return f'{self.line_base_url}{self.repo}/issues/{new_issue_number}'
+        return f'{self.line_base_url}{self.target_repo}/issues/{new_issue_number}'
