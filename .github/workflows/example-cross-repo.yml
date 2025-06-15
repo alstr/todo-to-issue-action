@@ -23,7 +23,8 @@ jobs:
         # Use the local version of the action (after you've made the changes)
         uses: ./
         with:
-          TARGET_REPO: "my-org/target-repo" # Replace with your target repository
+          TARGET_REPO: "target-repo" # Replace with your target repository name (without org)
+          OWNER: "my-org" # Replace with your organization name
           TOKEN: ${{ secrets.CROSS_REPO_TOKEN }} # Token with access to the target repository
           CLOSE_ISSUES: "true" # Optional: close issues when TODOs are removed
           AUTO_ASSIGN: "true" # Optional: assign issues to the committer

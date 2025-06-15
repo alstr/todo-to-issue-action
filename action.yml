@@ -5,18 +5,19 @@ runs:
   using: "composite"
   steps:
     - name: Extract repository names
-      if: ${{ inputs.TARGET_REPO != '' && inputs.APP_ID != '' }}
+      if: ${{ inputs.TARGET_REPO != '' && inputs.OWNER != '' && inputs.APP_ID != '' }}
       id: extract-repos
       run: |
         SOURCE_REPO_NAME=$(echo "${{ inputs.REPO }}" | cut -d'/' -f2)
-        TARGET_REPO_NAME=$(echo "${{ inputs.TARGET_REPO }}" | cut -d'/' -f2)
+        # TARGET_REPO now only contains the repo name, not the full path
+        TARGET_REPO_NAME="${{ inputs.TARGET_REPO }}"
         echo "source-repo-name=$SOURCE_REPO_NAME" >> $GITHUB_OUTPUT
         echo "target-repo-name=$TARGET_REPO_NAME" >> $GITHUB_OUTPUT
         echo "repositories=$SOURCE_REPO_NAME,$TARGET_REPO_NAME" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Generate token for private repository access
-      if: ${{ inputs.TARGET_REPO != '' && inputs.APP_ID != '' }}
+      if: ${{ inputs.TARGET_REPO != '' && inputs.OWNER != '' && inputs.APP_ID != '' }}
       id: generate-token
       uses: actions/create-github-app-token@v2
       with:
@@ -80,7 +81,7 @@ inputs:
     required: false
     default: ${{ github.token }}
   TARGET_REPO:
-    description: "Optional target repository to create issues in (e.g. 'owner/repo'). If not provided, issues will be created in the current repository."
+    description: "Optional target repository name to create issues in (e.g. 'gitops-repo'). Use with OWNER to specify the full repository. If not provided, issues will be created in the current repository."
     required: false
   APP_ID:
     description: "GitHub App ID for generating tokens to access private repositories"
@@ -89,16 +90,16 @@ inputs:
     description: "Private key for the GitHub App (do not enter the actual secret)"
     required: false
   OWNER:
-    description: "Owner of the target repository (required if using GitHub App authentication)"
+    description: "Owner of the target repository (e.g. 'your-org'). Required when using TARGET_REPO or GitHub App authentication."
     required: false
   CLOSE_ISSUES:
     description: "Optional input specifying whether to attempt to close an issue when a TODO is removed"
     required: false
-    default: true
+    default: "true"
   AUTO_P:
     description: "For multiline TODOs, format each line as a new paragraph when creating the issue"
     required: false
-    default: true
+    default: "true"
   PROJECT:
     description: "User or organization project to link issues to, format 'project_type/owner/project_name'"
     required: false
@@ -111,7 +112,7 @@ inputs:
   AUTO_ASSIGN:
     description: "Automatically assign new issues to the user who triggered the action"
     required: false
-    default: false
+    default: "false"
   ACTOR:
     description: "The username of the person who triggered the action (automatically set)"
     required: false
@@ -133,15 +134,15 @@ inputs:
   ESCAPE:
     description: "Escape all special Markdown characters"
     required: false
-    default: true
+    default: "true"
   LANGUAGES:
     description: "A collection of comma-delimited URLs or local paths for custom language files"
     required: false
   NO_STANDARD:
     description: "Exclude loading the default 'syntax.json' and 'languages.yml' files from the repository"
     required: false
-    default: false
+    default: "false"
   INSERT_ISSUE_URLS:
     description: "Whether the action should insert the URL for a newly-created issue into the associated TODO comment"
     required: false
-    default: false
+    default: "false"

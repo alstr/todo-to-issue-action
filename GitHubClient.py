@@ -16,8 +16,25 @@ class GitHubClient(Client):
             raise EnvironmentError
         self.base_url = f'{self.github_url}/'
         self.repos_url = f'{self.base_url}repos/'
-        self.repo = os.getenv('INPUT_REPO')
-        self.target_repo = os.getenv('INPUT_TARGET_REPO', self.repo)  # Default to current repo if not specified
+                self.repo = os.getenv('INPUT_REPO')
+        self.target_repo_name = os.getenv('INPUT_TARGET_REPO')
+        self.owner = os.getenv('INPUT_OWNER')
+
+        # Construct the full target repository path
+        if self.target_repo_name and self.owner:
+            self.target_repo = f'{self.owner}/{self.target_repo_name}'
+        elif self.target_repo_name and '/' in self.target_repo_name:
+            # Backward compatibility: if TARGET_REPO contains '/', treat it as full repo path
+            self.target_repo = self.target_repo_name
+            print('WARNING: Using full repository path in TARGET_REPO is deprecated. Use OWNER and TARGET_REPO separately.')
+        else:
+            self.target_repo = self.repo  # Default to current repo if not specified
+
+        # Log the repository configuration for debugging
+        if self.target_repo == self.repo:
+            print(f'Creating issues in current repository: {self.repo}')
+        else:
+            print(f'Creating issues in target repository: {self.target_repo} (source: {self.repo})')
         self.before = os.getenv('INPUT_BEFORE')
         self.sha = os.getenv('INPUT_SHA')
         self.commits = json.loads(os.getenv('INPUT_COMMITS')) or []
@@ -77,14 +94,15 @@ class GitHubClient(Client):
             # There is a valid before SHA to compare with, or this is a release being created.
             diff_url = f'{self.repos_url}{self.repo}/compare/{self.before}...{self.sha}'
         elif len(self.commits) == 1:
-            # There is only one commit.
-            diff_url = f'{self.repos_url}{self.repo}/commits/{self.sha}'
+            # There is only one commit - compare against empty tree to get all files
+            diff_url = f'{self.repos_url}{self.repo}/compare/4b825dc642cb6eb9a060e54bf8d69288fbee4904...{self.sha}'
         elif len(self.commits) > 1:
             # There are several commits: compare with the oldest one.
             oldest = sorted(self.commits, key=self._get_timestamp)[0]['id']
             diff_url = f'{self.repos_url}{self.repo}/compare/{oldest}...{self.sha}'
         else:
-            return None
+            # No commits info available, compare against empty tree to get all files
+            diff_url = f'{self.repos_url}{self.repo}/compare/4b825dc642cb6eb9a060e54bf8d69288fbee4904...{self.sha}'
 
         diff_headers = {
             'Accept': 'application/vnd.github.v3.diff',

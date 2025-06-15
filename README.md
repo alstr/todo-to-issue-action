@@ -36,107 +36,135 @@ See [Upgrading](#upgrading) for breaking changes.
 
 ## Usage
 
-Simply add a line or block comment starting with TODO (or any other comment identifiers configured), followed by a colon and/or space.
+### Basic Usage (Same Repository)
 
-Here's an example for Python creating an issue named after the TODO _description_:
+For most users, you can use the action without any additional configuration. Issues will be created in the same repository where your code and TODOs exist:
 
-```python
-def hello_world():
-    # TODO: Come up with a more imaginative greeting
-    print('Hello world!')
+```yaml
+name: "TODO to Issue"
+on: ["push"]
+jobs:
+  build:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensures all commits are available for processing existing TODOs
+      - name: "TODO to Issue"
+        uses: "alstr/todo-to-issue-action@v5"
 ```
 
-_Multiline_ TODOs are supported, with additional lines inserted into the issue body:
+### Cross-Repository Usage (Advanced)
 
-```python
-def hello_world():
-    # TODO: Come up with a more imaginative greeting
-    #  Everyone uses hello world and it's boring.
-    print('Hello world!')
+If you want to create issues in a different repository (e.g., a GitOps repository), you'll need to set up a GitHub App and provide additional configuration:
+
+```yaml
+name: "TODO to Issue"
+on: ["push"]
+jobs:
+  build:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "TODO to Issue"
+        uses: "alstr/todo-to-issue-action@v5"
+        with:
+          TARGET_REPO: "gitops-repo"
+          APP_ID: ${{ secrets.APP_ID }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          OWNER: "your-org"
 ```
 
-### Cross-Repository Issues
+## Configuration
 
-The action supports creating issues in a different repository than the one where the TODO comments are found. This requires:
+### Required for Cross-Repository Usage
 
-1. Setting the `TARGET_REPO` input to specify the target repository (e.g., "owner/repo")
+| Input         | Description                                                     | Required            |
+| ------------- | --------------------------------------------------------------- | ------------------- |
+| `TARGET_REPO` | Target repository name to create issues in (e.g. 'gitops-repo') | Only for cross-repo |
+| `APP_ID`      | GitHub App ID for generating tokens                             | Only for cross-repo |
+| `PRIVATE_KEY` | Private key for the GitHub App                                  | Only for cross-repo |
+| `OWNER`       | Owner of the target repository (e.g. 'your-org')                | Only for cross-repo |
 
-2. Providing appropriate authentication:
-   - For public repositories or when the target repository is in the same organization, use the default `GITHUB_TOKEN`:
-     ```yaml
-     - uses: alstr/todo-to-issue-action@v5
-       with:
-         TARGET_REPO: "my-org/target-repo"
-     ```
-   - For private repositories, provide GitHub App credentials:
-     ```yaml
-     - uses: alstr/todo-to-issue-action@v5
-       with:
-         TARGET_REPO: "target-org/target-repo"
-         APP_ID: ${{ secrets.APP_ID }}
-         PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-         OWNER: "target-org"
-     ```
+### Optional Inputs
 
-The action will automatically:
-1. Use the default `GITHUB_TOKEN` for same-repo or public repository access
-2. Generate a GitHub App token when `APP_ID` and `PRIVATE_KEY` are provided for private repository access
+| Input               | Description                          | Default   |
+| ------------------- | ------------------------------------ | --------- |
+| `CLOSE_ISSUES`      | Close issues when TODOs are removed  | `"true"`  |
+| `AUTO_P`            | Format multiline TODOs as paragraphs | `"true"`  |
+| `AUTO_ASSIGN`       | Auto-assign issues to the actor      | `"false"` |
+| `ESCAPE`            | Escape Markdown characters           | `"true"`  |
+| `INSERT_ISSUE_URLS` | Insert issue URLs into TODO comments | `"false"` |
 
-### GitHub App Setup
+## GitHub App Setup (For Cross-Repository Usage)
 
-To use the action with private repositories, you'll need to:
+If you want to create issues in a different repository, you'll need to create a GitHub App:
 
-1. Create a GitHub App:
-   - Go to your GitHub account settings
-   - Navigate to "Developer settings" (bottom of the left sidebar)
-   - Click "GitHub Apps" and then "New GitHub App"
-   - Fill in the following details:
-     - **GitHub App name**: Choose a unique name (e.g., "TODO-to-Issue-App")
-     - **Homepage URL**: Your repository URL
-     - **Webhook**: Leave disabled
-     - **Repository permissions**:
-       - Issues: Read & Write
-       - Pull requests: Read & Write (if using PR integration)
-     - **Where can this GitHub App be installed?**: Any account
-   - Click "Create GitHub App"
-   - On the next page, click "Generate a private key" to download your private key file
-   - Note down the "App ID" shown on the page
+### 1. Create a GitHub App
 
-2. Store the following secrets in your repository:
-   - Go to your repository's "Settings" → "Secrets and variables" → "Actions"
-   - Add two new repository secrets:
-     - `APP_ID`: The App ID you noted down
-     - `PRIVATE_KEY`: The entire contents of the private key file you downloaded (including the BEGIN and END lines)
+1. Go to your GitHub organization/user settings
+2. Navigate to "Developer settings" > "GitHub Apps"
+3. Click "New GitHub App"
+4. Fill in the required fields:
+   - **App name**: Choose a unique name
+   - **Homepage URL**: Your repository or organization URL
+   - **Webhook URL**: Can be a placeholder like `https://example.com`
 
-3. Install the GitHub App:
-   - Go back to your GitHub App settings
-   - Click "Install App" in the left sidebar
-   - Choose the target repository where you want to create issues
-   - Click "Install"
+### 2. Set Permissions
 
-As per the [Google Style Guide](https://google.github.io/styleguide/cppguide.html#TODO_Comments), you can provide a _reference_ after the TODO identifier:
+Grant the following **Repository permissions**:
+- **Contents**: Read (to access source code and diffs)
+- **Issues**: Write (to create and manage issues)
+- **Metadata**: Read (required)
+- **Pull requests**: Read (if using with PRs)
 
-```python
-def hello_world():
-  # TODO(@alstr): Come up with a more imaginative greeting
-  #  This will assign the issue to alstr.
-  print('Hello world!')
+### 3. Generate and Store Secrets
 
-  # TODO(!urgent): This is wrong
-  #  This will add an 'urgent' label.
-  assert 1 + 1 == 3
+1. **Private Key**: Generate and download the private key
+2. **App ID**: Note the App ID from the app settings
+3. Store both in your repository secrets:
+   - `APP_ID`: The numeric App ID
+   - `PRIVATE_KEY`: The entire private key file content
 
-  # TODO(#99): We need error handling here
-  #  This will add the comment to the existing issue 99.
-  greeting_time = datetime.fromisoformat(date_string)
+### 4. Install the App
 
-  # TODO(language): Localise this string
-  #  This will prepend the reference to the issue title
-  dialogue = "TODO or not TODO, that is the question."
+Install the GitHub App on both:
+- The source repository (where your code/TODOs are)
+- The target repository (where issues will be created)
+
+## How It Works
+
+### First Run
+When you first add this action to a repository with existing TODOs:
+- With `fetch-depth: 0`, the action has access to full git history
+- It compares against an empty tree to treat all files as "new"
+- **All existing TODOs** in your codebase will be converted to issues
+
+### Subsequent Runs
+- Only processes TODOs that were added, modified, or removed in the current push
+- Updates existing issues when TODOs are modified
+- Closes issues when TODOs are removed (if `CLOSE_ISSUES` is enabled)
+
+## Examples
+
+### Same Repository (Simple)
+```yaml
+- uses: "alstr/todo-to-issue-action@v5"
 ```
 
-Only one reference can be provided. Should you wish to further configure the issue, you can do so via
-[TODO Options](#todo-options).
+### Cross Repository with Custom Settings
+```yaml
+- uses: "alstr/todo-to-issue-action@v5"
+  with:
+    TARGET_REPO: "issues-repo"
+    APP_ID: ${{ secrets.TODO_APP_ID }}
+    PRIVATE_KEY: ${{ secrets.TODO_PRIVATE_KEY }}
+    OWNER: "myorg"
+    AUTO_ASSIGN: "true"
+    CLOSE_ISSUES: "false"
+```
 
 ## TODO Options
 
