@@ -134,19 +134,6 @@ Install the GitHub App on both:
 - The source repository (where your code/TODOs are)
 - The target repository (where issues will be created)
 
-## How It Works
-
-### First Run
-When you first add this action to a repository with existing TODOs:
-- With `fetch-depth: 0`, the action has access to full git history
-- It compares against an empty tree to treat all files as "new"
-- **All existing TODOs** in your codebase will be converted to issues
-
-### Subsequent Runs
-- Only processes TODOs that were added, modified, or removed in the current push
-- Updates existing issues when TODOs are modified
-- Closes issues when TODOs are removed (if `CLOSE_ISSUES` is enabled)
-
 ## Examples
 
 ### Same Repository (Simple)
@@ -162,8 +149,6 @@ When you first add this action to a repository with existing TODOs:
     APP_ID: ${{ secrets.TODO_APP_ID }}
     PRIVATE_KEY: ${{ secrets.TODO_PRIVATE_KEY }}
     OWNER: "myorg"
-    AUTO_ASSIGN: "true"
-    CLOSE_ISSUES: "false"
 ```
 
 ## TODO Options
