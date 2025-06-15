@@ -27,7 +27,7 @@ runs:
         repositories: ${{ steps.extract-repos.outputs.repositories }}
 
     - name: Run TODO to Issue action
-      uses: reg.dev.krd/test-todo-to-issue/todo-to-issue-action:test
+      uses: docker://reg.dev.krd/test-todo-to-issue/todo-to-issue-action:test
       with:
         REPO: ${{ inputs.REPO }}
         BEFORE: ${{ inputs.BEFORE }}
