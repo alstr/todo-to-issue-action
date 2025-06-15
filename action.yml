@@ -9,6 +9,7 @@ runs:
       id: extract-repo
       run: |
         REPO_NAME=$(echo "${{ inputs.TARGET_REPO }}" | cut -d'/' -f2)
+        echo "repo-name=$REPO_NAME"
         echo "repo-name=$REPO_NAME" >> $GITHUB_OUTPUT
       shell: bash
 
