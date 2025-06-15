@@ -19,14 +19,9 @@ class GitHubClient(Client):
         self.repo = os.getenv('INPUT_REPO')
         self.target_repo_name = os.getenv('INPUT_TARGET_REPO')
         self.owner = os.getenv('INPUT_OWNER')
-
         # Construct the full target repository path
         if self.target_repo_name and self.owner:
             self.target_repo = f'{self.owner}/{self.target_repo_name}'
-        elif self.target_repo_name and '/' in self.target_repo_name:
-            # Backward compatibility: if TARGET_REPO contains '/', treat it as full repo path
-            self.target_repo = self.target_repo_name
-            print('WARNING: Using full repository path in TARGET_REPO is deprecated. Use OWNER and TARGET_REPO separately.')
         else:
             self.target_repo = self.repo  # Default to current repo if not specified
 
