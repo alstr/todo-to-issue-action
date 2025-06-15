@@ -198,6 +198,56 @@ def hello_world():
 
 Only a single milestone can be specified. If the milestone does not exist, it will be created.
 
+## TODO References
+
+TODOs can include references in parentheses to control their behavior:
+
+### Labels
+
+Use `!` to add a label to the issue:
+
+```python
+def calculate_tax():
+    # TODO(!urgent): This is wrong
+    #  This will add an 'urgent' label.
+    assert 1 + 1 == 3
+```
+
+### Comment on Existing Issue
+
+Use `#` followed by an issue number to add a comment to an existing issue instead of creating a new one:
+
+```python
+def parse_date():
+    # TODO(#99): We need error handling here
+    #  This will add the comment to the existing issue 99.
+    greeting_time = datetime.fromisoformat(date_string)
+```
+
+### Custom Reference
+
+Use any other text to prepend a reference to the issue title:
+
+```python
+def get_greeting():
+    # TODO(language): Localise this string
+    #  This will prepend the reference to the issue title
+    dialogue = "TODO or not TODO, that is the question."
+```
+
+### Assignees
+
+Use `@` to assign the issue to a specific user:
+
+```python
+def optimize_performance():
+    # TODO(@username): This needs optimization
+    #  This will assign the issue to 'username'
+    slow_function()
+```
+
+Multiple references can be combined: `# TODO(@alice !priority #123): Fix this`
+
 ## Supported Languages
 
 - ABAP
