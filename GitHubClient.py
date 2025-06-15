@@ -16,7 +16,7 @@ class GitHubClient(Client):
             raise EnvironmentError
         self.base_url = f'{self.github_url}/'
         self.repos_url = f'{self.base_url}repos/'
-                self.repo = os.getenv('INPUT_REPO')
+        self.repo = os.getenv('INPUT_REPO')
         self.target_repo_name = os.getenv('INPUT_TARGET_REPO')
         self.owner = os.getenv('INPUT_OWNER')
 
