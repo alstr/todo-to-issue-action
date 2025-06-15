@@ -89,15 +89,14 @@ class GitHubClient(Client):
             # There is a valid before SHA to compare with, or this is a release being created.
             diff_url = f'{self.repos_url}{self.repo}/compare/{self.before}...{self.sha}'
         elif len(self.commits) == 1:
-            # There is only one commit - compare against empty tree to get all files
-            diff_url = f'{self.repos_url}{self.repo}/compare/4b825dc642cb6eb9a060e54bf8d69288fbee4904...{self.sha}'
+            # There is only one commit.
+            diff_url = f'{self.repos_url}{self.repo}/commits/{self.sha}'
         elif len(self.commits) > 1:
             # There are several commits: compare with the oldest one.
             oldest = sorted(self.commits, key=self._get_timestamp)[0]['id']
             diff_url = f'{self.repos_url}{self.repo}/compare/{oldest}...{self.sha}'
         else:
-            # No commits info available, compare against empty tree to get all files
-            diff_url = f'{self.repos_url}{self.repo}/compare/4b825dc642cb6eb9a060e54bf8d69288fbee4904...{self.sha}'
+            return None
 
         diff_headers = {
             'Accept': 'application/vnd.github.v3.diff',
