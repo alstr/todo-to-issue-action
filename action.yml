@@ -36,6 +36,7 @@ runs:
         SHA: ${{ inputs.SHA }}
         TOKEN: ${{ steps.generate-token.outputs.token || inputs.TOKEN }}
         TARGET_REPO: ${{ inputs.TARGET_REPO }}
+        OWNER: ${{ inputs.OWNER }}
         CLOSE_ISSUES: ${{ inputs.CLOSE_ISSUES }}
         AUTO_P: ${{ inputs.AUTO_P }}
         PROJECT: ${{ inputs.PROJECT }}
