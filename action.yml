@@ -30,7 +30,7 @@ runs:
         COMMITS: ${{ inputs.COMMITS }}
         DIFF_URL: ${{ inputs.DIFF_URL }}
         SHA: ${{ inputs.SHA }}
-        TOKEN: ${{ inputs.APP_ID != '' && steps.generate-token.outputs.token || inputs.TOKEN }}
+        TOKEN: ${{ steps.generate-token.outputs.token || inputs.TOKEN }}
         TARGET_REPO: ${{ inputs.TARGET_REPO }}
         CLOSE_ISSUES: ${{ inputs.CLOSE_ISSUES }}
         AUTO_P: ${{ inputs.AUTO_P }}
@@ -47,6 +47,7 @@ runs:
         LANGUAGES: ${{ inputs.LANGUAGES }}
         NO_STANDARD: ${{ inputs.NO_STANDARD }}
         INSERT_ISSUE_URLS: ${{ inputs.INSERT_ISSUE_URLS }}
+
 branding:
   icon: "check-square"
   color: "orange"
