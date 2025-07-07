@@ -16,8 +16,8 @@ class TodoParser(object):
     """Parser for extracting information from a given diff file."""
     FILE_HUNK_PATTERN = r'(?<=diff)(.*?)(?=diff\s--git\s)'
     HEADERS_PATTERN = re.compile(r'(?<=--git) a/(.*?) b/(.*?)$\n(?=((new|deleted).*?$\n)?index ([0-9a-f]+)\.\.([0-9a-f]+))', re.MULTILINE)
-    LINE_NUMBERS_PATTERN = re.compile(r'@@[\d\s,\-+]*\s@@.*')
-    LINE_NUMBERS_INNER_PATTERN = re.compile(r'@@[\d\s,\-+]*\s@@')
+    LINE_NUMBERS_PATTERN = re.compile(r'^@@[\d\s,\-+]*\s@@.*', re.MULTILINE)
+    LINE_NUMBERS_INNER_PATTERN = re.compile(r'^@@[\d\s,\-+]*\s@@', re.MULTILINE)
     ADDITION_PATTERN = re.compile(r'(?<=^\+).*')
     DELETION_PATTERN = re.compile(r'(?<=^-).*')
     REF_PATTERN = re.compile(r'.+?(?=\))')
