@@ -9,6 +9,7 @@ class GitHubClient(Client):
     """Basic client for getting the last diff and managing issues."""
     existing_issues = []
     milestones = []
+    max_issue_title_length = 256
 
     def __init__(self):
         self.github_url = os.getenv('INPUT_GITHUB_URL')
@@ -304,7 +305,7 @@ class GitHubClient(Client):
                 # Just prepend the ref to the title.
                 title = f'[{issue.ref}] {issue.title}'
 
-        title = title + '...' if len(title) > 80 else title
+        title = title + '...' if len(title) > self.max_issue_title_length else title
         new_issue_body = {'title': title, 'body': issue_contents, 'labels': issue.labels}
 
         # We need to check if any assignees/milestone specified exist, otherwise issue creation will fail.
@@ -357,12 +358,18 @@ class GitHubClient(Client):
         else:
             # Try simple matching.
             matched = 0
+            # If title length is long, make sure we're searching using the exact same title as would've been inserted.
+            search_title = issue.title + '...' if len(issue.title) > self.max_issue_title_length else issue.title
             for existing_issue in self.existing_issues:
-                if existing_issue['title'] == issue.title:
+                if existing_issue['title'] == search_title:
                     matched += 1
                     # If there are multiple issues with similar titles, don't try and close any.
                     if matched > 1:
-                        print(f'Skipping issue (multiple matches)')
+                        print(f'Skipping issue closure due to ambiguous match against multiple existing issues, shown below')
+                        for x in self.existing_issues:
+                            if x['title'] == search_title:
+                                print(f' {x["web_url"]}')
+                        issue_number = None
                         break
                     issue_number = existing_issue['number']
         if issue_number:
