@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 import itertools
 
 headers = {
-    'User-Agent': 'TODOToIssue/5.1.9'
+    'User-Agent': 'TODOToIssue'
 }
 
 class TodoParser(object):
