@@ -164,6 +164,7 @@ Only a single milestone can be specified. If the milestone does not exist, it wi
 - Objective-C
 - Org Mode
 - PHP
+- PowerShell
 - Python
 - PureScript
 - R
