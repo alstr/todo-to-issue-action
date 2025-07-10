@@ -599,3 +599,29 @@ index 0000000..d340f6a
 +ENV PYTHONPATH /app
 +# TODO: Update command
 +CMD ["/app/main.py"]
+diff --git a/example_script.ps1 b/example_script.ps1
+new file mode 100644
+index 0000000..d340f6a
+--- /dev/null
++++ b/example_script.ps1
+@@ -0,0 +1,20 @@
++# PowerShell script example
++
++# TODO: Add proper error handling
++# This is needed for production use
++# labels: enhancement
++
++function Get-SystemInfo {
++    # TODO: Expand this function
++    # It should return more detailed information
++    # labels: help wanted
++    
++    return Get-ComputerInfo
++}
++
++<#
++TODO: Add more utility functions
++We need functions for network diagnostics and performance monitoring
++labels: feature
++#>
++Write-Host "Script completed"
