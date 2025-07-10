@@ -17,6 +17,7 @@ Before submitting your pull request, please ensure the following requirements ar
 - [ ] I have added the language to `syntax.json` with the language name matching that in GitHub's [Linguist `languages.yml` file](https://github.com/github-linguist/linguist/blob/main/lib/linguist/languages.yml).
 - [ ] I have added sample code to `test_new.diff` and `test_closed.diff`.
 - [ ] I have added issue creation and closure tests to `test_todo_parser.py`. The tests should check that the `ace_mode` of the issue matches that specified in the `languages.yml` file. If existing checks for that `ace_mode` exists, I have incremented them instead.
+- [ ] I have incremented the number specified in the `test_url_insertion` test in `test_process_diff.py` to account for the changes made to `test_new.diff`.
 - [ ] I have updated `README.md` to add the language.
 - [ ] I have run and verified all tests.
 
