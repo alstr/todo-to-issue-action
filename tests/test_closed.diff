@@ -600,3 +600,30 @@ index d340f6a..29b54da 100644
 -labels: feature
 -#>
  Write-Host "Script completed"
+diff --git a/tests/ExampleCodeunit.al b/tests/ExampleCodeunit.al
+index a1b2c3d..5e6f7g8 100644
+--- a/tests/ExampleCodeunit.al
++++ b/tests/ExampleCodeunit.al
+@@ -1,19 +1,12 @@
+ codeunit 50100 "Example Codeunit"
+ {
+-    // TODO: Implement customer validation logic
+-    // This needs to be done before go-live
+-    // labels: enhancement
+
+     procedure ValidateCustomer(CustomerNo: Code[20])
+     var
+         Customer: Record Customer;
+     begin
+-        // TODO: Add validation rules
+-        // We need to check credit limit and blocked status
+-        // labels: urgent
+
+-        /*
+-        TODO: Add error handling
+-        labels: help wanted
+-        */
++        if Customer.Get(CustomerNo) then
++            Customer.TestField(Blocked, Customer.Blocked::" ");
+     end;
+ }
