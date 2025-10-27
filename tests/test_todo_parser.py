@@ -12,6 +12,7 @@ def count_issues_for_file_type(raw_issues, file_type):
             num_issues += 1
     return num_issues
 
+
 def get_issues_for_fields(raw_issues, fields):
     matching_issues = []
     for issue in raw_issues:
@@ -21,6 +22,7 @@ def get_issues_for_fields(raw_issues, fields):
         else:
             matching_issues.append(issue)
     return matching_issues
+
 
 def print_unexpected_issues(unexpected_issues):
     return '\n'.join([
@@ -60,12 +62,20 @@ class NewIssueTest(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 2)
 
     def test_javascript_issues(self):
-        # Includes 1 test for JSON with Comments, 1 test for JSON5, 3 tests for TSX.
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 5)
+        # Includes 1 test for JSON with Comments.
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 1)
+
+    def test_json5_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'json5'), 1)
+
+    def test_tsx_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'tsx'), 3)
 
     def test_ruby_issues(self):
-        # Includes 2 tests for Crystal.
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
+
+    def test_crystal_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'crystal'), 2)
 
     def test_abap_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'abap'), 2)
@@ -89,7 +99,8 @@ class NewIssueTest(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_text_issues(self):
-        # Includes 2 tests for Org, 2 tests for GAP, 2 tests for Visual Basic, 2 tests for Agda, 4 tests for Sol, 4 tests for Move, 3 tests for AL
+        # Includes 2 tests for Org, 2 tests for GAP, 2 tests for Visual Basic, 2 tests for Agda, 4 tests for Sol,
+        # 4 tests for Move, 3 tests for AL
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 19)
 
     def test_scss_issues(self):
@@ -134,6 +145,7 @@ class NewIssueTest(unittest.TestCase):
     def test_powershell_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'powershell'), 3)
 
+
 class CustomOptionsTest(unittest.TestCase):
     def setUp(self):
         parser = TodoParser(options={"identifiers":
@@ -153,7 +165,7 @@ class CustomOptionsTest(unittest.TestCase):
 
         Other than case-insensitivity, an issue should only be matched if the
         identifier is exactly within the list of identifiers. For instances, if
-        "FIX" is an identifier, it should NOT accidentaly match comments with
+        "FIX" is an identifier, it should NOT accidentally match comments with
         the words "suffix" or "prefix".
         """
         matching_issues = get_issues_for_fields(self.raw_issues,
@@ -242,8 +254,10 @@ class ClosedIssueTest(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 2)
 
     def test_ruby_issues(self):
-        # Includes 2 tests for Crystal.
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
+
+    def test_crystal_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'crystal'), 2)
 
     def test_abap_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'abap'), 2)
@@ -261,8 +275,14 @@ class ClosedIssueTest(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'python'), 5)
 
     def test_javascript_issues(self):
-        # Includes 1 test for JSON with Comments, 1 test for JSON5, 3 tests for TSX.
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 5)
+        # Includes 1 test for JSON with Comments.
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'javascript'), 1)
+
+    def test_json5_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'json5'), 1)
+
+    def test_tsx_issues(self):
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'tsx'), 3)
 
     def test_autohotkey_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'autohotkey'), 1)
@@ -271,7 +291,8 @@ class ClosedIssueTest(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_text_issues(self):
-        # Includes 2 tests for Org, 2 tests for GAP, 2 tests for Visual Basic, 2 tests for Agda, 4 tests for Sol, 4 tests for Move, 3 tests for AL
+        # Includes 2 tests for Org, 2 tests for GAP, 2 tests for Visual Basic, 2 tests for Agda, 4 tests for Sol,
+        # 4 tests for Move, 3 tests for AL
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 19)
 
     def test_scss_issues(self):
@@ -316,6 +337,7 @@ class ClosedIssueTest(unittest.TestCase):
     def test_powershell_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'powershell'), 3)
 
+
 class IgnorePatternTest(unittest.TestCase):
     def test_single_ignore(self):
         os.environ['INPUT_IGNORE'] = '.*\\.java'
@@ -328,8 +350,8 @@ class IgnorePatternTest(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 4)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 0)
-        # Includes 2 tests for Crystal.
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'crystal'), 2)
         os.environ['INPUT_IGNORE'] = ''
 
     def test_multiple_ignores(self):
@@ -343,8 +365,8 @@ class IgnorePatternTest(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'yaml'), 2)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'php'), 0)
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'java'), 0)
-        # Includes 2 tests for Crystal.
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 5)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'ruby'), 3)
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'crystal'), 2)
         os.environ['INPUT_IGNORE'] = ''
 
 
@@ -394,7 +416,7 @@ class CustomLanguageFileTest(BaseCustomLanguageTests.BaseTest):
         self.assertIsNotNone(self.parser.languages_dict['ILS'])
         self.assertEqual(self.count_syntax(self.parser, 'ILS'), 1)
 
-    def test_custom_lang_not_dupplicate(self):
+    def test_custom_lang_not_duplicate(self):
 
         # Test if a custom language can overwrite the rules of an existing one
         self.assertEqual(self.count_syntax(self.parser, 'Java'), 1)
@@ -416,7 +438,8 @@ class CustomLanguageFileTest(BaseCustomLanguageTests.BaseTest):
 
 class CustomLanguageUrlTest(BaseCustomLanguageTests.BaseTest):
     def setUp(self):
-        os.environ['INPUT_LANGUAGES'] = 'https://raw.githubusercontent.com/alstr/todo-to-issue-action/master/tests/custom_languages.json'
+        os.environ['INPUT_LANGUAGES'] = ('https://raw.githubusercontent.com/alstr/'
+                                         'todo-to-issue-action/master/tests/custom_languages.json')
         os.environ['INPUT_NO_STANDARD'] = 'true'
         self.parser = TodoParser()
 
