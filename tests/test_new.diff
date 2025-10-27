@@ -625,3 +625,29 @@ index 0000000..d340f6a
 +labels: feature
 +#>
 +Write-Host "Script completed"
+diff --git a/ExampleCodeunit.al b/ExampleCodeunit.al
+new file mode 100644
+index 0000000..a1b2c3d
+--- /dev/null
++++ b/ExampleCodeunit.al
+@@ -0,0 +1,19 @@
++codeunit 50100 "Example Codeunit"
++{
++    // TODO: Implement customer validation logic
++    // This needs to be done before go-live
++    // labels: enhancement
++
++    procedure ValidateCustomer(CustomerNo: Code[20])
++    var
++        Customer: Record Customer;
++    begin
++        // TODO: Add validation rules
++        // We need to check credit limit and blocked status
++        // labels: urgent
++
++        /*
++        TODO: Add error handling
++        labels: help wanted
++        */
++    end;
++}

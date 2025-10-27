@@ -89,8 +89,8 @@ class NewIssueTest(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_text_issues(self):
-        # Includes 2 tests for Org, 2 tests for GAP, 2 tests for Visual Basic, 2 tests for Agda, 4 tests for Sol, 4 tests for Move
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 16)
+        # Includes 2 tests for Org, 2 tests for GAP, 2 tests for Visual Basic, 2 tests for Agda, 4 tests for Sol, 4 tests for Move, 3 tests for AL
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 19)
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)
@@ -271,8 +271,8 @@ class ClosedIssueTest(unittest.TestCase):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'handlebars'), 2)
 
     def test_text_issues(self):
-        # Includes 2 tests for Org, 2 tests for GAP, 2 tests for Visual Basic, 2 tests for Agda, 4 tests for Sol, 4 tests for Move
-        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 16)
+        # Includes 2 tests for Org, 2 tests for GAP, 2 tests for Visual Basic, 2 tests for Agda, 4 tests for Sol, 4 tests for Move, 3 tests for AL
+        self.assertEqual(count_issues_for_file_type(self.raw_issues, 'text'), 19)
 
     def test_scss_issues(self):
         self.assertEqual(count_issues_for_file_type(self.raw_issues, 'scss'), 2)

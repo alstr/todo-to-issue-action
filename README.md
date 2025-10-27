@@ -131,6 +131,7 @@ Only a single milestone can be specified. If the milestone does not exist, it wi
 - ABAP
 - ABAP CDS
 - Agda
+- AL
 - AutoHotkey
 - C
 - C++
