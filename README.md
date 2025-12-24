@@ -211,7 +211,7 @@ jobs:
     permissions:
       issues: write
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
       - name: "TODO to Issue"
         uses: "alstr/todo-to-issue-action@v5"
 ```
@@ -238,7 +238,7 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
       - name: "TODO to Issue"
         uses: "alstr/todo-to-issue-action@v5"
         with:
@@ -451,7 +451,7 @@ jobs:
   build:
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
       - name: "TODO to Issue"
         uses: "alstr/todo-to-issue-action@v5"
         env:
