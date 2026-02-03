@@ -41,6 +41,7 @@ class TodoParser(object):
                 custom_identifiers_dict = json.loads(custom_identifiers)
             except json.JSONDecodeError:
                 print('Invalid identifiers dict, ignoring.')
+                custom_identifiers_dict = dict()
         else:
             custom_identifiers_dict = options.get("identifiers", None)
         if custom_identifiers_dict:
