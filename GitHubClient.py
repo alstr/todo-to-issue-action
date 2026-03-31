@@ -260,6 +260,21 @@ class GitHubClient(Client):
         update_issue_request = requests.post(issue_comment_url, headers=self.issue_headers, json=body)
         return update_issue_request.status_code
 
+    def _find_existing_issue_by_title(self, title):
+        """Search for an existing open or closed issue with the exact same title in this repo."""
+        search_url = f'{self.base_url}search/issues'
+        params = {
+            'q': f'repo:{self.repo} is:issue in:title {title}',
+            'per_page': 30
+        }
+        search_request = requests.get(search_url, headers=self.issue_headers, params=params)
+        if search_request.status_code == 200:
+            results = search_request.json().get('items', [])
+            for result in results:
+                if result['title'] == title:
+                    return result
+        return None
+
     def create_issue(self, issue):
         """Create a dict containing the issue details and send it to GitHub."""
         formatted_issue_body = self.line_break.join(issue.body)
@@ -306,6 +321,14 @@ class GitHubClient(Client):
                 title = f'[{issue.ref}] {issue.title}'
 
         title = title + '...' if len(title) > self.max_issue_title_length else title
+
+        # Check for duplicate issues before creating a new one.
+        if not issue.issue_url:
+            existing = self._find_existing_issue_by_title(title)
+            if existing:
+                print(f'Skipping issue creation (duplicate found): #{existing["number"]} "{title}"')
+                return 200, existing['number']
+
         new_issue_body = {'title': title, 'body': issue_contents, 'labels': issue.labels}
 
         # We need to check if any assignees/milestone specified exist, otherwise issue creation will fail.
