@@ -2,8 +2,38 @@ name: 'TODO to Issue'
 description: 'Converts IDE TODO comments to GitHub issues'
 author: 'Alastair Mooney'
 runs:
-  using: 'docker'
-  image: 'docker://ghcr.io/alstr/todo-to-issue-action:v5.1.14'
+  using: 'composite'
+  steps:
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
+    - name: Run TODO to Issue
+      shell: bash
+      env:
+        PYTHONPATH: ${{ github.action_path }}
+        INPUT_REPO: ${{ inputs.REPO }}
+        INPUT_BEFORE: ${{ inputs.BEFORE }}
+        INPUT_COMMITS: ${{ inputs.COMMITS }}
+        INPUT_DIFF_URL: ${{ inputs.DIFF_URL }}
+        INPUT_SHA: ${{ inputs.SHA }}
+        INPUT_TOKEN: ${{ inputs.TOKEN }}
+        INPUT_CLOSE_ISSUES: ${{ inputs.CLOSE_ISSUES }}
+        INPUT_AUTO_P: ${{ inputs.AUTO_P }}
+        INPUT_PROJECT: ${{ inputs.PROJECT }}
+        INPUT_PROJECTS_SECRET: ${{ inputs.PROJECTS_SECRET }}
+        INPUT_IGNORE: ${{ inputs.IGNORE }}
+        INPUT_AUTO_ASSIGN: ${{ inputs.AUTO_ASSIGN }}
+        INPUT_ACTOR: ${{ inputs.ACTOR }}
+        INPUT_ISSUE_TEMPLATE: ${{ inputs.ISSUE_TEMPLATE }}
+        INPUT_IDENTIFIERS: ${{ inputs.IDENTIFIERS }}
+        INPUT_GITHUB_URL: ${{ inputs.GITHUB_URL }}
+        INPUT_GITHUB_SERVER_URL: ${{ inputs.GITHUB_SERVER_URL }}
+        INPUT_ESCAPE: ${{ inputs.ESCAPE }}
+        INPUT_LANGUAGES: ${{ inputs.LANGUAGES }}
+        INPUT_NO_STANDARD: ${{ inputs.NO_STANDARD }}
+        INPUT_INSERT_ISSUE_URLS: ${{ inputs.INSERT_ISSUE_URLS }}
+      run: uv run --with-requirements "${{ github.action_path }}/requirements.txt" "${{ github.action_path }}/main.py"
 branding:
   icon: 'check-square'
   color: 'orange'
