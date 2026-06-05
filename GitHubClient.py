@@ -368,7 +368,7 @@ class GitHubClient(Client):
                         print(f'Skipping issue closure due to ambiguous match against multiple existing issues, shown below')
                         for x in self.existing_issues:
                             if x['title'] == search_title:
-                                print(f' {x["web_url"]}')
+                                print(f' {x["html_url"]}')
                         issue_number = None
                         break
                     issue_number = existing_issue['number']
