@@ -383,9 +383,12 @@ class EscapeMarkdownTest(unittest.TestCase):
         self.assertEqual(len(self.raw_issues), 2)
 
         issue = self.raw_issues[0]
-        self.assertEqual(len(issue.body), 2)
+        self.assertEqual(len(issue.body), 5)
         self.assertEqual(issue.body[0], '\\# Some title')
         self.assertEqual(issue.body[1], '\\<SomeTag\\>')
+        self.assertEqual(issue.body[2], '- [x] Top\\-level task')
+        self.assertEqual(issue.body[3], '  - [ ] Nested task')
+        self.assertEqual(issue.body[4], '1. Ordered item')
 
         issue = self.raw_issues[1]
         self.assertEqual(len(issue.body), 2)

@@ -516,7 +516,9 @@ class TodoParser(object):
         must_escape = ['\\', '<', '>', '#', '`', '*', '_', '[', ']', '(', ')', '!', '+', '-', '.', '|', '{', '}', '~',
                        '=']
 
-        escaped = ''
+        list_prefix = re.match(r'^(\s*(?:[-+*]|\d+[.)])\s+(?:\[[ xX]\](?:\s+|$))?)', comment)
+        escaped = list_prefix.group(0) if list_prefix else ''
+        comment = comment[len(escaped):]
 
         # Linear Escape Algorithm, because the algorithm ends in an infinite loop when using the function 'replace',
         # which tries to replace all backslashes with duplicate backslashes, i.e. also the already other escaped
@@ -586,6 +588,8 @@ class TodoParser(object):
                 num_pre_marker_tabs = pre_marker_text.count('\t', 0, pre_marker_length)
                 post_marker_length = len(post_marker_whitespace)
                 num_post_marker_tabs = post_marker_whitespace.count('\t', 0, post_marker_length)
+                if post_marker_whitespace:
+                    comment = post_marker_whitespace[1:] + comment
             else:
                 pre_marker_length = 0
                 num_pre_marker_tabs = 0
