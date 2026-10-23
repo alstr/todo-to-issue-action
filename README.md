@@ -355,7 +355,7 @@ Default: `True`
 Whether to close an issue when a TODO is removed.  If enabling this, also enabling `INSERT_ISSUE_URLS` is recommended
 for improved accuracy.
 
-Default: `False`
+Default: `True`
 
 #### ESCAPE
 
